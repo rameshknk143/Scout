@@ -24,6 +24,7 @@ Design notes (see BLUEPRINT / plan for full context):
   aborts the rest of the run. Partial data beats no data.
 """
 
+import html
 import random
 import re
 import sys
@@ -110,7 +111,7 @@ def parse_products(html):
         products.append({
             "asin": asin,
             "rank": int(rank_m.group(1)) if rank_m else None,
-            "title": title_m.group(1).strip() if title_m else None,
+            "title": html.unescape(title_m.group(1).strip()) if title_m else None,
             "price": price,
             "rating": rating,
             "review_count": review_count,

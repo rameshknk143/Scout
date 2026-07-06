@@ -5,14 +5,14 @@ only the data layer (db.py) changed, to talk to Supabase instead of a
 local SQLite file.
 
 Every endpoint except /health requires an X-Scout-Key header matching the
-API_KEY environment variable. Honest note on what this actually protects:
-since the frontend calls this API directly from the browser, that key is
-visible to anyone who opens dev tools on the site — it's a deterrent against
-a stranger stumbling on the URL, not real cryptographic security. Fine for a
-single personal user; would need a real auth model if this ever stopped
-being personal-only.
+API_KEY environment variable. The Next.js frontend calls this server-side
+(Server Components / Server Actions), so the key never reaches the browser
+bundle. Still worth knowing: it's one shared key for a single personal user,
+not a real per-user auth model — fine for this tool's scope, not something
+to reuse if it ever stopped being personal-only.
 """
 
+import html
 import math
 import os
 
@@ -69,6 +69,10 @@ def df_to_records(df: pd.DataFrame):
                 r[k] = v.isoformat()
             elif isinstance(v, float) and math.isnan(v):
                 r[k] = None
+            elif k == "title" and isinstance(v, str):
+                # some titles were collected before html.unescape() was added
+                # to collector.py — decode on read so old rows display clean too
+                r[k] = html.unescape(v)
     return records
 
 

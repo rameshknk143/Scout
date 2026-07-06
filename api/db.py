@@ -7,6 +7,7 @@ own logic touched, only this import. Connection string comes from the
 DATABASE_URL environment variable (Supabase gives you this directly).
 """
 
+import html
 import os
 from contextlib import contextmanager
 
@@ -91,6 +92,15 @@ def insert_snapshot_rows(rows):
     return len(rows)
 
 
+def _clean_title(row):
+    # Some titles were collected before collector.py started decoding HTML
+    # entities (e.g. "L&#x27;Oreal") — unescape on read so old rows display
+    # clean too, not just newly-collected ones.
+    if row and row.get("title"):
+        row["title"] = html.unescape(row["title"])
+    return row
+
+
 def get_latest_snapshot(asin):
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -99,7 +109,7 @@ def get_latest_snapshot(asin):
                 (asin,),
             )
             row = cur.fetchone()
-            return dict(row) if row else None
+            return _clean_title(dict(row)) if row else None
 
 
 def get_history(asin):
@@ -109,7 +119,7 @@ def get_history(asin):
                 "SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at ASC",
                 (asin,),
             )
-            return [dict(r) for r in cur.fetchall()]
+            return [_clean_title(dict(r)) for r in cur.fetchall()]
 
 
 def get_all_snapshots_df():
