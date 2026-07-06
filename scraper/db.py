@@ -48,7 +48,11 @@ CREATE TABLE IF NOT EXISTS validations (
 
 @contextmanager
 def get_conn():
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+    # NOTE: no connection-wide cursor_factory here on purpose — pandas.read_sql_query
+    # expects plain tuple rows from cursor.fetchall(). A RealDictCursor default at the
+    # connection level silently corrupts pandas' column/row mapping. Functions that want
+    # dict-like rows ask for RealDictCursor explicitly on their own cursor instead.
+    conn = psycopg2.connect(DATABASE_URL)
     try:
         yield conn
         conn.commit()
@@ -89,7 +93,7 @@ def insert_snapshot_rows(rows):
 
 def get_latest_snapshot(asin):
     with get_conn() as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 "SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at DESC LIMIT 1",
                 (asin,),
@@ -100,7 +104,7 @@ def get_latest_snapshot(asin):
 
 def get_history(asin):
     with get_conn() as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 "SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at ASC",
                 (asin,),
