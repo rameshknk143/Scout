@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "last_verified": "2026-07-06",
+    "source": "Compiled from published Amazon India seller fee-update articles (March 2026 revision). NOT yet cross-checked per-ASIN against SP-API's live Product Fees API.",
+    "verify_next": "Once SP-API access is connected (BLUEPRINT.md Milestone 0), calibrate every field below against the real fee-preview response for a few actual candidate ASINs and update this file.",
+    "zero_referral_threshold_rupees": 1000,
+    "zero_referral_note": "Effective 16 Mar 2026, Amazon India waived referral fee entirely on items priced <= Rs.1000 across 1800+ categories. Closing fee and weight-handling fee still apply below this threshold."
+  },
+
+  "referral_fee_pct_by_category": {
+    "electronics_accessories": 8,
+    "fashion_apparel": 15,
+    "home_kitchen": 13,
+    "beauty_personal_care": 6,
+    "grocery": 10,
+    "books": 5,
+    "sports_fitness": 12,
+    "toys": 10,
+    "automotive_parts": 16,
+    "other_default": 12
+  },
+
+  "closing_fee_by_price_band": [
+    { "max_price": 250, "fee": 5 },
+    { "max_price": 500, "fee": 10 },
+    { "max_price": 1000, "fee": 20 },
+    { "max_price": 5000, "fee": 40 },
+    { "max_price": null, "fee": 60 }
+  ],
+
+  "weight_handling_fee_easy_ship": {
+    "note": "Zone = Local (same city/state) / Regional (nearby states) / National (rest of India).",
+    "base_slab_upto_grams": 500,
+    "base_fee": { "local": 29, "regional": 43, "national": 63 },
+    "next_slab_upto_grams": 1000,
+    "next_slab_fee": { "local": 41, "regional": 65, "national": 97 },
+    "additional_per_500g_fee": { "local": 13, "regional": 19, "national": 31 }
+  },
+
+  "fba_pick_pack_fee_rupees": {
+    "note": "Per-unit fee only. Monthly storage fee is separate and not per-unit (see fba_storage_fee_per_cuft_month) — enter your own per-unit storage estimate if you want it folded into a single product's margin.",
+    "standard": 20,
+    "oversize": 65
+  },
+
+  "fba_storage_fee_per_cuft_month_rupees": 21,
+
+  "gst_on_amazon_fees_pct": 18
+}

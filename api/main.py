@@ -1,0 +1,165 @@
+"""
+Scout's business-logic API. Thin FastAPI wrapper around the same
+profit_calculator / scorer / trend_radar logic Scout has always used —
+only the data layer (db.py) changed, to talk to Supabase instead of a
+local SQLite file.
+
+Every endpoint except /health requires an X-Scout-Key header matching the
+API_KEY environment variable. Honest note on what this actually protects:
+since the frontend calls this API directly from the browser, that key is
+visible to anyone who opens dev tools on the site — it's a deterrent against
+a stranger stumbling on the URL, not real cryptographic security. Fine for a
+single personal user; would need a real auth model if this ever stopped
+being personal-only.
+"""
+
+import math
+import os
+
+import numpy as np
+import pandas as pd
+from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+import db
+import profit_calculator
+import scorer
+import trend_radar
+
+API_KEY = os.environ["API_KEY"]
+
+ALLOWED_ORIGINS = [o for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o] or [
+    "http://localhost:3000",
+]
+
+CATEGORIES = [
+    "Electronics Accessories", "Home & Kitchen", "Beauty & Personal Care",
+    "Sports & Fitness", "Toys & Games", "Stationery/Office", "Pet Supplies",
+    "Car Accessories", "Garden & Outdoors", "Baby Products", "Watches & Gifting",
+]
+
+app = FastAPI(title="Scout API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+
+def require_key(x_scout_key: str = Header(default="")):
+    if x_scout_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing X-Scout-Key header")
+
+
+def df_to_records(df: pd.DataFrame):
+    if df is None or df.empty:
+        return []
+    clean = df.replace({np.nan: None})
+    for col in clean.columns:
+        if pd.api.types.is_datetime64_any_dtype(clean[col]):
+            clean[col] = clean[col].astype(str)
+    records = clean.to_dict(orient="records")
+    # dates (python datetime.date objects from trend_radar's collected_date column, if present)
+    for r in records:
+        for k, v in list(r.items()):
+            if hasattr(v, "isoformat"):
+                r[k] = v.isoformat()
+            elif isinstance(v, float) and math.isnan(v):
+                r[k] = None
+    return records
+
+
+@app.get("/health")
+def health():
+    return {"ok": True}
+
+
+@app.get("/trend-radar/categories", dependencies=[Depends(require_key)])
+def get_categories():
+    return {"categories": CATEGORIES}
+
+
+@app.get("/trend-radar/digest", dependencies=[Depends(require_key)])
+def get_digest():
+    digest = trend_radar.weekly_digest()
+    return {
+        "new_entrants": df_to_records(digest["new_entrants"]),
+        "top_movers": df_to_records(digest["top_movers"]),
+        "cross_category": df_to_records(digest["cross_category"]),
+        "collection_dates": [d.isoformat() for d in digest["collection_dates"]],
+    }
+
+
+@app.get("/trend-radar/category/{category}", dependencies=[Depends(require_key)])
+def get_category_table(category: str):
+    table = trend_radar.category_table(category)
+    return {"category": category, "products": df_to_records(table)}
+
+
+class ScoreRequest(BaseModel):
+    asin: str
+    buy_price: float
+    category: str | None = None
+    weight_grams: int = scorer.DEFAULT_WEIGHT_GRAMS
+    fulfillment: str = scorer.DEFAULT_FULFILLMENT
+    gst_rate_pct: int = scorer.DEFAULT_GST_RATE_PCT
+    zone: str = scorer.DEFAULT_ZONE
+    differentiation: int = 3
+    operational_fit: int = 3
+    notes: str = ""
+
+
+@app.post("/validator/score", dependencies=[Depends(require_key)])
+def score_asin(req: ScoreRequest):
+    return scorer.score_asin(
+        asin=req.asin,
+        buy_price=req.buy_price,
+        category=req.category,
+        weight_grams=req.weight_grams,
+        fulfillment=req.fulfillment,
+        gst_rate_pct=req.gst_rate_pct,
+        zone=req.zone,
+        differentiation=req.differentiation,
+        operational_fit=req.operational_fit,
+        notes=req.notes,
+    )
+
+
+@app.get("/watchlist", dependencies=[Depends(require_key)])
+def get_watchlist():
+    df = db.get_all_validations_df()
+    return {"validations": df_to_records(df)}
+
+
+class ProfitCalcRequest(BaseModel):
+    sell_price: float
+    buy_price: float
+    category: str
+    weight_grams: int
+    fulfillment: str
+    gst_rate_pct: int
+    zone: str = "national"
+    is_oversize: bool = False
+    returns_pct: float = 5
+    ppc_per_unit: float = 0
+    own_shipping_cost: float = 0
+
+
+@app.post("/profit-calculator", dependencies=[Depends(require_key)])
+def calc_profit(req: ProfitCalcRequest):
+    return profit_calculator.calculate(
+        sell_price=req.sell_price,
+        buy_price=req.buy_price,
+        category=req.category,
+        weight_grams=req.weight_grams,
+        fulfillment=req.fulfillment,
+        gst_rate_pct=req.gst_rate_pct,
+        zone=req.zone,
+        is_oversize=req.is_oversize,
+        returns_pct=req.returns_pct,
+        ppc_per_unit=req.ppc_per_unit,
+        own_shipping_cost=req.own_shipping_cost,
+    )
