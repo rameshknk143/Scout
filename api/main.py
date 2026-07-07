@@ -16,10 +16,8 @@ import html
 import math
 import os
 
-import numpy as np
 import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import db
@@ -29,10 +27,6 @@ import trend_radar
 
 API_KEY = os.environ["API_KEY"]
 
-ALLOWED_ORIGINS = [o for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o] or [
-    "http://localhost:3000",
-]
-
 CATEGORIES = [
     "Electronics Accessories", "Home & Kitchen", "Beauty & Personal Care",
     "Sports & Fitness", "Toys & Games", "Stationery/Office", "Pet Supplies",
@@ -40,13 +34,6 @@ CATEGORIES = [
 ]
 
 app = FastAPI(title="Scout API")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["GET", "POST"],
-    allow_headers=["*"],
-)
 
 
 def require_key(x_scout_key: str = Header(default="")):
@@ -57,7 +44,7 @@ def require_key(x_scout_key: str = Header(default="")):
 def df_to_records(df: pd.DataFrame):
     if df is None or df.empty:
         return []
-    clean = df.replace({np.nan: None})
+    clean = df.replace({math.nan: None})
     for col in clean.columns:
         if pd.api.types.is_datetime64_any_dtype(clean[col]):
             clean[col] = clean[col].astype(str)
