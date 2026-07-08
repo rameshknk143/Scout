@@ -14,8 +14,8 @@ export default function TrendRadarPage() {
     <div>
       <h1 className="text-2xl font-bold tracking-tight mb-1">Trend Radar</h1>
       <p className="text-muted text-sm mb-6">
-        Broad discovery across 11 categories — new entrants, climbers,
-        cross-category hits.
+        Broad discovery across all 31 Amazon India categories — new entrants,
+        climbers, cross-category hits.
       </p>
       <Suspense fallback={<div className="text-muted text-sm">Loading trend data…</div>}>
         <TrendRadarData />
