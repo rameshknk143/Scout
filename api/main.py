@@ -20,6 +20,7 @@ import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel
 
+import alerts
 import db
 import profit_calculator
 import scorer
@@ -130,6 +131,11 @@ def score_asin(req: ScoreRequest):
 def get_watchlist():
     df = db.get_all_validations_df()
     return {"validations": df_to_records(df)}
+
+
+@app.get("/alerts", dependencies=[Depends(require_key)])
+def get_alerts():
+    return {"alerts": alerts.compute_alerts()}
 
 
 class ProfitCalcRequest(BaseModel):

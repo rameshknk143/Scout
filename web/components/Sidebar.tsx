@@ -37,7 +37,10 @@ const NAV: NavCategory[] = [
     id: "watchlist-alerts",
     label: "Watchlist & Alerts",
     icon: "📋",
-    items: [{ href: "/watchlist", label: "Watchlist", icon: "📋" }],
+    items: [
+      { href: "/watchlist", label: "Watchlist", icon: "📋" },
+      { href: "/alerts", label: "Alerts", icon: "🔔" },
+    ],
   },
   { id: "settings", label: "Settings", icon: "⚙️", items: [] },
 ];

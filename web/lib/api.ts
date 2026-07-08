@@ -90,6 +90,24 @@ export type ScoreResult = {
   caveats: string[];
 };
 
+export type Alert = {
+  asin: string;
+  title: string | null;
+  category: string | null;
+  list_type: string;
+  alert_type:
+    | "price_change"
+    | "entered_top3"
+    | "rank_climbing"
+    | "rank_sliding"
+    | "review_surge"
+    | "dropped_from_list";
+  severity: "high" | "medium" | "low";
+  message: string;
+  detail: Record<string, unknown>;
+  detected_at: string;
+};
+
 export type Validation = {
   id: number;
   asin: string;
@@ -150,6 +168,15 @@ export const api = {
   watchlist: () =>
     request<{ validations: Validation[] }>(
       "/watchlist",
+      {},
+      { revalidate: 60, tags: ["watchlist"] }
+    ),
+  // Alerts are derived from watched (validated) ASINs, so they ride the
+  // same "watchlist" tag -- a new Validator run can change which ASINs
+  // get checked, and should be reflected immediately, same as the list itself.
+  alerts: () =>
+    request<{ alerts: Alert[] }>(
+      "/alerts",
       {},
       { revalidate: 60, tags: ["watchlist"] }
     ),
