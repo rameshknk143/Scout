@@ -2,6 +2,13 @@ import { Suspense } from "react";
 import { api } from "@/lib/api";
 import TrendRadarClient from "./trend-radar-client";
 
+// This is personal, password-gated, live data -- never statically
+// prerendered. Without this, `next build` tries to prerender the page by
+// calling the live Render API at build time, which is both a pointless
+// stale snapshot to bake in and a real failure mode if that endpoint isn't
+// up yet during the build (see the /alerts build failure this fixed).
+export const dynamic = "force-dynamic";
+
 // Header renders immediately; the digest fetch (Render cold-start prone)
 // streams in behind it instead of blocking the whole page.
 async function TrendRadarData() {

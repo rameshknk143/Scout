@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { api } from "@/lib/api";
 import AnalyticsClient from "./analytics-client";
 
+// See (dashboard)/page.tsx for why: never statically prerendered.
+export const dynamic = "force-dynamic";
+
 async function AnalyticsData() {
   const { validations } = await api.watchlist();
   return <AnalyticsClient validations={validations} />;

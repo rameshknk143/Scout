@@ -2,6 +2,12 @@ import { Suspense } from "react";
 import { api } from "@/lib/api";
 import AlertsClient from "./alerts-client";
 
+// This build broke once already: `next build` tried to statically
+// prerender this page by calling the live Render API, and lost the race
+// against Render's own redeploy of the new /alerts endpoint. See
+// (dashboard)/page.tsx for the fuller explanation -- same fix everywhere.
+export const dynamic = "force-dynamic";
+
 async function AlertsData() {
   const { alerts } = await api.alerts();
   return <AlertsClient alerts={alerts} />;

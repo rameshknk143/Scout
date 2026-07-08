@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { api } from "@/lib/api";
 import WatchlistClient from "./watchlist-client";
 
+// See (dashboard)/page.tsx for why: never statically prerendered.
+export const dynamic = "force-dynamic";
+
 // Header renders immediately; the watchlist fetch streams in behind it
 // instead of blocking the whole page.
 async function WatchlistData() {
