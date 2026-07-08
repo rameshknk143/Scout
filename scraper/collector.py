@@ -1,18 +1,25 @@
 """
-Scout's nightly collector. Fetches amazon.in Best Sellers pages for a fixed
-list of broad-discovery categories, parses each product card, and writes one
-snapshot row per product into the database (via db.insert_snapshot_rows).
+Scout's nightly collector. Fetches amazon.in list pages (Best Sellers, New
+Releases, Most Wished For, Most Gifted) for a fixed list of broad-discovery
+categories, parses each product card, and writes one snapshot row per
+product into the database (via db.insert_snapshot_rows).
 
 Cloud version: runs via GitHub Actions on a schedule, writing to Supabase
 Postgres instead of a local SQLite file. Logic is unchanged from the original
 laptop version — only db.py's connection layer changed.
 
-Run manually:  python collector.py
-Run for one category only (debugging):  python collector.py electronics
+Run manually (all categories x all list types):  python collector.py
+Run for one category only, all list types (debugging):  python collector.py electronics
 
 Design notes (see BLUEPRINT / plan for full context):
-- v1 covers Best Sellers only. Movers & Shakers / New Releases / Most Wished
-  For / Most Gifted are a deliberate follow-up, not an oversight.
+- Expanded 2026-07-08 from Best Sellers only to 4 list types. Movers &
+  Shakers was investigated and deliberately excluded: verified across
+  multiple categories that its pages return zero server-side-rendered
+  products for every category tested (real HTTP 200, correct <title>, but
+  the product-card HTML is entirely absent — likely populated client-side
+  via JS rather than server-rendered like the other four list types). Not
+  achievable with this scraper's plain-HTTP approach without a much bigger
+  investment (headless browser). Revisit only if that trade-off changes.
 - Amazon's CSS classes are hashed/versioned (e.g. "_cDEzb_..._3mJ9Z") and
   likely change on redeploys, so parsing matches stable substrings/attributes
   instead: zg-bdg-text (rank), data-asin (asin), p13n-sc-css-line-clamp
@@ -20,8 +27,8 @@ Design notes (see BLUEPRINT / plan for full context):
   and a plain rupee-amount regex (price).
 - "Gifting/Novelty" has no real Amazon bestsellers browse node at all —
   substituted with "watches" (Watches & Gifting), a real, gift-heavy category.
-- Any single category's fetch/parse failure is logged and skipped; it never
-  aborts the rest of the run. Partial data beats no data.
+- Any single category/list-type fetch/parse failure is logged and skipped;
+  it never aborts the rest of the run. Partial data beats no data.
 """
 
 import html
@@ -87,8 +94,16 @@ CATEGORIES = {
     "Video Games": "videogames",
 }
 
-LIST_TYPE = "bestsellers"  # v1 scope: Best Sellers only
-BASE_URL = "https://www.amazon.in/gp/bestsellers/{slug}/"
+# list_type key -> amazon.in URL path segment. Movers & Shakers deliberately
+# excluded — see module docstring for why (verified zero server-rendered
+# products across multiple categories, not a slug problem).
+LIST_TYPES = {
+    "bestsellers": "gp/bestsellers",
+    "new-releases": "gp/new-releases",
+    "most-wished-for": "gp/most-wished-for",
+    "most-gifted": "gp/most-gifted",
+}
+BASE_URL = "https://www.amazon.in/{path}/{slug}/"
 
 ASIN_RE = re.compile(r'data-asin="([A-Z0-9]{10})"')
 RANK_RE = re.compile(r'zg-bdg-text">#(\d+)<')
@@ -154,10 +169,11 @@ def parse_products(page_html):
     return products
 
 
-def collect_category(label, slug):
-    """Fetch + parse one category. Returns list of snapshot-row dicts.
-    Raises on failure (caller is responsible for catching/logging)."""
-    url = BASE_URL.format(slug=slug)
+def collect_category(label, slug, list_type="bestsellers"):
+    """Fetch + parse one category/list-type combination. Returns list of
+    snapshot-row dicts. Raises on failure (caller is responsible for
+    catching/logging)."""
+    url = BASE_URL.format(path=LIST_TYPES[list_type], slug=slug)
     page_html = fetch(url)
     products = parse_products(page_html)
 
@@ -174,7 +190,7 @@ def collect_category(label, slug):
         rows.append({
             "asin": p["asin"],
             "category": label,
-            "list_type": LIST_TYPE,
+            "list_type": list_type,
             "rank": p["rank"],
             "title": p["title"],
             "price": p["price"],
@@ -186,25 +202,31 @@ def collect_category(label, slug):
     return rows
 
 
-def run(categories=None):
-    """Run the collector across the given categories (default: all).
-    Returns a summary dict: {label: {"ok": True, "rows": N} | {"ok": False, "error": str}}."""
+def run(categories=None, list_types=None):
+    """Run the collector across the given categories x list types (default:
+    all categories, all 4 supported list types). Returns a summary dict
+    keyed by "label [list_type]": {"ok": True, "rows": N} | {"ok": False, "error": str}.
+    One polite delay between every individual fetch, not just per category —
+    this is now 31 x 4 = up to 124 fetches/run, so pacing matters more than
+    it did at 31."""
     db.init_db()
     targets = categories or CATEGORIES
+    types = list_types or list(LIST_TYPES.keys())
     summary = {}
 
-    labels = list(targets.items())
-    for idx, (label, slug) in enumerate(labels):
+    jobs = [(label, slug, lt) for label, slug in targets.items() for lt in types]
+    for idx, (label, slug, list_type) in enumerate(jobs):
+        key = f"{label} [{list_type}]"
         try:
-            rows = collect_category(label, slug)
+            rows = collect_category(label, slug, list_type)
             n = db.insert_snapshot_rows(rows)
-            summary[label] = {"ok": True, "rows": n}
-            print(f"[ok]   {label:<24} ({slug}) -> {n} rows")
+            summary[key] = {"ok": True, "rows": n}
+            print(f"[ok]   {key:<45} ({slug}) -> {n} rows")
         except Exception as e:
-            summary[label] = {"ok": False, "error": str(e)}
-            print(f"[FAIL] {label:<24} ({slug}) -> {e}")
+            summary[key] = {"ok": False, "error": str(e)}
+            print(f"[FAIL] {key:<45} ({slug}) -> {e}")
 
-        if idx < len(labels) - 1:
+        if idx < len(jobs) - 1:
             delay = random.uniform(10, 30)
             time.sleep(delay)
 
@@ -219,6 +241,11 @@ if __name__ == "__main__":
             print(f"Unknown category/slug: {slug_arg}")
             print("Known categories:", ", ".join(CATEGORIES))
             sys.exit(1)
-        run(matches)
+        list_type_arg = sys.argv[2] if len(sys.argv) > 2 else None
+        if list_type_arg and list_type_arg not in LIST_TYPES:
+            print(f"Unknown list type: {list_type_arg}")
+            print("Known list types:", ", ".join(LIST_TYPES))
+            sys.exit(1)
+        run(matches, [list_type_arg] if list_type_arg else None)
     else:
         run()

@@ -92,9 +92,9 @@ def get_digest():
 
 
 @app.get("/trend-radar/category/{category}", dependencies=[Depends(require_key)])
-def get_category_table(category: str):
-    table = trend_radar.category_table(category)
-    return {"category": category, "products": df_to_records(table)}
+def get_category_table(category: str, list_type: str = "bestsellers"):
+    table = trend_radar.category_table(category, list_type=list_type)
+    return {"category": category, "list_type": list_type, "products": df_to_records(table)}
 
 
 class ScoreRequest(BaseModel):
