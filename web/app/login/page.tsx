@@ -14,7 +14,7 @@ export default async function LoginPage({
           <h1 className="text-2xl font-bold tracking-tight">
             <span className="text-amber">Scout</span>
           </h1>
-          <p className="text-muted text-sm mt-1">Ram&apos;s personal product radar</p>
+          <p className="text-muted text-sm mt-1">Personal Amazon India research tool</p>
         </div>
         <LoginForm from={from || "/"} />
       </div>
