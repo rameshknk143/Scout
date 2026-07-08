@@ -31,12 +31,12 @@ def distinct_collection_dates(df=None):
     return sorted(df["collected_date"].unique())
 
 
-def new_entrants(category=None, top_n=100):
+def new_entrants(category=None, top_n=100, df=None):
     """ASINs whose EARLIEST snapshot ever recorded is from the most recent
     collection run — i.e. first time we've ever seen them. On a fresh DB
     (one collection run so far) this returns every product, which is the
     expected cold-start behaviour."""
-    df = _snapshots_df()
+    df = _snapshots_df() if df is None else df
     if df.empty:
         return pd.DataFrame()
 
@@ -82,12 +82,12 @@ def velocity(asin):
     }
 
 
-def top_movers(category=None, min_snapshots=2, limit=20):
+def top_movers(category=None, min_snapshots=2, limit=20, df=None):
     """ASINs with the biggest rank improvement (delta = first_rank -
     latest_rank, positive = climbing) across their full collection history.
     Requires at least `min_snapshots` collection runs per ASIN — on a
     single-night DB this will be empty, which is expected."""
-    df = _snapshots_df()
+    df = _snapshots_df() if df is None else df
     if df.empty:
         return pd.DataFrame()
     if category:
@@ -115,10 +115,10 @@ def top_movers(category=None, min_snapshots=2, limit=20):
     return movers.head(limit).reset_index(drop=True)
 
 
-def cross_category_hits(min_categories=2):
+def cross_category_hits(min_categories=2, df=None):
     """ASINs appearing (in their latest snapshot) across multiple distinct
     categories — signals appeal beyond a single niche."""
-    df = _snapshots_df()
+    df = _snapshots_df() if df is None else df
     if df.empty:
         return pd.DataFrame()
 
@@ -142,12 +142,18 @@ def cross_category_hits(min_categories=2):
 
 def weekly_digest():
     """Rollup used by the Trend Radar homepage: new entrants, top movers,
-    and cross-category hits, all computed live."""
+    and cross-category hits, all computed live.
+
+    Fetches the snapshots table exactly once and shares it across all four
+    sub-queries — previously each one called _snapshots_df() independently,
+    meaning a single digest request pulled the entire table 4x over.
+    """
+    df = _snapshots_df()
     return {
-        "new_entrants": new_entrants(),
-        "top_movers": top_movers(),
-        "cross_category": cross_category_hits(),
-        "collection_dates": distinct_collection_dates(),
+        "new_entrants": new_entrants(df=df),
+        "top_movers": top_movers(df=df),
+        "cross_category": cross_category_hits(df=df),
+        "collection_dates": distinct_collection_dates(df=df),
     }
 
 

@@ -5,7 +5,17 @@ import "server-only";
 const API_URL = process.env.API_URL!;
 const API_KEY = process.env.API_KEY!;
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+// GET-style reads default to a short time-based revalidation window instead
+// of the old blanket `cache: "no-store"` (which meant zero caching on every
+// call, GET or POST). POST-style mutations (score, profitCalculator) pass
+// `cache: "no-store"` explicitly via `options` and are left untouched below.
+type NextFetchOptions = { revalidate?: number | false; tags?: string[] };
+
+async function request<T>(
+  path: string,
+  options: RequestInit = {},
+  next?: NextFetchOptions
+): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
@@ -13,7 +23,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },
-    cache: "no-store",
+    // Mutations (POST) still pass their own cache/next via `options` if
+    // ever needed; reads get the revalidate/tags below unless overridden.
+    cache: options.cache ?? (next ? undefined : "no-store"),
+    next: next ?? undefined,
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -104,10 +117,16 @@ export type ProfitResult = {
 };
 
 export const api = {
-  digest: () => request<Digest>("/trend-radar/digest"),
+  // Nightly collector runs once/day, so a short revalidation window is safe:
+  // fresh data still shows up within a minute, but repeated dashboard loads
+  // in between don't each trigger a full Render cold-start + full-table scan.
+  digest: () =>
+    request<Digest>("/trend-radar/digest", {}, { revalidate: 60 }),
   categoryTable: (category: string) =>
     request<{ category: string; products: SnapshotRow[] }>(
-      `/trend-radar/category/${encodeURIComponent(category)}`
+      `/trend-radar/category/${encodeURIComponent(category)}`,
+      {},
+      { revalidate: 60 }
     ),
   score: (body: {
     asin: string;
@@ -125,7 +144,15 @@ export const api = {
       method: "POST",
       body: JSON.stringify(body),
     }),
-  watchlist: () => request<{ validations: Validation[] }>("/watchlist"),
+  // Tagged (not just time-revalidated) because a new validation must show
+  // up immediately after scoreAsin() — see updateTag("watchlist") in
+  // lib/actions.ts, called right after a successful score.
+  watchlist: () =>
+    request<{ validations: Validation[] }>(
+      "/watchlist",
+      {},
+      { revalidate: 60, tags: ["watchlist"] }
+    ),
   profitCalculator: (body: {
     sell_price: number;
     buy_price: number;

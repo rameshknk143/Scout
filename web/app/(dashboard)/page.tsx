@@ -1,9 +1,15 @@
+import { Suspense } from "react";
 import { api } from "@/lib/api";
 import TrendRadarClient from "./trend-radar-client";
 
-export default async function TrendRadarPage() {
+// Header renders immediately; the digest fetch (Render cold-start prone)
+// streams in behind it instead of blocking the whole page.
+async function TrendRadarData() {
   const digest = await api.digest();
+  return <TrendRadarClient digest={digest} />;
+}
 
+export default function TrendRadarPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight mb-1">Trend Radar</h1>
@@ -11,7 +17,9 @@ export default async function TrendRadarPage() {
         Broad discovery across 11 categories — new entrants, climbers,
         cross-category hits.
       </p>
-      <TrendRadarClient digest={digest} />
+      <Suspense fallback={<div className="text-muted text-sm">Loading trend data…</div>}>
+        <TrendRadarData />
+      </Suspense>
     </div>
   );
 }

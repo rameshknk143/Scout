@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import VerdictBadge from "@/components/VerdictBadge";
 import CaveatBox from "@/components/CaveatBox";
+import { Card, Field, MiniStat } from "@/components/ui";
 import type { ScoreResult } from "@/lib/api";
 import { CATEGORIES } from "@/lib/constants";
 import { scoreAsin } from "@/lib/actions";
@@ -158,69 +158,54 @@ export default function ValidatorClient() {
 
       {error && <div className="text-red text-sm">{error}</div>}
 
-      <AnimatePresence>
-        {result && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="glass-panel p-6"
-          >
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div>
-                <div className="text-xs text-muted mb-1">{result.asin}</div>
-                <div className="font-semibold leading-snug">{result.title}</div>
-                <div className="text-xs text-muted mt-1">
-                  {result.category ?? "unknown category"} · sell ₹
-                  {result.sell_price?.toLocaleString("en-IN")} · buy ₹
-                  {result.buy_price.toLocaleString("en-IN")} · net margin{" "}
-                  {result.margin_detail.net_margin_pct.toFixed(1)}%
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-4xl font-bold text-amber amber-glow-text">
-                  {result.score}
-                </div>
-                <div className="mt-1">
-                  <VerdictBadge verdict={result.verdict} />
-                </div>
+      {result && (
+        <Card>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div className="text-xs text-muted mb-1">{result.asin}</div>
+              <div className="font-semibold leading-snug">{result.title}</div>
+              <div className="text-xs text-muted mt-1">
+                {result.category ?? "unknown category"} · sell ₹
+                {result.sell_price?.toLocaleString("en-IN")} · buy ₹
+                {result.buy_price.toLocaleString("en-IN")} · net margin{" "}
+                {result.margin_detail.net_margin_pct.toFixed(1)}%
               </div>
             </div>
+            <div className="text-right shrink-0">
+              <div className="text-4xl font-bold text-amber amber-glow-text">
+                {result.score}
+              </div>
+              <div className="mt-1">
+                <VerdictBadge verdict={result.verdict} />
+              </div>
+            </div>
+          </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-              {Object.entries(result.weights).map(([key, weight]) => (
-                <div key={key} className="rounded-lg bg-white/5 px-3 py-2.5">
-                  <div className="text-xs text-muted">
-                    {WEIGHT_LABELS[key]} · {weight}%
-                  </div>
-                  <div className="text-lg font-semibold">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+            {Object.entries(result.weights).map(([key, weight]) => (
+              <MiniStat
+                key={key}
+                label={`${WEIGHT_LABELS[key]} · ${weight}%`}
+                value={
+                  <>
                     {result.components[key].toFixed(0)}
                     <span className="text-muted text-sm">/100</span>
-                  </div>
-                </div>
+                  </>
+                }
+              />
+            ))}
+          </div>
+
+          {result.caveats.length > 0 && (
+            <div className="space-y-2">
+              {result.caveats.map((c, i) => (
+                <CaveatBox key={i}>{c}</CaveatBox>
               ))}
             </div>
-
-            {result.caveats.length > 0 && (
-              <div className="space-y-2">
-                {result.caveats.map((c, i) => (
-                  <CaveatBox key={i}>{c}</CaveatBox>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </Card>
+      )}
     </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="block text-sm text-muted mb-1.5">{label}</span>
-      {children}
-    </label>
   );
 }
 

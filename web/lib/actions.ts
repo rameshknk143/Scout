@@ -1,5 +1,6 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { api } from "./api";
 
 export async function getCategoryTable(category: string) {
@@ -18,7 +19,13 @@ export async function scoreAsin(input: {
   operational_fit?: number;
   notes?: string;
 }) {
-  return api.score(input);
+  const result = await api.score(input);
+  // score_asin() writes a new row to the validations table server-side.
+  // updateTag (not revalidateTag) is the correct primitive here: this is a
+  // Server Action and we need read-your-own-writes — the very next request
+  // for the watchlist must wait for fresh data, not serve the 60s-stale copy.
+  updateTag("watchlist");
+  return result;
 }
 
 export async function getWatchlist() {

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import VerdictBadge from "@/components/VerdictBadge";
+import { Card, Field, MiniStat } from "@/components/ui";
 import type { ProfitResult } from "@/lib/api";
 import { FEE_CATEGORIES } from "@/lib/constants";
 import { calcProfit } from "@/lib/actions";
@@ -134,73 +134,48 @@ export default function ProfitCalculatorClient() {
         </button>
       </form>
 
-      <AnimatePresence>
-        {result && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="glass-panel p-6"
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div className="text-sm text-muted">Net margin</div>
-              <VerdictBadge verdict={result.verdict} />
-            </div>
-            <div className="text-4xl font-bold text-amber amber-glow-text mb-6">
-              {result.net_margin_pct.toFixed(1)}%
-              <span className="text-lg text-muted font-normal ml-2">
-                (₹{result.net_margin_rupees.toFixed(0)}/unit)
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <Stat label="Referral fee" value={`₹${result.referral_fee}`} />
-              <Stat label="Closing fee" value={`₹${result.closing_fee}`} />
-              <Stat
-                label="Weight / pick-pack fee"
-                value={`₹${result.weight_or_pickpack_fee}`}
-              />
-              <Stat
-                label="Amazon fees (total)"
-                value={`₹${result.amazon_fees_subtotal}`}
-              />
-              <Stat
-                label="Returns provision"
-                value={`₹${result.returns_provision}`}
-              />
-              <Stat
-                label="Breakeven price"
-                value={
-                  result.breakeven_price != null
-                    ? `₹${result.breakeven_price.toFixed(0)}`
-                    : "—"
-                }
-              />
-              <Stat
-                label="Breakeven ACoS"
-                value={`${result.breakeven_acos_pct.toFixed(1)}%`}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="block text-sm text-muted mb-1.5">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white/5 px-3 py-2.5">
-      <div className="text-xs text-muted">{label}</div>
-      <div className="text-lg font-semibold">{value}</div>
+      {result && (
+        <Card>
+          <div className="flex items-center justify-between mb-5">
+            <div className="text-sm text-muted">Net margin</div>
+            <VerdictBadge verdict={result.verdict} />
+          </div>
+          <div className="text-4xl font-bold text-amber amber-glow-text mb-6">
+            {result.net_margin_pct.toFixed(1)}%
+            <span className="text-lg text-muted font-normal ml-2">
+              (₹{result.net_margin_rupees.toFixed(0)}/unit)
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <MiniStat label="Referral fee" value={`₹${result.referral_fee}`} />
+            <MiniStat label="Closing fee" value={`₹${result.closing_fee}`} />
+            <MiniStat
+              label="Weight / pick-pack fee"
+              value={`₹${result.weight_or_pickpack_fee}`}
+            />
+            <MiniStat
+              label="Amazon fees (total)"
+              value={`₹${result.amazon_fees_subtotal}`}
+            />
+            <MiniStat
+              label="Returns provision"
+              value={`₹${result.returns_provision}`}
+            />
+            <MiniStat
+              label="Breakeven price"
+              value={
+                result.breakeven_price != null
+                  ? `₹${result.breakeven_price.toFixed(0)}`
+                  : "—"
+              }
+            />
+            <MiniStat
+              label="Breakeven ACoS"
+              value={`${result.breakeven_acos_pct.toFixed(1)}%`}
+            />
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
