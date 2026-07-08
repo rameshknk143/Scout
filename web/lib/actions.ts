@@ -3,8 +3,8 @@
 import { updateTag } from "next/cache";
 import { api } from "./api";
 
-export async function getCategoryTable(category: string) {
-  return api.categoryTable(category);
+export async function getCategoryTable(category: string, listType?: string) {
+  return api.categoryTable(category, listType);
 }
 
 export async function scoreAsin(input: {

@@ -15,6 +15,15 @@ export const CATEGORIES = [
   "Software", "Video Games",
 ] as const;
 
+// Keep in sync with scraper/collector.py's LIST_TYPES dict keys. Movers &
+// Shakers deliberately excluded — see collector.py's module docstring.
+export const LIST_TYPES = [
+  { value: "bestsellers", label: "Best Sellers" },
+  { value: "new-releases", label: "New Releases" },
+  { value: "most-wished-for", label: "Most Wished For" },
+  { value: "most-gifted", label: "Most Gifted" },
+] as const;
+
 export const FEE_CATEGORIES = [
   "electronics_accessories", "fashion_apparel", "home_kitchen",
   "beauty_personal_care", "grocery", "books", "sports_fitness", "toys",

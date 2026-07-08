@@ -5,7 +5,7 @@ import StatCard from "@/components/StatCard";
 import CaveatBox from "@/components/CaveatBox";
 import { Table, Tabs, Select, ChartCard, type Column } from "@/components/ui";
 import type { Digest, SnapshotRow } from "@/lib/api";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES, LIST_TYPES } from "@/lib/constants";
 import { getCategoryTable } from "@/lib/actions";
 
 type TabKey = "entrants" | "movers" | "cross";
@@ -15,6 +15,7 @@ type CrossRow = Digest["cross_category"][number];
 export default function TrendRadarClient({ digest }: { digest: Digest }) {
   const [tab, setTab] = useState<TabKey>("entrants");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
+  const [listType, setListType] = useState<string>(LIST_TYPES[0].value);
   const [table, setTable] = useState<SnapshotRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +24,7 @@ export default function TrendRadarClient({ digest }: { digest: Digest }) {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getCategoryTable(category).then((res) => {
+    getCategoryTable(category, listType).then((res) => {
       if (!cancelled) {
         setTable(res.products);
         setLoading(false);
@@ -32,7 +33,7 @@ export default function TrendRadarClient({ digest }: { digest: Digest }) {
     return () => {
       cancelled = true;
     };
-  }, [category]);
+  }, [category, listType]);
 
   const chartData = table.slice(0, 15).map((p) => ({
     rank: `#${p.rank}`,
@@ -100,13 +101,20 @@ export default function TrendRadarClient({ digest }: { digest: Digest }) {
       </Tabs>
 
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <h2 className="text-lg font-semibold">Browse by category</h2>
-          <Select
-            value={category}
-            onChange={setCategory}
-            options={CATEGORIES.map((c) => ({ value: c, label: c }))}
-          />
+          <div className="flex flex-wrap gap-2">
+            <Select
+              value={listType}
+              onChange={setListType}
+              options={LIST_TYPES.map((l) => ({ value: l.value, label: l.label }))}
+            />
+            <Select
+              value={category}
+              onChange={setCategory}
+              options={CATEGORIES.map((c) => ({ value: c, label: c }))}
+            />
+          </div>
         </div>
 
         {!loading && chartData.length > 0 && (

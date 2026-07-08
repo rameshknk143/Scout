@@ -122,9 +122,9 @@ export const api = {
   // in between don't each trigger a full Render cold-start + full-table scan.
   digest: () =>
     request<Digest>("/trend-radar/digest", {}, { revalidate: 60 }),
-  categoryTable: (category: string) =>
-    request<{ category: string; products: SnapshotRow[] }>(
-      `/trend-radar/category/${encodeURIComponent(category)}`,
+  categoryTable: (category: string, listType: string = "bestsellers") =>
+    request<{ category: string; list_type: string; products: SnapshotRow[] }>(
+      `/trend-radar/category/${encodeURIComponent(category)}?list_type=${encodeURIComponent(listType)}`,
       {},
       { revalidate: 60 }
     ),
