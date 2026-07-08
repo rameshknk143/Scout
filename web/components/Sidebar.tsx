@@ -21,7 +21,12 @@ const NAV: NavCategory[] = [
   { id: "keyword-research", label: "Keyword Research", icon: "🔑", items: [] },
   { id: "listing", label: "Listing", icon: "📝", items: [] },
   { id: "market-intelligence", label: "Market Intelligence", icon: "🧭", items: [] },
-  { id: "analytics", label: "Analytics", icon: "📊", items: [] },
+  {
+    id: "analytics",
+    label: "Analytics",
+    icon: "📊",
+    items: [{ href: "/analytics", label: "Opportunity Scorer", icon: "📊" }],
+  },
   {
     id: "pricing",
     label: "Pricing",

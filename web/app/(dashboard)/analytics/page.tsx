@@ -1,0 +1,23 @@
+import { Suspense } from "react";
+import { api } from "@/lib/api";
+import AnalyticsClient from "./analytics-client";
+
+async function AnalyticsData() {
+  const { validations } = await api.watchlist();
+  return <AnalyticsClient validations={validations} />;
+}
+
+export default function AnalyticsPage() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold tracking-tight mb-1">Analytics</h1>
+      <p className="text-muted text-sm mb-6">
+        Patterns across everything you&apos;ve run through the Opportunity
+        Scorer so far.
+      </p>
+      <Suspense fallback={<div className="text-muted text-sm">Loading analytics…</div>}>
+        <AnalyticsData />
+      </Suspense>
+    </div>
+  );
+}
