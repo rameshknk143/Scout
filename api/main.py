@@ -22,6 +22,7 @@ from pydantic import BaseModel
 
 import alerts
 import db
+import listing_analyzer
 import profit_calculator
 import scorer
 import trend_radar
@@ -136,6 +137,39 @@ def get_watchlist():
 @app.get("/alerts", dependencies=[Depends(require_key)])
 def get_alerts():
     return {"alerts": alerts.compute_alerts()}
+
+
+class ListingAnalyzeRequest(BaseModel):
+    asin: str
+    category: str | None = None
+
+
+@app.post("/listing/analyze", dependencies=[Depends(require_key)])
+def analyze_listing(req: ListingAnalyzeRequest):
+    try:
+        return listing_analyzer.analyze_listing(req.asin.strip(), category=req.category)
+    except listing_analyzer.ListingFetchError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
+
+class ListingSuggestRequest(BaseModel):
+    title: str | None = None
+    bullets: list[str] = []
+    category: str | None = None
+    gaps: list[str] = []
+
+
+@app.post("/listing/suggest", dependencies=[Depends(require_key)])
+def suggest_listing_improvements(req: ListingSuggestRequest):
+    suggestions = listing_analyzer.suggest_improvements(
+        req.title, req.bullets, req.category, req.gaps
+    )
+    if suggestions is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI suggestions aren't available right now (no key configured, or the free model didn't respond) -- the quality score above doesn't depend on this.",
+        )
+    return suggestions
 
 
 class ProfitCalcRequest(BaseModel):

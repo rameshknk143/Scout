@@ -120,6 +120,31 @@ export type Validation = {
   validated_at: string;
 };
 
+export type ListingAnalysis = {
+  asin: string;
+  title: string | null;
+  category: string | null;
+  score: number;
+  components: { title: number; bullets: number; images: number };
+  bullets: string[];
+  image_count: number;
+  rating: number | null;
+  price: number | null;
+  review_count: number | null;
+  benchmark: {
+    price_percentile?: number;
+    category_median_price?: number;
+    review_percentile?: number;
+    category_median_reviews?: number;
+  } | null;
+  gaps: string[];
+};
+
+export type ListingSuggestion = {
+  title: string | null;
+  bullets: string[];
+};
+
 export type ProfitResult = {
   referral_fee: number;
   closing_fee: number;
@@ -180,6 +205,28 @@ export const api = {
       {},
       { revalidate: 60, tags: ["watchlist"] }
     ),
+  // Live on-demand scrape + rule-based scoring, not cached -- every click
+  // should hit the real, current page (and Amazon's bot-check means results
+  // can genuinely differ run to run, so caching a failure would be worse
+  // than just re-fetching).
+  analyzeListing: (body: { asin: string; category?: string }) =>
+    request<ListingAnalysis>("/listing/analyze", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  // Deliberately separate call from analyzeListing -- this is the one AI
+  // step in Scout (a free-tier model router), can be slow or occasionally
+  // unavailable, and shouldn't hold up or risk the rule-based score above.
+  suggestListingImprovements: (body: {
+    title: string | null;
+    bullets: string[];
+    category?: string | null;
+    gaps: string[];
+  }) =>
+    request<ListingSuggestion>("/listing/suggest", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
   profitCalculator: (body: {
     sell_price: number;
     buy_price: number;

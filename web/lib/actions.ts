@@ -28,6 +28,19 @@ export async function scoreAsin(input: {
   return result;
 }
 
+export async function analyzeListing(input: { asin: string; category?: string }) {
+  return api.analyzeListing(input);
+}
+
+export async function suggestListingImprovements(input: {
+  title: string | null;
+  bullets: string[];
+  category?: string | null;
+  gaps: string[];
+}) {
+  return api.suggestListingImprovements(input);
+}
+
 export async function getWatchlist() {
   return api.watchlist();
 }
