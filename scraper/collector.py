@@ -113,16 +113,23 @@ def fetch(url, timeout=20, retries=1):
     raise last_err
 
 
-def parse_products(html):
+def parse_products(page_html):
     """Split the page into per-product blocks (one per data-asin occurrence)
     and extract fields from each block. Returns a list of dicts (fields may
-    be None if a given field wasn't found for that product)."""
-    matches = list(ASIN_RE.finditer(html))
+    be None if a given field wasn't found for that product).
+
+    NOTE: parameter is named page_html, not html — a bare `html` here would
+    shadow the `import html` module used below for html.unescape(), which
+    silently broke every single category (AttributeError swallowed by
+    collect_category's per-category try/except, so the whole nightly run
+    "succeeded" while collecting zero rows). Don't rename this back.
+    """
+    matches = list(ASIN_RE.finditer(page_html))
     products = []
     for i, m in enumerate(matches):
         start = m.start()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(html)
-        block = html[start:end]
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(page_html)
+        block = page_html[start:end]
 
         asin = m.group(1)
         rank_m = RANK_RE.search(block)
@@ -151,8 +158,8 @@ def collect_category(label, slug):
     """Fetch + parse one category. Returns list of snapshot-row dicts.
     Raises on failure (caller is responsible for catching/logging)."""
     url = BASE_URL.format(slug=slug)
-    html = fetch(url)
-    products = parse_products(html)
+    page_html = fetch(url)
+    products = parse_products(page_html)
 
     valid = [p for p in products if p["asin"] and p["title"]]
     if not valid:
