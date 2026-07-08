@@ -2,10 +2,17 @@
 // from api.ts (which has a `server-only` guard) so client bundles never
 // pull that module in.
 
+// Keep in sync with scraper/collector.py's CATEGORIES dict keys.
 export const CATEGORIES = [
   "Electronics Accessories", "Home & Kitchen", "Beauty & Personal Care",
   "Sports & Fitness", "Toys & Games", "Stationery/Office", "Pet Supplies",
   "Car Accessories", "Garden & Outdoors", "Baby Products", "Watches & Gifting",
+  "Clothing & Accessories", "Amazon Launchpad", "Amazon Renewed",
+  "Apps & Games", "Bags, Wallets & Luggage", "Books", "Computers & Accessories",
+  "Gift Cards", "Grocery & Gourmet Foods", "Health & Personal Care",
+  "Home Improvement", "Industrial & Scientific", "Jewellery", "Kindle Store",
+  "Movies & TV Shows", "Music", "Musical Instruments", "Shoes & Handbags",
+  "Software", "Video Games",
 ] as const;
 
 export const FEE_CATEGORIES = [

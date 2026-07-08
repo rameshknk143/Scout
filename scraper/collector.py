@@ -45,7 +45,11 @@ HEADERS = {
     "Accept-Language": "en-IN,en;q=0.9",
 }
 
-# category label -> amazon.in bestsellers browse-node slug
+# category label -> amazon.in bestsellers browse-node slug.
+# The original 11 (through "Watches & Gifting") are load-bearing: renaming
+# any of these labels would fragment existing trend history under a new
+# label, since the DB has months of rows tagged with the exact text below.
+# Add new categories freely; never rename an existing key.
 CATEGORIES = {
     "Electronics Accessories": "electronics",
     "Home & Kitchen": "kitchen",
@@ -58,6 +62,29 @@ CATEGORIES = {
     "Garden & Outdoors": "garden",
     "Baby Products": "baby",
     "Watches & Gifting": "watches",  # substitute for non-existent "Gifting/Novelty" node
+    # Expanded 2026-07-08 to cover all 31 of Amazon.in's real bestseller
+    # categories (verified against the live nav, not guessed) per Ram's
+    # request for full coverage rather than a curated subset.
+    "Clothing & Accessories": "apparel",
+    "Amazon Launchpad": "boost",
+    "Amazon Renewed": "amazon-renewed",
+    "Apps & Games": "mobile-apps",
+    "Bags, Wallets & Luggage": "luggage",
+    "Books": "books",
+    "Computers & Accessories": "computers",
+    "Gift Cards": "gift-cards",
+    "Grocery & Gourmet Foods": "grocery",
+    "Health & Personal Care": "hpc",
+    "Home Improvement": "home-improvement",
+    "Industrial & Scientific": "industrial",
+    "Jewellery": "jewelry",
+    "Kindle Store": "digital-text",
+    "Movies & TV Shows": "dvd",
+    "Music": "music",
+    "Musical Instruments": "musical-instruments",
+    "Shoes & Handbags": "shoes",
+    "Software": "software",
+    "Video Games": "videogames",
 }
 
 LIST_TYPE = "bestsellers"  # v1 scope: Best Sellers only

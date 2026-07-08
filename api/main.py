@@ -27,10 +27,17 @@ import trend_radar
 
 API_KEY = os.environ["API_KEY"]
 
+# Keep in sync with scraper/collector.py's CATEGORIES dict keys.
 CATEGORIES = [
     "Electronics Accessories", "Home & Kitchen", "Beauty & Personal Care",
     "Sports & Fitness", "Toys & Games", "Stationery/Office", "Pet Supplies",
     "Car Accessories", "Garden & Outdoors", "Baby Products", "Watches & Gifting",
+    "Clothing & Accessories", "Amazon Launchpad", "Amazon Renewed",
+    "Apps & Games", "Bags, Wallets & Luggage", "Books", "Computers & Accessories",
+    "Gift Cards", "Grocery & Gourmet Foods", "Health & Personal Care",
+    "Home Improvement", "Industrial & Scientific", "Jewellery", "Kindle Store",
+    "Movies & TV Shows", "Music", "Musical Instruments", "Shoes & Handbags",
+    "Software", "Video Games",
 ]
 
 app = FastAPI(title="Scout API")
