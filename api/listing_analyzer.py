@@ -253,12 +253,15 @@ def suggest_improvements(title, bullets, category, gaps):
         "requested reply format exactly, with no preamble or extra commentary."
     )
 
-    # openrouter/free picks a random free model per call -- including, in
-    # testing, a content-safety classifier that replied "User Safety: safe"
-    # instead of writing anything. A bad pick isn't rare enough to ignore,
-    # so retry a few times (each retry re-rolls the random pick) rather than
-    # surfacing whatever garbage the first roll happened to return. Keeps
-    # the best partial result seen across attempts instead of an all-or-nothing.
+    # openrouter/free picks a random free model per call -- verified in
+    # production this can go wrong two different ways: a non-instruct model
+    # (a content-safety classifier replied "User Safety: safe" instead of
+    # writing anything), or an instruct model that echoes the prompt's own
+    # <title>/<bullet> placeholder markers back verbatim instead of filling
+    # them in. Retry a few times (each retry re-rolls the random pick)
+    # rather than surfacing whatever garbage the first roll returns, and
+    # reject placeholder echoes explicitly since they'd otherwise "parse"
+    # successfully as fake real content.
     best = None
     for _ in range(SUGGEST_ATTEMPTS):
         raw = ai_client.chat(system_prompt, user_prompt)
@@ -268,6 +271,10 @@ def suggest_improvements(title, bullets, category, gaps):
         title_match = re.search(r"SUGGESTED TITLE:\s*(.+)", raw)
         suggested_title = title_match.group(1).strip() if title_match else None
         suggested_bullets = [b.strip() for b in re.findall(r"^\d+\.\s*(.+)$", raw, re.MULTILINE)][:5]
+
+        if suggested_title and _is_placeholder_echo(suggested_title):
+            suggested_title = None
+        suggested_bullets = [b for b in suggested_bullets if not _is_placeholder_echo(b)]
 
         if not suggested_title and not suggested_bullets:
             continue
@@ -280,3 +287,12 @@ def suggest_improvements(title, bullets, category, gaps):
             best = candidate
 
     return best
+
+
+def _is_placeholder_echo(text):
+    """Catches a model echoing the prompt's own format markers back
+    verbatim (e.g. literal "<title>" or "<bullet>") instead of writing
+    real content. Real product copy essentially never contains angle
+    brackets, so this is a safe, simple filter."""
+    stripped = text.strip().strip("<>[]").strip().lower()
+    return "<" in text or ">" in text or stripped in {"title", "bullet"}
