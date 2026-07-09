@@ -172,6 +172,26 @@ def suggest_listing_improvements(req: ListingSuggestRequest):
     return suggestions
 
 
+class ReviewItem(BaseModel):
+    text: str
+    rating: float | None = None
+
+
+class ReviewSummaryRequest(BaseModel):
+    reviews: list[ReviewItem] = []
+
+
+@app.post("/listing/review-summary", dependencies=[Depends(require_key)])
+def summarize_reviews(req: ReviewSummaryRequest):
+    summary = listing_analyzer.summarize_reviews([r.model_dump() for r in req.reviews])
+    if summary is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Couldn't summarize reviews right now (too few reviews found on the page, no AI key configured, or the free model didn't respond).",
+        )
+    return summary
+
+
 class ProfitCalcRequest(BaseModel):
     sell_price: float
     buy_price: float

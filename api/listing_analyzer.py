@@ -34,6 +34,7 @@ import random
 import re
 import time
 
+import pandas as pd
 import requests
 
 import ai_client
@@ -130,7 +131,49 @@ def parse_listing(page_html):
     if m:
         rating = float(m.group(1))
 
-    return {"title": title, "bullets": bullets, "image_count": image_count, "rating": rating}
+    return {
+        "title": title,
+        "bullets": bullets,
+        "image_count": image_count,
+        "rating": rating,
+        "reviews": _extract_reviews(page_html),
+    }
+
+
+_REVIEW_BOILERPLATE = (
+    "Brief content visible, double tap to read full content.",
+    "Full content visible, double tap to read brief content.",
+)
+
+
+def _extract_reviews(page_html):
+    """Amazon's own embedded "top reviews" on the mobile product page --
+    only found there, not on the desktop page (verified: the desktop page
+    has zero review text anywhere in its server-rendered HTML). Typically
+    6-10 of Amazon's own featured reviews, each with real text and a
+    matching star rating, extracted from the exact same page fetch
+    fetch_detail_page() already made -- no second request. This is NOT the
+    complete review history (the dedicated reviews page redirects to
+    Amazon's login page, a real policy wall, not a bot-block workaround),
+    but it's real, unfabricated customer feedback, not a sample of one."""
+    texts = re.findall(r'data-hook="reviewText"[^>]*>(.*?)</div>\s*</div>', page_html, re.S)
+    stars = re.findall(
+        r'data-hook="review-star-rating"[^>]*>\s*<span[^>]*>([\d.]+) out of 5 stars</span>',
+        page_html, re.S,
+    )
+
+    reviews = []
+    seen = set()
+    for i, raw in enumerate(texts):
+        text = _clean_text(raw)
+        for boilerplate in _REVIEW_BOILERPLATE:
+            text = text.replace(boilerplate, "")
+        text = text.strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        reviews.append({"text": text, "rating": float(stars[i]) if i < len(stars) else None})
+    return reviews
 
 
 def _title_check(title):
@@ -174,11 +217,8 @@ def _images_check(image_count):
     return 100.0, []
 
 
-def _category_benchmark(category, list_type, own_price, own_reviews):
-    if not category:
-        return None
-    table = trend_radar.category_table(category, list_type=list_type or "bestsellers")
-    if table.empty:
+def _category_benchmark(table, own_price, own_reviews):
+    if table is None or table.empty:
         return None
 
     result = {}
@@ -193,6 +233,27 @@ def _category_benchmark(category, list_type, own_price, own_reviews):
             result["review_percentile"] = round((reviews < own_reviews).mean() * 100)
             result["category_median_reviews"] = int(reviews.median())
     return result or None
+
+
+def _top_peers(table, exclude_asin, limit=8):
+    """Top-ranked category peers (rank/price/rating/reviews), for Ram to
+    actually see who he's up against rather than just a percentile number.
+    Reuses the same category_table() fetch _category_benchmark() uses --
+    no extra scraping or DB query, just surfacing data Scout already has."""
+    if table is None or table.empty:
+        return []
+    peers = table[table["asin"] != exclude_asin].head(limit)
+    records = []
+    for _, row in peers.iterrows():
+        records.append({
+            "asin": row["asin"],
+            "title": row["title"],
+            "rank": int(row["rank"]) if pd.notna(row["rank"]) else None,
+            "price": float(row["price"]) if pd.notna(row["price"]) else None,
+            "rating": float(row["rating"]) if pd.notna(row["rating"]) else None,
+            "review_count": int(row["review_count"]) if pd.notna(row["review_count"]) else None,
+        })
+    return records
 
 
 def analyze_listing(asin, category=None):
@@ -222,7 +283,11 @@ def analyze_listing(asin, category=None):
     overall = round(sum(components.values()) / len(components))
     gaps = title_gaps + bullets_gaps + images_gaps
 
-    benchmark = _category_benchmark(resolved_category, list_type, own_price, own_reviews)
+    table = (
+        trend_radar.category_table(resolved_category, list_type=list_type or "bestsellers")
+        if resolved_category else pd.DataFrame()
+    )
+    benchmark = _category_benchmark(table, own_price, own_reviews)
     if benchmark:
         if benchmark.get("price_percentile", 0) >= 80:
             gaps.append(
@@ -234,6 +299,7 @@ def analyze_listing(asin, category=None):
                 f"Review count is in the bottom {benchmark['review_percentile']}% of this "
                 f"category's top sellers -- expect an uphill trust battle at launch."
             )
+    peers = _top_peers(table, asin)
 
     return {
         "asin": asin,
@@ -247,8 +313,67 @@ def analyze_listing(asin, category=None):
         "price": own_price,
         "review_count": own_reviews,
         "benchmark": benchmark,
+        "peers": peers,
+        "reviews": parsed["reviews"],
         "gaps": gaps,
     }
+
+
+REVIEW_SUMMARY_ATTEMPTS = 3
+MIN_REVIEWS_FOR_SUMMARY = 3
+
+
+def summarize_reviews(reviews):
+    """AI-clustered pros/cons from the review snippets _extract_reviews()
+    pulled off the same page fetch as the listing score -- see that
+    function's docstring for what these are and aren't. Returns None if AI
+    isn't configured, there aren't enough reviews to say anything
+    meaningful, or every retry attempt fails to produce something usable."""
+    usable = [r for r in reviews if r.get("text")]
+    if not ai_client.is_configured() or len(usable) < MIN_REVIEWS_FOR_SUMMARY:
+        return None
+
+    review_text = "\n".join(f"- ({r['rating']}★) {r['text']}" for r in usable)
+    user_prompt = (
+        f"Here are {len(usable)} real customer reviews for an Amazon India product "
+        f"(Amazon's own featured reviews, not the full history):\n{review_text}\n\n"
+        "Summarize the recurring PROS and CONS customers actually mention. Only include "
+        "points that genuinely appear in the reviews above -- never invent feedback that "
+        "isn't there. Reply in exactly this format and nothing else:\n"
+        "PROS:\n- point\n- point\nCONS:\n- point\n- point"
+    )
+    system_prompt = (
+        "You analyze real Amazon customer reviews to extract recurring themes. Only "
+        "summarize what's actually said -- never invent feedback. Follow the requested "
+        "reply format exactly, with no preamble."
+    )
+
+    best = None
+    for _ in range(REVIEW_SUMMARY_ATTEMPTS):
+        raw = ai_client.chat(system_prompt, user_prompt)
+        if not raw:
+            continue
+
+        pros_match = re.search(r"PROS:\s*(.*?)(?:CONS:|$)", raw, re.S)
+        cons_match = re.search(r"CONS:\s*(.*)", raw, re.S)
+        pros = _parse_bullet_lines(pros_match.group(1)) if pros_match else []
+        cons = _parse_bullet_lines(cons_match.group(1)) if cons_match else []
+
+        if not pros and not cons:
+            continue
+
+        candidate = {"pros": pros, "cons": cons}
+        if len(pros) >= 2 and len(cons) >= 1:
+            return candidate
+        if best is None or (len(pros) + len(cons)) > (len(best["pros"]) + len(best["cons"])):
+            best = candidate
+
+    return best
+
+
+def _parse_bullet_lines(block):
+    lines = [html.unescape(line.strip(" -•").strip()) for line in block.splitlines()]
+    return [line for line in lines if line and not _is_placeholder_echo(line)]
 
 
 def suggest_improvements(title, bullets, category, gaps):
