@@ -11,14 +11,20 @@ until Ram decides the per-call AI cost is worth it.
 
 Fetches the live product detail page on demand (one ASIN, one click -- not
 part of collector.py's nightly batch, and not the same URL shape it reads).
-Verified directly before building this: Amazon's bot detection on individual
-/dp/{asin} pages is meaningfully stricter than on the bestseller/list pages
-collector.py already reads reliably -- roughly half of direct requests came
-back as a "Continue shopping" interstitial instead of the real page, even
-with a warmed-up session and matching headers. A short retry (this is a
-single on-demand request, not a 124-fetch nightly run, so a couple of
-spaced-out attempts is a reasonable budget) got through on the 3rd try in
-testing. If every attempt is still blocked, this raises ListingFetchError
+
+Amazon's bot detection on individual product pages turned out to be a much
+bigger problem from Render's datacenter IP than it first looked in local
+testing: the desktop /dp/{asin} page came back bot-blocked on every single
+attempt, for every ASIN tried, both from Render's IP and separately from a
+home connection later in the same day (i.e. not just transient rate-limiting
+from earlier testing volume -- a real, repeatable block specific to that
+URL). Verified directly: Amazon's *mobile* product page
+(/gp/aw/d/{asin}) is a different endpoint with different bot-detection
+treatment -- came back clean on every attempt, back-to-back, for ASINs the
+desktop page was blocking 100% of the time. This module tries the mobile
+page first for that reason, and only falls back to the desktop page (kept
+as a second independent strategy, not removed) if mobile is ever blocked
+too. If every attempt across both fails, this raises ListingFetchError
 rather than silently returning an empty or fabricated score -- Ram sees an
 honest "try again" message.
 """
@@ -34,13 +40,26 @@ import ai_client
 import db
 import trend_radar
 
-USER_AGENT = (
+DESKTOP_URL = "https://www.amazon.in/dp/{asin}"
+DESKTOP_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
-HEADERS = {"User-Agent": USER_AGENT, "Accept-Language": "en-IN,en;q=0.9"}
+DESKTOP_HEADERS = {"User-Agent": DESKTOP_USER_AGENT, "Accept-Language": "en-IN,en;q=0.9"}
 
-FETCH_ATTEMPTS = 3
+# Amazon's mobile product page -- tried first; see module docstring for why.
+MOBILE_URL = "https://www.amazon.in/gp/aw/d/{asin}"
+MOBILE_USER_AGENT = (
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 "
+    "(KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
+)
+MOBILE_HEADERS = {"User-Agent": MOBILE_USER_AGENT, "Accept-Language": "en-IN,en;q=0.9"}
+
+FETCH_STRATEGIES = [
+    (MOBILE_URL, MOBILE_HEADERS),
+    (DESKTOP_URL, DESKTOP_HEADERS),
+]
+FETCH_ATTEMPTS_PER_STRATEGY = 2
 RETRY_DELAY_RANGE = (3, 6)
 MIN_REAL_PAGE_BYTES = 50_000  # the bot-check interstitial is ~5KB; real pages are 300KB+
 
@@ -58,20 +77,22 @@ class ListingFetchError(Exception):
 
 
 def fetch_detail_page(asin):
-    for attempt in range(FETCH_ATTEMPTS):
-        resp = requests.get(f"https://www.amazon.in/dp/{asin}", headers=HEADERS, timeout=20)
-        if (
-            resp.status_code == 200
-            and "Continue shopping" not in resp.text
-            and len(resp.text) > MIN_REAL_PAGE_BYTES
-        ):
-            return resp.text
-        if attempt < FETCH_ATTEMPTS - 1:
-            time.sleep(random.uniform(*RETRY_DELAY_RANGE))
+    for url_template, headers in FETCH_STRATEGIES:
+        for attempt in range(FETCH_ATTEMPTS_PER_STRATEGY):
+            resp = requests.get(url_template.format(asin=asin), headers=headers, timeout=20)
+            if (
+                resp.status_code == 200
+                and "Continue shopping" not in resp.text
+                and len(resp.text) > MIN_REAL_PAGE_BYTES
+            ):
+                return resp.text
+            if attempt < FETCH_ATTEMPTS_PER_STRATEGY - 1:
+                time.sleep(random.uniform(*RETRY_DELAY_RANGE))
     raise ListingFetchError(
         "Amazon blocked every attempt to load this product page (bot-check "
-        "interstitial). This happens on individual product pages more than "
-        "on category pages -- try again in a moment."
+        "interstitial), on both the mobile and desktop page. Rare, but it "
+        "happens on individual product pages more than on category pages -- "
+        "try again in a moment."
     )
 
 
@@ -80,10 +101,16 @@ def _clean_text(raw):
 
 
 def parse_listing(page_html):
+    # Title marker differs between the mobile page (<span id="title">,
+    # tried first since that's the page fetched first) and the desktop page
+    # (id="productTitle") -- try both rather than assuming which one this
+    # HTML came from.
     title = None
-    m = re.search(r'id="productTitle"[^>]*>\s*(.*?)\s*</span>', page_html, re.S)
-    if m:
-        title = _clean_text(m.group(1))
+    for pattern in (r'<span id="title"[^>]*>\s*(.*?)\s*</span>', r'id="productTitle"[^>]*>\s*(.*?)\s*</span>'):
+        m = re.search(pattern, page_html, re.S)
+        if m:
+            title = _clean_text(m.group(1))
+            break
 
     bullets = []
     m = re.search(r'id="feature-bullets"(.*?)id="[a-zA-Z]', page_html, re.S)
@@ -93,7 +120,10 @@ def parse_listing(page_html):
             if text:
                 bullets.append(text)
 
-    image_count = len(set(re.findall(r'"hiRes":"([^"]+)"', page_html)))
+    # data-num-of-images is the mobile page's own image count attribute;
+    # hiRes-URL counting is the desktop-page fallback.
+    m = re.search(r'data-num-of-images="(\d+)"', page_html)
+    image_count = int(m.group(1)) if m else len(set(re.findall(r'"hiRes":"([^"]+)"', page_html)))
 
     rating = None
     m = re.search(r"([\d.]+) out of 5 stars", page_html)
