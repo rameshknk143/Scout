@@ -50,6 +50,8 @@ BULLET_TARGET_COUNT = 5
 BULLET_MIN_LEN = 50
 IMAGE_TARGET_COUNT = 6
 
+SUGGEST_ATTEMPTS = 3  # openrouter/free's random pick occasionally lands on a non-instruct model
+
 
 class ListingFetchError(Exception):
     pass
@@ -251,14 +253,30 @@ def suggest_improvements(title, bullets, category, gaps):
         "requested reply format exactly, with no preamble or extra commentary."
     )
 
-    raw = ai_client.chat(system_prompt, user_prompt)
-    if not raw:
-        return None
+    # openrouter/free picks a random free model per call -- including, in
+    # testing, a content-safety classifier that replied "User Safety: safe"
+    # instead of writing anything. A bad pick isn't rare enough to ignore,
+    # so retry a few times (each retry re-rolls the random pick) rather than
+    # surfacing whatever garbage the first roll happened to return. Keeps
+    # the best partial result seen across attempts instead of an all-or-nothing.
+    best = None
+    for _ in range(SUGGEST_ATTEMPTS):
+        raw = ai_client.chat(system_prompt, user_prompt)
+        if not raw:
+            continue
 
-    title_match = re.search(r"SUGGESTED TITLE:\s*(.+)", raw)
-    suggested_title = title_match.group(1).strip() if title_match else None
-    suggested_bullets = [b.strip() for b in re.findall(r"^\d+\.\s*(.+)$", raw, re.MULTILINE)][:5]
+        title_match = re.search(r"SUGGESTED TITLE:\s*(.+)", raw)
+        suggested_title = title_match.group(1).strip() if title_match else None
+        suggested_bullets = [b.strip() for b in re.findall(r"^\d+\.\s*(.+)$", raw, re.MULTILINE)][:5]
 
-    if not suggested_title and not suggested_bullets:
-        return None
-    return {"title": suggested_title, "bullets": suggested_bullets}
+        if not suggested_title and not suggested_bullets:
+            continue
+
+        candidate = {"title": suggested_title, "bullets": suggested_bullets}
+        if suggested_title and len(suggested_bullets) >= 3:
+            return candidate  # good enough, stop rolling
+
+        if best is None or len(suggested_bullets) > len(best["bullets"]):
+            best = candidate
+
+    return best
