@@ -339,19 +339,28 @@ def summarize_reviews(reviews):
         f"(Amazon's own featured reviews, not the full history):\n{review_text}\n\n"
         "Summarize the recurring PROS and CONS customers actually mention. Only include "
         "points that genuinely appear in the reviews above -- never invent feedback that "
-        "isn't there. Reply in exactly this format and nothing else:\n"
-        "PROS:\n- point\n- point\nCONS:\n- point\n- point"
+        "isn't there. Do not show your reasoning or thinking -- reply with ONLY the final "
+        "list, in exactly this format and nothing else (this is an example to show the "
+        "format, write your own real points, don't copy it):\n"
+        "PROS:\n- Tastes great\n- Good value for money\nCONS:\n- Packaging could be sturdier"
     )
     system_prompt = (
         "You analyze real Amazon customer reviews to extract recurring themes. Only "
-        "summarize what's actually said -- never invent feedback. Follow the requested "
-        "reply format exactly, with no preamble."
+        "summarize what's actually said -- never invent feedback. Output ONLY the final "
+        "PROS/CONS list in the requested format -- no reasoning, no preamble, no restating "
+        "the reviews."
     )
 
     best = None
     for _ in range(REVIEW_SUMMARY_ATTEMPTS):
         raw = ai_client.chat(system_prompt, user_prompt)
-        if not raw:
+        # A clean response is a short bulleted list; anything this long is
+        # almost certainly a reasoning model dumping its chain-of-thought
+        # instead of following the format -- verified in production (one
+        # response included lines like "But the user wants recurring
+        # themes... However, in the example format..."). Skip parsing it
+        # rather than risk that leaking into "cons".
+        if not raw or len(raw) > 1200:
             continue
 
         pros_match = re.search(r"PROS:\s*(.*?)(?:CONS:|$)", raw, re.S)
@@ -371,9 +380,28 @@ def summarize_reviews(reviews):
     return best
 
 
+_REASONING_LEAK_MARKERS = re.compile(
+    r"\b(let me|i need to|the user|however|so i should|but the|recurring pros|recurring cons"
+    r"|mentioned in review|reviews? \d)",
+    re.IGNORECASE,
+)
+# Catches a reasoning model quoting one of the *input* reviews back verbatim
+# (e.g. "1. (5.0★) Excellent taste") instead of writing a synthesized point --
+# verified in production, slipped past the markers above since it's not
+# meta-commentary, just an echoed numbered input line.
+_QUOTED_REVIEW_ECHO = re.compile(r"^\d+\.\s*\([\d.]+\s*(star|★)", re.IGNORECASE)
+
+
 def _parse_bullet_lines(block):
     lines = [html.unescape(line.strip(" -•").strip()) for line in block.splitlines()]
-    return [line for line in lines if line and not _is_placeholder_echo(line)]
+    return [
+        line for line in lines
+        if line
+        and len(line) <= 160
+        and not _is_placeholder_echo(line)
+        and not _REASONING_LEAK_MARKERS.search(line)
+        and not _QUOTED_REVIEW_ECHO.match(line)
+    ]
 
 
 def suggest_improvements(title, bullets, category, gaps):
@@ -447,9 +475,11 @@ def suggest_improvements(title, bullets, category, gaps):
 
 
 def _is_placeholder_echo(text):
-    """Catches a model echoing the prompt's own format markers back
-    verbatim (e.g. literal "<title>" or "<bullet>") instead of writing
-    real content. Real product copy essentially never contains angle
-    brackets, so this is a safe, simple filter."""
+    """Catches a model echoing a prompt's own format markers back verbatim
+    instead of writing real content -- both angle-bracket style ("<title>",
+    "<bullet>") and bare placeholder words used in prompts elsewhere in
+    this module ("point"). Real product copy essentially never contains
+    angle brackets or is literally just the word "point", so this is a
+    safe, simple filter."""
     stripped = text.strip().strip("<>[]").strip().lower()
-    return "<" in text or ">" in text or stripped in {"title", "bullet"}
+    return "<" in text or ">" in text or stripped in {"title", "bullet", "point"}
