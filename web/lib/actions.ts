@@ -1,7 +1,7 @@
 "use server";
 
 import { updateTag } from "next/cache";
-import { api } from "./api";
+import { api, type ListingReview } from "./api";
 
 export async function getCategoryTable(category: string, listType?: string) {
   return api.categoryTable(category, listType);
@@ -39,6 +39,10 @@ export async function suggestListingImprovements(input: {
   gaps: string[];
 }) {
   return api.suggestListingImprovements(input);
+}
+
+export async function summarizeReviews(reviews: ListingReview[]) {
+  return api.summarizeReviews({ reviews });
 }
 
 export async function getWatchlist() {

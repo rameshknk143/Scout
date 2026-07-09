@@ -120,6 +120,20 @@ export type Validation = {
   validated_at: string;
 };
 
+export type ListingPeer = {
+  asin: string;
+  title: string | null;
+  rank: number | null;
+  price: number | null;
+  rating: number | null;
+  review_count: number | null;
+};
+
+export type ListingReview = {
+  text: string;
+  rating: number | null;
+};
+
 export type ListingAnalysis = {
   asin: string;
   title: string | null;
@@ -137,12 +151,19 @@ export type ListingAnalysis = {
     review_percentile?: number;
     category_median_reviews?: number;
   } | null;
+  peers: ListingPeer[];
+  reviews: ListingReview[];
   gaps: string[];
 };
 
 export type ListingSuggestion = {
   title: string | null;
   bullets: string[];
+};
+
+export type ReviewSummary = {
+  pros: string[];
+  cons: string[];
 };
 
 export type ProfitResult = {
@@ -224,6 +245,13 @@ export const api = {
     gaps: string[];
   }) =>
     request<ListingSuggestion>("/listing/suggest", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  // Also deliberately separate from analyzeListing -- same reasoning as
+  // suggestListingImprovements above.
+  summarizeReviews: (body: { reviews: ListingReview[] }) =>
+    request<ReviewSummary>("/listing/review-summary", {
       method: "POST",
       body: JSON.stringify(body),
     }),

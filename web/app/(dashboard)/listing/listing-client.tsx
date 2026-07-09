@@ -2,10 +2,10 @@
 
 import { useState, useTransition } from "react";
 import CaveatBox from "@/components/CaveatBox";
-import { Card, Field, MiniStat } from "@/components/ui";
-import type { ListingAnalysis, ListingSuggestion } from "@/lib/api";
+import { Card, Field, MiniStat, Table, type Column } from "@/components/ui";
+import type { ListingAnalysis, ListingPeer, ListingSuggestion, ReviewSummary } from "@/lib/api";
 import { CATEGORIES } from "@/lib/constants";
-import { analyzeListing, suggestListingImprovements } from "@/lib/actions";
+import { analyzeListing, suggestListingImprovements, summarizeReviews } from "@/lib/actions";
 
 function extractDetail(err: unknown, fallback: string): string {
   const raw = err instanceof Error ? err.message : "";
@@ -31,11 +31,17 @@ export default function ListingClient() {
   const [suggestError, setSuggestError] = useState<string | null>(null);
   const [isSuggesting, startSuggestTransition] = useTransition();
 
+  const [reviewSummary, setReviewSummary] = useState<ReviewSummary | null>(null);
+  const [reviewSummaryError, setReviewSummaryError] = useState<string | null>(null);
+  const [isSummarizing, startSummarizeTransition] = useTransition();
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSuggestion(null);
     setSuggestError(null);
+    setReviewSummary(null);
+    setReviewSummaryError(null);
     startTransition(async () => {
       try {
         const res = await analyzeListing({ asin: asin.trim(), category: category || undefined });
@@ -66,6 +72,21 @@ export default function ListingClient() {
       } catch (err) {
         setSuggestError(
           extractDetail(err, "AI suggestions aren't available right now — try again in a moment.")
+        );
+      }
+    });
+  }
+
+  function handleSummarizeReviews() {
+    if (!result) return;
+    setReviewSummaryError(null);
+    startSummarizeTransition(async () => {
+      try {
+        const res = await summarizeReviews(result.reviews);
+        setReviewSummary(res);
+      } catch (err) {
+        setReviewSummaryError(
+          extractDetail(err, "Couldn't summarize reviews right now — try again in a moment.")
         );
       }
     });
@@ -151,7 +172,7 @@ export default function ListingClient() {
             </div>
           )}
 
-          <div className="pt-2 border-t border-white/8">
+          <div className="pt-2 border-t border-white/8 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={handleSuggest}
@@ -160,7 +181,21 @@ export default function ListingClient() {
             >
               {isSuggesting ? "Asking the AI…" : "✨ Suggest AI improvements"}
             </button>
+            {result.reviews.length > 0 && (
+              <button
+                type="button"
+                onClick={handleSummarizeReviews}
+                disabled={isSummarizing}
+                className="rounded-lg bg-white/8 hover:bg-white/12 border border-white/10 text-sm font-medium px-4 py-2 disabled:opacity-50 transition-colors"
+              >
+                {isSummarizing
+                  ? "Reading reviews…"
+                  : `🔍 Summarize ${result.reviews.length} reviews`}
+              </button>
+            )}
+          </div>
 
+          <div>
             {suggestError && <div className="text-xs text-muted mt-3">{suggestError}</div>}
 
             {suggestion && (
@@ -193,9 +228,88 @@ export default function ListingClient() {
                 </div>
               </div>
             )}
+
+            {reviewSummaryError && <div className="text-xs text-muted mt-3">{reviewSummaryError}</div>}
+
+            {reviewSummary && (
+              <div className="mt-4 space-y-3">
+                {reviewSummary.pros.length > 0 && (
+                  <div>
+                    <div className="text-xs text-green mb-1">Pros customers mention</div>
+                    <ul className="space-y-1.5">
+                      {reviewSummary.pros.map((p, i) => (
+                        <li
+                          key={i}
+                          className="text-sm bg-[var(--green-soft)] rounded-lg px-3 py-2 border border-white/10"
+                        >
+                          {p}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {reviewSummary.cons.length > 0 && (
+                  <div>
+                    <div className="text-xs text-red mb-1">Cons customers mention</div>
+                    <ul className="space-y-1.5">
+                      {reviewSummary.cons.map((c, i) => (
+                        <li
+                          key={i}
+                          className="text-sm bg-[var(--red-soft)] rounded-lg px-3 py-2 border border-white/10"
+                        >
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="text-xs text-muted/70">
+                  From {result.reviews.length} of Amazon&apos;s own featured reviews on this
+                  listing — not the complete review history, which requires being signed in to
+                  view.
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {result && result.peers.length > 0 && (
+        <Card>
+          <div className="text-sm font-semibold mb-3">
+            Category peers — top {result.peers.length} in {result.category ?? "this category"}
+          </div>
+          <Table
+            columns={peerColumns}
+            rows={result.peers}
+            rowKey={(p) => p.asin}
+            emptyText="No peer data for this category yet."
+          />
+          <div className="text-xs text-muted/70 mt-3">
+            From Scout&apos;s own nightly-collected snapshot data — same source as Trend Radar.
           </div>
         </Card>
       )}
     </div>
   );
 }
+
+const peerColumns: Column<ListingPeer>[] = [
+  { key: "rank", header: "Rank", render: (p) => (p.rank != null ? `#${p.rank}` : "—"), cellClassName: "text-muted" },
+  {
+    key: "title",
+    header: "Product",
+    render: (p) => (
+      <span className="max-w-sm truncate block" title={p.title ?? p.asin}>
+        {p.title ?? p.asin}
+      </span>
+    ),
+  },
+  { key: "price", header: "Price", render: (p) => (p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—") },
+  { key: "rating", header: "Rating", render: (p) => `${p.rating ?? "—"} ⭐` },
+  {
+    key: "review_count",
+    header: "Reviews",
+    render: (p) => p.review_count?.toLocaleString("en-IN") ?? "—",
+  },
+];
