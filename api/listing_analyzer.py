@@ -269,8 +269,10 @@ def suggest_improvements(title, bullets, category, gaps):
             continue
 
         title_match = re.search(r"SUGGESTED TITLE:\s*(.+)", raw)
-        suggested_title = title_match.group(1).strip() if title_match else None
-        suggested_bullets = [b.strip() for b in re.findall(r"^\d+\.\s*(.+)$", raw, re.MULTILINE)][:5]
+        suggested_title = html.unescape(title_match.group(1).strip()) if title_match else None
+        suggested_bullets = [
+            html.unescape(b.strip()) for b in re.findall(r"^\d+\.\s*(.+)$", raw, re.MULTILINE)
+        ][:5]
 
         if suggested_title and _is_placeholder_echo(suggested_title):
             suggested_title = None
