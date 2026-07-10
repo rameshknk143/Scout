@@ -9,25 +9,45 @@ import TrendRadarClient from "./trend-radar-client";
 // up yet during the build (see the /alerts build failure this fixed).
 export const dynamic = "force-dynamic";
 
-// Header renders immediately; the digest fetch (Render cold-start prone)
-// streams in behind it instead of blocking the whole page.
+import Link from "next/link";
+
+// Header renders immediately; the digest, watchlist, and alert fetches (Render cold-start prone)
+// stream in behind it instead of blocking the whole page.
 async function TrendRadarData() {
-  const digest = await api.digest();
-  return <TrendRadarClient digest={digest} />;
+  const [digest, watchlistData, alertsData] = await Promise.all([
+    api.digest(),
+    api.watchlist().catch(() => ({ validations: [] })),
+    api.alerts().catch(() => ({ alerts: [] })),
+  ]);
+  return (
+    <TrendRadarClient
+      digest={digest}
+      watchlist={watchlistData.validations}
+      alerts={alertsData.alerts}
+    />
+  );
 }
 
 export default function TrendRadarPage() {
   return (
-    <div>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-white/5 pb-6 mb-8">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-zinc-200/80">
         <div>
-          <h1 className="text-3xl font-extrabold text-text tracking-tight">Trend Radar</h1>
-          <p className="text-sm text-muted mt-1.5">
-            Broad discovery across all 31 Amazon India categories — new entrants, climbers, cross-category hits.
+          <h1 className="text-xl font-bold text-zinc-950 tracking-tight">Good evening, Ram</h1>
+          <p className="text-xs text-zinc-500 font-medium mt-1">
+            Your Amazon India reseller business at a glance.
           </p>
         </div>
+        <div className="mt-3 sm:mt-0">
+          <Link
+            href="/validator"
+            className="btn-primary w-auto text-xs py-2 px-4 shadow-sm flex items-center gap-1.5"
+          >
+            <span>+</span> Validate New ASIN
+          </Link>
+        </div>
       </div>
-      <Suspense fallback={<div className="text-muted text-sm">Loading trend data…</div>}>
+      <Suspense fallback={<div className="text-zinc-500 text-xs font-semibold py-8 text-center bg-white rounded-xl border border-zinc-200/60 shadow-sm">Loading business dashboard intelligence...</div>}>
         <TrendRadarData />
       </Suspense>
     </div>
