@@ -5,69 +5,147 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type NavItem = { href: string; label: string; icon: string };
-type NavCategory = { id: string; label: string; icon: string; items: NavItem[] };
+type SidebarItem = {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  disabled?: boolean;
+};
 
-const NAV: NavCategory[] = [
-  {
-    id: "product-research",
-    label: "Product Research",
-    icon: "🔍",
-    items: [
-      { href: "/", label: "Trend Radar", icon: "📡" },
-      { href: "/validator", label: "Validator", icon: "🎯" },
-    ],
-  },
-  { id: "keyword-research", label: "Keyword Research", icon: "🔑", items: [] },
-  {
-    id: "listing",
-    label: "Listing",
-    icon: "📝",
-    items: [{ href: "/listing", label: "Quality Score", icon: "📝" }],
-  },
-  { id: "market-intelligence", label: "Market Intelligence", icon: "🧭", items: [] },
-  {
-    id: "analytics",
-    label: "Analytics",
-    icon: "📊",
-    items: [{ href: "/analytics", label: "Opportunity Scorer", icon: "📊" }],
-  },
-  {
-    id: "pricing",
-    label: "Pricing",
-    icon: "🧮",
-    items: [{ href: "/profit-calculator", label: "Profit Calculator", icon: "🧮" }],
-  },
-  {
-    id: "watchlist-alerts",
-    label: "Watchlist & Alerts",
-    icon: "📋",
-    items: [
-      { href: "/watchlist", label: "Watchlist", icon: "📋" },
-      { href: "/alerts", label: "Alerts", icon: "🔔" },
-    ],
-  },
-  { id: "settings", label: "Settings", icon: "⚙️", items: [] },
-];
+type SidebarSection = {
+  title: string;
+  items: SidebarItem[];
+};
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState<Set<string>>(
-    () => new Set(NAV.filter((c) => c.items.some((i) => i.href === pathname)).map((c) => c.id))
-  );
-
-  const toggle = (id: string) =>
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
 
   // close the mobile drawer on route change
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  const sections: SidebarSection[] = [
+    {
+      title: "Product Research",
+      items: [
+        {
+          href: "/",
+          label: "Trend Radar",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+            </svg>
+          ),
+        },
+        {
+          href: "/validator",
+          label: "Validator",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+          ),
+        },
+        {
+          href: "#",
+          label: "Keyword Research",
+          disabled: true,
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m-3.414-1.414A2 2 0 1119 4a2 2 0 01-4.243 2.828M15 7l-3 3M9 13l-4 4v3h3l4-4M9 13L15 7" />
+            </svg>
+          ),
+        },
+      ],
+    },
+    {
+      title: "Listing Optimization",
+      items: [
+        {
+          href: "/listing",
+          label: "Quality Score",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          ),
+        },
+        {
+          href: "#",
+          label: "Market Intelligence",
+          disabled: true,
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.243 7.757l-1.061 4.243-4.243 1.061 1.061-4.243 4.243-1.061z" />
+            </svg>
+          ),
+        },
+      ],
+    },
+    {
+      title: "Analytics & Pricing",
+      items: [
+        {
+          href: "/analytics",
+          label: "Opportunity Scorer",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          ),
+        },
+        {
+          href: "/profit-calculator",
+          label: "Profit Calculator",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h6M9 13h6M9 17h6" />
+            </svg>
+          ),
+        },
+      ],
+    },
+    {
+      title: "Watchlist & Alerts",
+      items: [
+        {
+          href: "/watchlist",
+          label: "Watchlist",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          ),
+        },
+        {
+          href: "/alerts",
+          label: "Alerts",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          ),
+        },
+        {
+          href: "#",
+          label: "Settings",
+          disabled: true,
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg>
+          ),
+        },
+      ],
+    },
+  ];
 
   return (
     <>
@@ -101,99 +179,85 @@ export default function Sidebar() {
 
       <aside
         className={`
-          w-64 shrink-0 flex flex-col border-r border-white/5 px-5 py-6
+          w-64 shrink-0 flex flex-col border-r border-white/5 px-4 py-6
           fixed inset-y-0 left-0 z-50 bg-bg-elevated
-          transition-transform duration-250 ease-out
+          transition-transform duration-200 ease-out
           ${open ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0 md:sticky md:top-0 md:h-screen md:bg-transparent
         `}
       >
-        <div className="mb-8">
+        {/* Brand Area */}
+        <div className="mb-8 px-2">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🔭</span>
             <span className="text-lg font-bold tracking-tight text-text">
               SCOUT
             </span>
           </div>
-          <p className="text-xs text-muted mt-2 leading-relaxed">
-            Personal Amazon India research tool · KNK Enterprises
+          <p className="text-[10px] text-muted mt-2 leading-relaxed font-medium uppercase tracking-wide">
+            KNK ENTERPRISES · RESEARCH
           </p>
         </div>
 
-        <nav className="flex flex-col gap-1 overflow-y-auto">
-          {NAV.map((cat) => {
-            const hasItems = cat.items.length > 0;
-            const isExpanded = expanded.has(cat.id);
-            const containsActive = cat.items.some((i) => i.href === pathname);
+        {/* Navigation Area */}
+        <nav className="flex flex-col gap-6 overflow-y-auto pr-1">
+          {sections.map((section) => (
+            <div key={section.title} className="space-y-1.5">
+              <h3 className="text-[9px] font-extrabold uppercase tracking-widest text-muted/60 px-2.5">
+                {section.title}
+              </h3>
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const active = pathname === item.href;
+                  if (item.disabled) {
+                    return (
+                      <div
+                        key={item.label}
+                        className="flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-muted/40 font-medium cursor-not-allowed"
+                      >
+                        <span className="shrink-0">{item.icon}</span>
+                        <span className="flex-1">{item.label}</span>
+                        <span className="text-[8px] uppercase tracking-wider bg-white/5 border border-white/5 px-1 py-0.5 rounded font-bold">
+                          Soon
+                        </span>
+                      </div>
+                    );
+                  }
 
-            return (
-              <div key={cat.id}>
-                <button
-                  type="button"
-                  disabled={!hasItems}
-                  onClick={() => toggle(cat.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    containsActive ? "text-text" : "text-muted"
-                  } ${hasItems ? "hover:text-text cursor-pointer" : "opacity-50 cursor-default"}`}
-                >
-                  <span aria-hidden className="grayscale opacity-75">{cat.icon}</span>
-                  <span className="flex-1 text-left">{cat.label}</span>
-                  {hasItems ? (
-                    <span
-                      aria-hidden
-                      className={`text-xs transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="relative block py-1.5 px-2.5 rounded-lg hover:bg-white/5 transition-colors group"
                     >
-                      ▶
-                    </span>
-                  ) : (
-                    <span className="text-[10px] uppercase tracking-wide text-muted/40 font-semibold">
-                      Soon
-                    </span>
-                  )}
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {hasItems && isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="overflow-hidden pl-3 mt-1 space-y-0.5"
-                    >
-                      {cat.items.map((item) => {
-                        const active = pathname === item.href;
-                        return (
-                          <Link key={item.href} href={item.href} className="relative block py-1.5 px-3 rounded-lg hover:bg-white/5 transition-colors">
-                            {active && (
-                              <motion.div
-                                layoutId="nav-active"
-                                className="absolute inset-0 rounded-lg bg-white/5 border border-white/10"
-                                transition={{ type: "spring", stiffness: 450, damping: 38 }}
-                              />
-                            )}
-                            <span
-                              className={`relative z-10 flex items-center gap-3 text-sm font-medium transition-colors ${
-                                active ? "text-text" : "text-muted"
-                              }`}
-                            >
-                              <span aria-hidden className="grayscale opacity-70">{item.icon}</span>
-                              {item.label}
-                            </span>
-                          </Link>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {active && (
+                        <motion.div
+                          layoutId="nav-active-pill"
+                          className="absolute inset-0 rounded-lg bg-white/5 border border-white/10"
+                          transition={{ type: "spring", stiffness: 450, damping: 38 }}
+                        />
+                      )}
+                      <span
+                        className={`relative z-10 flex items-center gap-2.5 text-xs font-semibold transition-colors ${
+                          active ? "text-text" : "text-muted hover:text-text"
+                        }`}
+                      >
+                        <span className={`shrink-0 transition-opacity ${active ? "opacity-100" : "opacity-60 group-hover:opacity-100"}`}>
+                          {item.icon}
+                        </span>
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </nav>
 
-        <div className="mt-auto pt-6 text-[10px] text-muted/50 border-t border-white/5">
-          Runs nightly in the cloud — collection continues even if this
-          laptop is off.
+        {/* Footer Area */}
+        <div className="mt-auto pt-4 px-2.5 text-[9px] text-muted/40 border-t border-white/5 leading-relaxed">
+          Nightly collections run automatically in the cloud.
         </div>
       </aside>
     </>

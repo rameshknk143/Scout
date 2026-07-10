@@ -49,7 +49,7 @@ export default function Table<T>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={rowKey(row)} className="border-b border-white/5 last:border-0">
+            <tr key={rowKey(row)} className="border-b border-white/5 last:border-0 hover:bg-white/[0.015] transition-colors">
               {columns.map((col) => (
                 <td key={col.key} className={`px-4 py-3 ${col.cellClassName ?? ""}`}>
                   {col.render(row)}

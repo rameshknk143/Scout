@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import StatCard from "@/components/StatCard";
 import { Card, ChartCard, EmptyState, Table, type Column } from "@/components/ui";
 import VerdictBadge from "@/components/VerdictBadge";
 import type { Validation } from "@/lib/api";
@@ -56,34 +55,68 @@ export default function AnalyticsClient({
   }
 
   const columns: Column<Validation>[] = [
-    { key: "score", header: "Score", render: (v) => v.score, cellClassName: "font-semibold text-amber" },
-    { key: "verdict", header: "Verdict", render: (v) => <VerdictBadge verdict={v.verdict} /> },
+    { 
+      key: "score", 
+      header: "Score", 
+      render: (v) => v.score, 
+      cellClassName: "font-mono font-bold text-text" 
+    },
+    { 
+      key: "verdict", 
+      header: "Verdict", 
+      render: (v) => <VerdictBadge verdict={v.verdict} /> 
+    },
     {
       key: "title",
       header: "Product",
       render: (v) => (
-        <span className="max-w-sm truncate block" title={v.title ?? ""}>
+        <span className="max-w-sm truncate block font-medium" title={v.title ?? ""}>
           {v.title ?? v.asin}
         </span>
       ),
     },
-    { key: "category", header: "Category", render: (v) => v.category ?? "—", cellClassName: "text-muted" },
+    { 
+      key: "category", 
+      header: "Category", 
+      render: (v) => v.category ?? "—", 
+      cellClassName: "text-muted font-medium" 
+    },
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <StatCard label="Total validations" value={stats.total} delay={0} />
-        <StatCard label="Unique products" value={stats.uniqueAsins} delay={0.05} />
-        <StatCard label="Average score" value={stats.avgScore.toFixed(1)} delay={0.1} />
-        <StatCard
-          label="PURSUE candidates"
-          value={stats.verdictData.find((d) => d.verdict === "PURSUE")?.count ?? 0}
-          delay={0.15}
-        />
+    <div className="space-y-10">
+      {/* Top Header Block */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-white/5 pb-6">
+        <div>
+          <h1 className="text-3xl font-extrabold text-text tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted mt-1.5">Aggregate insights and historical patterns across logged validations.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* Cohesive Stat Grid (Apple-style divide list) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 border border-white/5 rounded-xl overflow-hidden divide-x divide-y md:divide-y-0 divide-white/5 bg-white/[0.01] shadow-sm">
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Total Validations</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{stats.total}</p>
+        </div>
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Unique Products</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{stats.uniqueAsins}</p>
+        </div>
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Average Score</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{stats.avgScore.toFixed(1)}</p>
+        </div>
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Pursue Candidates</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">
+            {stats.verdictData.find((d) => d.verdict === "PURSUE")?.count ?? 0}
+          </p>
+        </div>
+      </div>
+
+      {/* Grid for breakdown and top-category charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
           title="Verdict breakdown"
           data={stats.verdictData}
@@ -98,28 +131,30 @@ export default function AnalyticsClient({
         />
       </div>
 
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Top-scoring candidates</h2>
+      {/* Top candidates list */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold tracking-tight text-text">Top-scoring candidates</h2>
         <Table columns={columns} rows={stats.topCandidates} rowKey={(v) => v.id} />
       </div>
 
+      {/* Average score by category slider block */}
       {stats.categoryData.length > 0 && (
-        <Card>
-          <h2 className="text-lg font-semibold mb-4">Average score by category</h2>
-          <div className="space-y-2">
+        <Card className="p-6">
+          <h2 className="text-lg font-bold tracking-tight text-text mb-6">Average score by category</h2>
+          <div className="space-y-4">
             {stats.categoryData
               .slice()
               .sort((a, b) => b.avgScore - a.avgScore)
               .map((c) => (
-                <div key={c.category} className="flex items-center gap-3">
-                  <span className="w-40 shrink-0 text-sm text-muted truncate">{c.category}</span>
-                  <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                <div key={c.category} className="flex items-center gap-4">
+                  <span className="w-44 shrink-0 text-xs font-semibold text-muted truncate">{c.category}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
                     <div
-                      className="h-full bg-amber rounded-full"
+                      className="h-full bg-text rounded-full"
                       style={{ width: `${Math.min(100, c.avgScore)}%` }}
                     />
                   </div>
-                  <span className="w-12 text-right text-sm font-semibold text-amber">
+                  <span className="w-12 text-right text-xs font-bold text-text font-mono">
                     {c.avgScore}
                   </span>
                 </div>
