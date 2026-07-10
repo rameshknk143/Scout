@@ -35,10 +35,10 @@ function DriftingParticles() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.45}
-        color="#a1a1aa"
+        size={0.35}
+        color="#71717a"
         sizeAttenuation
-        opacity={0.35}
+        opacity={0.22}
         transparent
       />
     </points>
@@ -58,7 +58,7 @@ function FloatingRing() {
   return (
     <mesh ref={ref} position={[2.5, -1, -5]}>
       <torusGeometry args={[2.5, 0.03, 8, 48]} />
-      <meshBasicMaterial color="#ffffff" opacity={0.06} transparent wireframe />
+      <meshBasicMaterial color="#71717a" opacity={0.03} transparent wireframe />
     </mesh>
   );
 }
@@ -78,7 +78,7 @@ export default function Dashboard3DBackground() {
         camera={{ position: [0, 0, 10], fov: 60 }}
         style={{ width: "100%", height: "100%" }}
       >
-        <ambientLight intensity={0.2} />
+        <ambientLight intensity={0.6} />
         <Suspense fallback={null}>
           <DriftingParticles />
           <FloatingRing />

@@ -17,7 +17,7 @@ export default function ChartCard({
   data,
   xKey,
   dataKey,
-  barColor = "#e4e4e7",
+  barColor = "#18181b",
 }: {
   title: string;
   data: Record<string, string | number>[];
@@ -30,15 +30,16 @@ export default function ChartCard({
       <div className="text-xs uppercase tracking-wide text-muted mb-3">{title}</div>
       <ResponsiveContainer width="100%" height="85%">
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.04)" />
           <XAxis dataKey={xKey} stroke="#71717a" fontSize={11} />
           <YAxis stroke="#71717a" fontSize={11} />
           <Tooltip
             contentStyle={{
-              background: "#18181b",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "#ffffff",
+              border: "1px solid rgba(0, 0, 0, 0.06)",
               borderRadius: 8,
               fontSize: 12,
+              color: "#09090b",
             }}
           />
           <Bar dataKey={dataKey} fill={barColor} radius={[2, 2, 0, 0]} />

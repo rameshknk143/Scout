@@ -89,7 +89,7 @@ function BackgroundStars() {
           args={[positions, 3]}
         />
       </bufferGeometry>
-      <pointsMaterial size={0.3} color="#a1a1aa" sizeAttenuation opacity={0.4} transparent />
+      <pointsMaterial size={0.35} color="#71717a" sizeAttenuation opacity={0.22} transparent />
     </points>
   );
 }
@@ -124,14 +124,14 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             camera={{ position: [0, 0, 5.5], fov: 50 }}
             style={{ width: "100%", height: "100%" }}
           >
-            <ambientLight intensity={0.5} />
+            <ambientLight intensity={0.9} />
             <directionalLight
               position={[8 + mouseX * 4, 8 + mouseY * 4, 8]}
-              intensity={1.2}
+              intensity={1.5}
               castShadow
             />
             <Suspense fallback={null}>
-              <Environment preset="night" />
+              <Environment preset="studio" />
               <FloatingASIN />
               <FloatingData />
               <FloatingChart />
