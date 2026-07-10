@@ -23,7 +23,7 @@ export default function StatCard({
       <div className="text-xs uppercase tracking-wide text-muted mb-2">
         {label}
       </div>
-      <div className="text-3xl font-bold text-amber amber-glow-text">
+      <div className="text-3xl font-extrabold text-text tracking-tight">
         {value}
       </div>
       {hint && <div className="text-xs text-muted mt-1">{hint}</div>}

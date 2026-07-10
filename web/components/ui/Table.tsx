@@ -36,7 +36,7 @@ export default function Table<T>({
     <div className="glass-panel overflow-hidden overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-muted text-xs uppercase border-b border-white/8">
+          <tr className="text-left text-muted text-[10px] tracking-wider uppercase border-b border-white/5">
             {columns.map((col) => (
               <th
                 key={col.key}

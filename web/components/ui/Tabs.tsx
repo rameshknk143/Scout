@@ -26,20 +26,20 @@ export default function Tabs({
 }) {
   return (
     <div>
-      <div className="flex gap-1 mb-4 border-b border-white/8">
+      <div className="flex gap-1 mb-4 border-b border-white/5">
         {tabs.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => onChange(key)}
             className={`relative px-4 py-2.5 text-sm font-medium transition-colors ${
-              active === key ? "text-amber" : "text-muted hover:text-text"
+              active === key ? "text-text" : "text-muted hover:text-text"
             }`}
           >
             {label}
             {active === key && (
               <motion.div
                 layoutId={layoutId}
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-text"
               />
             )}
           </button>

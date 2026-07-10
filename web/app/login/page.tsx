@@ -1,23 +1,22 @@
-import LoginForm from "./login-form";
+"use client";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ from?: string }>;
-}) {
-  const { from } = await searchParams;
+import PremiumLanding from "@/components/PremiumLanding";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") || "/";
+
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🔭</div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            <span className="text-amber">Scout</span>
-          </h1>
-          <p className="text-muted text-sm mt-1">Personal Amazon India research tool</p>
-        </div>
-        <LoginForm from={from || "/"} />
-      </div>
-    </main>
+    <PremiumLanding from={from} />
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg flex items-center justify-center text-muted text-sm">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

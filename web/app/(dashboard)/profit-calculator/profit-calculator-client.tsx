@@ -128,7 +128,7 @@ export default function ProfitCalculatorClient() {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-amber text-black font-semibold px-6 py-2.5 hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="btn-primary w-auto disabled:opacity-50"
         >
           {isPending ? "Calculating…" : "Calculate"}
         </button>
@@ -140,7 +140,7 @@ export default function ProfitCalculatorClient() {
             <div className="text-sm text-muted">Net margin</div>
             <VerdictBadge verdict={result.verdict} />
           </div>
-          <div className="text-4xl font-bold text-amber amber-glow-text mb-6">
+          <div className="text-4xl font-extrabold text-text tracking-tight mb-6">
             {result.net_margin_pct.toFixed(1)}%
             <span className="text-lg text-muted font-normal ml-2">
               (₹{result.net_margin_rupees.toFixed(0)}/unit)

@@ -150,7 +150,7 @@ export default function ValidatorClient() {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-amber text-black font-semibold px-6 py-2.5 hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="btn-primary w-auto disabled:opacity-50"
         >
           {isPending ? "Scoring…" : "Score this product"}
         </button>
@@ -172,10 +172,10 @@ export default function ValidatorClient() {
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-4xl font-bold text-amber amber-glow-text">
+              <div className="text-4xl font-extrabold text-text tracking-tight">
                 {result.score}
               </div>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 <VerdictBadge verdict={result.verdict} />
               </div>
             </div>
@@ -232,7 +232,7 @@ function Slider({
         max={5}
         value={value}
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        className="w-full accent-amber"
+        className="w-full accent-text"
       />
       <p className="text-xs text-muted/80 mt-1">{hint}</p>
     </div>
