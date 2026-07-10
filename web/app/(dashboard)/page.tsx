@@ -19,11 +19,14 @@ async function TrendRadarData() {
 export default function TrendRadarPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Trend Radar</h1>
-      <p className="text-muted text-sm mb-6">
-        Broad discovery across all 31 Amazon India categories — new entrants,
-        climbers, cross-category hits.
-      </p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-white/5 pb-6 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-text tracking-tight">Trend Radar</h1>
+          <p className="text-sm text-muted mt-1.5">
+            Broad discovery across all 31 Amazon India categories — new entrants, climbers, cross-category hits.
+          </p>
+        </div>
+      </div>
       <Suspense fallback={<div className="text-muted text-sm">Loading trend data…</div>}>
         <TrendRadarData />
       </Suspense>

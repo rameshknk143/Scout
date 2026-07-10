@@ -42,18 +42,20 @@ export default function TrendRadarClient({ digest }: { digest: Digest }) {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard
-          label="New Entrants (top 100)"
-          value={digest.new_entrants.length}
-          delay={0}
-        />
-        <StatCard label="Top Movers" value={digest.top_movers.length} delay={0.05} />
-        <StatCard
-          label="Cross-Category Hits"
-          value={digest.cross_category.length}
-          delay={0.1}
-        />
+      {/* Cohesive Stat Grid (Apple-style divide list) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 border border-white/5 rounded-xl overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-white/5 bg-white/[0.01] shadow-sm">
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">New Entrants (top 100)</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{digest.new_entrants.length}</p>
+        </div>
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Top Movers</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{digest.top_movers.length}</p>
+        </div>
+        <div className="p-6">
+          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Cross-Category Hits</p>
+          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{digest.cross_category.length}</p>
+        </div>
       </div>
 
       {coldStart && (
