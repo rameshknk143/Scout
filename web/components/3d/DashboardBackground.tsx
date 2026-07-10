@@ -6,12 +6,12 @@ import * as THREE from "three";
 
 function DriftingParticles() {
   const points = useRef<THREE.Points>(null!);
-  const count = 400;
+  const count = 600;
 
   useFrame((state) => {
     if (points.current) {
-      points.current.rotation.y = state.clock.getElapsedTime() * 0.008;
-      points.current.rotation.x = state.clock.getElapsedTime() * 0.004;
+      points.current.rotation.y = state.clock.getElapsedTime() * 0.005;
+      points.current.rotation.x = state.clock.getElapsedTime() * 0.003;
     }
   });
 
@@ -19,9 +19,9 @@ function DriftingParticles() {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const idx = i * 3;
-      pos[idx] = (Math.random() - 0.5) * 45;
-      pos[idx + 1] = (Math.random() - 0.5) * 45;
-      pos[idx + 2] = (Math.random() - 0.5) * 45;
+      pos[idx] = (Math.random() - 0.5) * 40;
+      pos[idx + 1] = (Math.random() - 0.5) * 40;
+      pos[idx + 2] = (Math.random() - 0.5) * 40;
     }
     return pos;
   }, [count]);
@@ -35,10 +35,10 @@ function DriftingParticles() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.2}
+        size={0.45}
         color="#a1a1aa"
         sizeAttenuation
-        opacity={0.12}
+        opacity={0.35}
         transparent
       />
     </points>
@@ -50,15 +50,15 @@ function FloatingRing() {
   
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.x = state.clock.getElapsedTime() * 0.02;
-      ref.current.rotation.y = state.clock.getElapsedTime() * 0.03;
+      ref.current.rotation.x = state.clock.getElapsedTime() * 0.015;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.02;
     }
   });
 
   return (
-    <mesh ref={ref} position={[3, -2, -8]}>
-      <torusGeometry args={[3, 0.04, 8, 48]} />
-      <meshBasicMaterial color="#ffffff" opacity={0.015} transparent wireframe />
+    <mesh ref={ref} position={[2.5, -1, -5]}>
+      <torusGeometry args={[2.5, 0.03, 8, 48]} />
+      <meshBasicMaterial color="#ffffff" opacity={0.06} transparent wireframe />
     </mesh>
   );
 }
