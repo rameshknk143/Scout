@@ -101,9 +101,11 @@ interface PremiumLandingProps {
 export default function PremiumLanding({ from }: PremiumLandingProps) {
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const [state, formAction, pending] = useActionState(login, undefined);
 
   useEffect(() => {
+    setMounted(true);
     const handleMouseMove = (e: MouseEvent) => {
       setMouseX((e.clientX / window.innerWidth) * 2 - 1);
       setMouseY(-(e.clientY / window.innerHeight) * 2 + 1);
@@ -116,25 +118,27 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
     <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col md:flex-row">
       {/* 3D Scene Left Side (Hidden on Mobile) */}
       <div className="hidden md:block md:w-1/2 h-full absolute inset-0 md:relative z-10 border-r border-white/5">
-        <Canvas
-          shadows
-          camera={{ position: [0, 0, 5.5], fov: 50 }}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <ambientLight intensity={0.5} />
-          <directionalLight
-            position={[8 + mouseX * 4, 8 + mouseY * 4, 8]}
-            intensity={1.2}
-            castShadow
-          />
-          <Suspense fallback={null}>
-            <Environment preset="night" />
-            <FloatingASIN />
-            <FloatingData />
-            <FloatingChart />
-            <BackgroundStars />
-          </Suspense>
-        </Canvas>
+        {mounted && (
+          <Canvas
+            shadows
+            camera={{ position: [0, 0, 5.5], fov: 50 }}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <ambientLight intensity={0.5} />
+            <directionalLight
+              position={[8 + mouseX * 4, 8 + mouseY * 4, 8]}
+              intensity={1.2}
+              castShadow
+            />
+            <Suspense fallback={null}>
+              <Environment preset="night" />
+              <FloatingASIN />
+              <FloatingData />
+              <FloatingChart />
+              <BackgroundStars />
+            </Suspense>
+          </Canvas>
+        )}
       </div>
 
       {/* Content Right Side */}
