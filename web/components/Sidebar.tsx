@@ -183,7 +183,7 @@ export default function Sidebar() {
           fixed inset-y-0 left-0 z-50 bg-bg-elevated
           transition-transform duration-200 ease-out
           ${open ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:sticky md:top-0 md:h-screen md:bg-transparent
+          md:translate-x-0 md:sticky md:top-0 md:h-screen md:bg-transparent md:z-10
         `}
       >
         {/* Brand Area */}

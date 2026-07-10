@@ -73,7 +73,7 @@ export default function Dashboard3DBackground() {
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none w-screen h-screen">
+    <div className="fixed inset-0 z-0 pointer-events-none w-screen h-screen">
       <Canvas
         camera={{ position: [0, 0, 10], fov: 60 }}
         style={{ width: "100%", height: "100%" }}
