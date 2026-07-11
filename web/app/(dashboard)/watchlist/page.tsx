@@ -15,8 +15,8 @@ async function WatchlistData() {
 export default function WatchlistPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Watchlist</h1>
-      <p className="text-muted text-sm mb-6">Every Validator run, logged.</p>
+      <h1 className="text-xl font-bold tracking-tight text-zinc-950">Trend Explorer & Watchlist</h1>
+      <p className="text-zinc-500 text-xs font-medium mt-1 mb-6">Every ASIN validation and product opportunity tracked.</p>
       <Suspense fallback={<div className="text-muted text-sm">Loading watchlist…</div>}>
         <WatchlistData />
       </Suspense>

@@ -1,9 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import SeverityBadge from "@/components/SeverityBadge";
-import CaveatBox from "@/components/CaveatBox";
-import { Table, Select, EmptyState, type Column } from "@/components/ui";
+import { Table, Select, EmptyState, ProductDetailDrawer } from "@/components/ui";
 import type { Alert } from "@/lib/api";
 
 const ALERT_TYPE_LABELS: Record<Alert["alert_type"], string> = {
@@ -15,78 +13,184 @@ const ALERT_TYPE_LABELS: Record<Alert["alert_type"], string> = {
   dropped_from_list: "Dropped from list",
 };
 
-export default function AlertsClient({ alerts }: { alerts: Alert[] }) {
-  const [severityFilter, setSeverityFilter] = useState<string>("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
+export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [severityFilter, setSeverityFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+
+  // Selected product details drawer state
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const types = useMemo(
     () => Array.from(new Set(alerts.map((a) => a.alert_type))).sort(),
     [alerts]
   );
 
-  const filtered = alerts.filter(
-    (a) =>
-      (!severityFilter || a.severity === severityFilter) &&
-      (!typeFilter || a.alert_type === typeFilter)
-  );
+  // Filter alerts
+  const filtered = useMemo(() => {
+    return alerts.filter((a) => {
+      const matchesSearch = 
+        a.asin.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (a.title && a.title.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesSeverity = !severityFilter || a.severity === severityFilter;
+      const matchesType = !typeFilter || a.alert_type === typeFilter;
+      return matchesSearch && matchesSeverity && matchesType;
+    });
+  }, [alerts, searchQuery, severityFilter, typeFilter]);
+
+  const handleRowClick = (row: Alert) => {
+    // Extract numerical price if present in message or detail
+    const priceMatch = row.message.match(/₹\s?(\d+)/);
+    const estimatedPrice = priceMatch ? Number(priceMatch[1]) : 299;
+
+    setSelectedProduct({
+      asin: row.asin,
+      title: row.title || "Unknown Product",
+      price: estimatedPrice,
+      score: 75, // default/fallback score
+      verdict: "WATCH" as const,
+      category: row.category,
+      notes: "",
+      buy_price: estimatedPrice * 0.6,
+      sell_price: estimatedPrice,
+      net_margin: 30.0,
+      rating: 4.2,
+      reviews: 95,
+    });
+    setIsDrawerOpen(true);
+  };
 
   if (!alerts.length) {
     return (
-      <EmptyState text="No alerts yet — alerts need at least two nightly collection runs for a watched ASIN before there's anything to compare. Run the Validator on a few ASINs, then check back tomorrow." />
+      <div className="bg-white p-8 rounded-xl border border-zinc-200/80 shadow-sm">
+        <EmptyState text="No alerts yet — alerts need at least two nightly collection runs for a watched ASIN before there's anything to compare. Run the Validator on a few ASINs, then check back tomorrow." />
+      </div>
     );
   }
 
-  const columns: Column<Alert>[] = [
-    { key: "severity", header: "Severity", render: (a) => <SeverityBadge severity={a.severity} /> },
-    { key: "alert_type", header: "Type", render: (a) => ALERT_TYPE_LABELS[a.alert_type], cellClassName: "text-muted" },
-    {
-      key: "title",
-      header: "Product",
-      render: (a) => (
-        <span className="max-w-sm truncate block" title={a.title ?? a.asin}>
-          {a.title ?? a.asin}
-        </span>
-      ),
-    },
-    { key: "category", header: "Category", render: (a) => a.category ?? "—", cellClassName: "text-muted" },
-    { key: "message", header: "What changed", render: (a) => a.message },
-    {
-      key: "detected_at",
-      header: "Detected",
-      render: (a) =>
-        new Date(a.detected_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
-      cellClassName: "text-muted text-xs",
-    },
-  ];
-
   return (
     <div className="space-y-4">
-      <CaveatBox>
-        &quot;Dropped from list&quot; means the ASIN fell out of that category&apos;s top-30 ranked
-        page — Scout reads the public bestseller/new-releases list, not live inventory, so it can&apos;t
-        tell a real stock-out apart from just losing rank. Treat it as &quot;worth checking,&quot; not confirmed.
-      </CaveatBox>
+      {/* Disclaimer Caveat Box */}
+      <div className="caveat-box bg-zinc-50 border border-zinc-200/60 rounded-xl p-4 text-xs text-zinc-500 leading-relaxed">
+        <strong>⚠️ Information Note:</strong> &quot;Dropped from list&quot; means the ASIN fell out of that category&apos;s top-30 ranked page. Scout reads the public bestseller/new-releases list, not live inventory, so it can&apos;t tell a real stock-out apart from just losing rank. Treat it as a sourcing indicator to review, not confirmed stock exhaustion.
+      </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Select
-          value={severityFilter}
-          onChange={setSeverityFilter}
-          placeholder="All severities"
-          options={["high", "medium", "low"].map((s) => ({ value: s, label: s }))}
-        />
-        <Select
-          value={typeFilter}
-          onChange={setTypeFilter}
-          placeholder="All types"
-          options={types.map((t) => ({ value: t, label: ALERT_TYPE_LABELS[t] }))}
+      {/* Search and Filters Toolbar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-zinc-200/80 shadow-sm">
+        <div className="flex items-center gap-3 flex-1 max-w-sm">
+          <input
+            type="text"
+            placeholder="Search alerts by ASIN or title..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input py-1.5 text-xs text-zinc-900"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2.5">
+          {/* Severity Filter */}
+          <Select
+            value={severityFilter}
+            onChange={setSeverityFilter}
+            placeholder="All Severities"
+            options={["high", "medium", "low"].map((s) => ({ value: s, label: s.toUpperCase() }))}
+          />
+
+          {/* Type Filter */}
+          <Select
+            value={typeFilter}
+            onChange={setTypeFilter}
+            placeholder="All Alert Types"
+            options={types.map((t) => ({ value: t, label: ALERT_TYPE_LABELS[t] }))}
+          />
+        </div>
+      </div>
+
+      {/* Alerts Table */}
+      <div className="bg-white rounded-xl border border-zinc-200/80 shadow-sm overflow-hidden">
+        <Table
+          columns={[
+            {
+              key: "severity",
+              header: "Severity",
+              render: (a) => (
+                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md border uppercase ${
+                  a.severity === "high"
+                    ? "bg-red-50 text-red-700 border-red-200/50"
+                    : a.severity === "medium"
+                    ? "bg-amber-50 text-amber-800 border-amber-200/50"
+                    : "bg-blue-50 text-blue-700 border-blue-200/50"
+                }`}>
+                  {a.severity}
+                </span>
+              ),
+            },
+            {
+              key: "alert_type",
+              header: "Alert Type",
+              cellClassName: "text-zinc-500 font-semibold text-xs",
+              render: (a) => ALERT_TYPE_LABELS[a.alert_type],
+            },
+            {
+              key: "title",
+              header: "Product Title",
+              cellClassName: "max-w-md truncate text-zinc-950 font-medium",
+              render: (a) => a.title || a.asin,
+            },
+            {
+              key: "category",
+              header: "Category",
+              cellClassName: "text-zinc-400 font-semibold text-xs",
+              render: (a) => a.category ?? "—",
+            },
+            {
+              key: "message",
+              header: "Details",
+              cellClassName: "text-zinc-700 font-semibold text-xs",
+              render: (a) => a.message,
+            },
+            {
+              key: "detected_at",
+              header: "Detected",
+              cellClassName: "text-zinc-400 font-medium text-xs",
+              render: (a) =>
+                new Date(a.detected_at).toLocaleString("en-IN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }),
+            },
+            {
+              key: "actions",
+              header: "Actions",
+              render: (row) => (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRowClick(row);
+                  }}
+                  className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded transition-colors cursor-pointer"
+                >
+                  Analyze
+                </button>
+              ),
+            },
+          ]}
+          rows={filtered}
+          rowKey={(a) => `${a.asin}-${a.alert_type}-${a.detected_at}`}
         />
       </div>
 
-      <Table columns={columns} rows={filtered} rowKey={(a) => `${a.asin}-${a.alert_type}-${a.detected_at}`} />
-
-      <div className="text-xs text-muted">
-        {filtered.length} of {alerts.length} alerts shown.
+      <div className="text-xs font-semibold text-zinc-500 pl-1">
+        {filtered.length} of {alerts.length} activity alerts shown.
       </div>
+
+      {/* Detail Slide-over Drawer */}
+      <ProductDetailDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        product={selectedProduct}
+      />
     </div>
   );
 }

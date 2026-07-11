@@ -16,9 +16,9 @@ async function AlertsData() {
 export default function AlertsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Alerts</h1>
-      <p className="text-muted text-sm mb-6">
-        Price, rank, and review-count changes on every ASIN you&apos;ve run through the Validator.
+      <h1 className="text-xl font-bold tracking-tight text-zinc-950">Activity / Alerts Log</h1>
+      <p className="text-zinc-500 text-xs font-medium mt-1 mb-6">
+        Price, rank, and review-count changes detected across your catalog.
       </p>
       <Suspense fallback={<div className="text-muted text-sm">Loading alerts…</div>}>
         <AlertsData />
