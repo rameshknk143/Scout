@@ -1,5 +1,4 @@
 import Sidebar from "@/components/Sidebar";
-import Dashboard3DBackground from "@/components/3d/DashboardBackground";
 
 export default function DashboardLayout({
   children,
@@ -8,7 +7,6 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex flex-col md:flex-row min-h-screen relative bg-[#f9f9fb]">
-      <Dashboard3DBackground />
       <Sidebar />
       
       <main className="flex-1 min-w-0 flex flex-col relative z-10">

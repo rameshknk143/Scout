@@ -215,7 +215,7 @@ export default function WatchlistClient({
       <ProductDetailDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        product={selectedProduct}
+        asin={selectedProduct?.asin || null}
         onUpdateNotes={handleUpdateNotes}
       />
     </div>

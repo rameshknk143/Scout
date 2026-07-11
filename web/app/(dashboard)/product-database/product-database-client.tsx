@@ -337,7 +337,7 @@ export default function ProductDatabaseClient() {
         <ProductDetailDrawer
           isOpen={isDrawerOpen}
           onClose={() => setIsDrawerOpen(false)}
-          product={selectedProduct}
+          asin={selectedProduct.asin}
           onUpdateNotes={handleUpdateNotes}
         />
       )}

@@ -199,3 +199,7 @@ export async function compareCompetitors(asins: string[]) {
 export async function getListingHealth() {
   return api.listingHealth();
 }
+
+export async function getDrawerDetails(asin: string) {
+  return api.drawerDetails(asin);
+}

@@ -199,7 +199,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
       <ProductDetailDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        product={selectedProduct}
+        asin={selectedProduct?.asin || null}
         onUpdateNotes={handleUpdateNotes}
       />
     </div>

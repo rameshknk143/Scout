@@ -362,4 +362,23 @@ export const api = {
         price: number | null;
       }[];
     }>("/listing-health"),
+  drawerDetails: (asin: string) =>
+    request<{
+      asin: string;
+      title: string;
+      category: string;
+      price: number;
+      buy_price: number;
+      sell_price: number;
+      shipping_cost: number;
+      fees: number;
+      net_margin: number;
+      rating: number;
+      reviews: number;
+      score: number;
+      verdict: "PURSUE" | "WATCH" | "SKIP";
+      notes: string;
+      trend_data: { day: string; BSR: number; Price: number }[];
+      audit_checklist: { check: string; pass: boolean }[];
+    }>(`/products/${asin}/drawer-details`),
 };

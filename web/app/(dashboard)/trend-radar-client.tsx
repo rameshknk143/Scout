@@ -100,13 +100,22 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
     ? Math.round(watchlist.reduce((sum, item) => sum + item.score, 0) / activeASINsCount)
     : 0;
 
-  // Mock revenue chart data for B2B performance analytics
+  const totalMonthlySales = watchlist.reduce((sum, item) => sum + Math.round(item.score * 5.2), 0);
+  const totalRevenue = watchlist.reduce((sum, item) => sum + Math.round(item.score * 5.2 * (item.buy_price * 1.5)), 0);
+  const margins = watchlist.map((w) => {
+    const sell = w.buy_price * 1.5;
+    const profit = sell - w.buy_price - (sell * 0.15 + 100);
+    return sell > 0 ? (profit / sell) * 100 : 0;
+  });
+  const avgNetMargin = margins.length ? Math.round(margins.reduce((s, m) => s + m, 0) / margins.length) : 0;
+
+  // Mock revenue chart data for B2B performance analytics (scales with actual watchlist sizing)
   const revenueChartData = [
-    { name: "Week 1", Revenue: 145000, Margin: 31 },
-    { name: "Week 2", Revenue: 189000, Margin: 33 },
-    { name: "Week 3", Revenue: 210000, Margin: 32 },
-    { name: "Week 4", Revenue: 285000, Margin: 34 },
-    { name: "Week 5", Revenue: 340000, Margin: 32.5 },
+    { name: "Week 1", Revenue: Math.round(totalRevenue * 0.6) || 145000, Margin: Math.max(15, avgNetMargin - 2) || 31 },
+    { name: "Week 2", Revenue: Math.round(totalRevenue * 0.75) || 189000, Margin: Math.max(15, avgNetMargin - 1) || 33 },
+    { name: "Week 3", Revenue: Math.round(totalRevenue * 0.85) || 210000, Margin: Math.max(15, avgNetMargin) || 32 },
+    { name: "Week 4", Revenue: Math.round(totalRevenue * 0.95) || 285000, Margin: Math.max(15, avgNetMargin + 1) || 34 },
+    { name: "Week 5", Revenue: totalRevenue || 340000, Margin: avgNetMargin || 32.5 },
   ];
 
   // Filter watchlist validations
@@ -122,23 +131,12 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
   });
 
   const handleRowClick = (row: Validation) => {
-    // Construct detail-drawer ready object
-    setSelectedProduct({
-      asin: row.asin,
-      title: row.title || "Unknown Product",
-      price: row.buy_price * 1.5, // estimate retail price
-      score: row.score,
-      verdict: row.verdict,
-      category: row.category,
-      notes: row.notes,
-      buy_price: row.buy_price,
-      sell_price: row.buy_price * 1.5,
-      net_margin: 32.5,
-      rating: 4.2,
-      reviews: 84,
-    });
+    setSelectedProduct(row);
     setIsDrawerOpen(true);
   };
+
+  const lowStockAsin = watchlist.find((w) => w.score < 60)?.asin || "B08L7V6YF2";
+  const lowQualityAsin = watchlist.find((w) => w.score < 75)?.asin || "B07W8P8M82";
 
   return (
     <div className="space-y-6">
@@ -149,19 +147,19 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <MetricCard
           title="Estimated Monthly Sales"
-          value="2,450 Units"
-          change="12.4%"
-          changeType="positive"
+          value={activeASINsCount > 0 ? `${totalMonthlySales.toLocaleString("en-IN")} Units` : "—"}
+          change={activeASINsCount > 0 ? "Dynamic" : "No data"}
+          changeType="neutral"
           tooltip="Calculated based on BSR performance across validated listings"
-          sparklineData={[120, 150, 180, 220, 250, 280, 310]}
+          sparklineData={activeASINsCount > 0 ? [Math.round(totalMonthlySales * 0.7), Math.round(totalMonthlySales * 0.85), totalMonthlySales] : [0, 0, 0]}
         />
         <MetricCard
           title="Estimated Revenue"
-          value="₹7,32,000"
-          change="15.2%"
-          changeType="positive"
+          value={activeASINsCount > 0 ? `₹${totalRevenue.toLocaleString("en-IN")}` : "—"}
+          change={activeASINsCount > 0 ? "Dynamic" : "No data"}
+          changeType="neutral"
           tooltip="Gross monthly sales projections for tracked ASINs"
-          sparklineData={[100000, 120000, 150000, 190000, 220000, 280000, 310000]}
+          sparklineData={activeASINsCount > 0 ? [Math.round(totalRevenue * 0.7), Math.round(totalRevenue * 0.85), totalRevenue] : [0, 0, 0]}
         />
         <MetricCard
           title="Active Tracked ASINs"
@@ -173,11 +171,11 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
         />
         <MetricCard
           title="Avg Net Margin"
-          value="32.5%"
-          change="+0.8%"
-          changeType="positive"
+          value={activeASINsCount > 0 ? `${avgNetMargin}%` : "—"}
+          change={activeASINsCount > 0 ? "Dynamic" : "No data"}
+          changeType="neutral"
           tooltip="Average estimated profit margin after Amazon referral, closing, and shipping fees"
-          sparklineData={[31.2, 31.8, 32.0, 32.2, 32.5]}
+          sparklineData={activeASINsCount > 0 ? [avgNetMargin - 1, avgNetMargin, avgNetMargin] : [0, 0, 0]}
         />
         <MetricCard
           title="Avg Opportunity Score"
@@ -196,9 +194,9 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
             <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-              Restock ASIN <strong className="font-mono text-zinc-950">B08L7V6YF2</strong> within 7 days to prevent stockout based on current velocity.
+              Restock ASIN <strong className="font-mono text-zinc-950">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
             </p>
-            <Link href="/watchlist" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+            <Link href="/inventory" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
               View Inventory Details →
             </Link>
           </div>
@@ -212,9 +210,9 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
           </div>
           <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
             <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-              Listing quality score is 68% on ASIN <strong className="font-mono text-zinc-950">B07W8P8M82</strong>. Add high-volume keywords to title.
+              Listing quality score is low on ASIN <strong className="font-mono text-zinc-950">{lowQualityAsin}</strong>. Add high-volume keywords to title.
             </p>
-            <Link href="/listing" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+            <Link href={`/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
               Optimize Listing →
             </Link>
           </div>
@@ -666,7 +664,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
       <ProductDetailDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        product={selectedProduct}
+        asin={selectedProduct?.asin || null}
         onUpdateNotes={handleUpdateNotes}
       />
     </div>
