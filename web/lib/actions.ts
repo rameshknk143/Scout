@@ -152,3 +152,50 @@ export async function updateWatchlistNotes(asin: string, notes: string) {
   updateTag("watchlist");
   return result;
 }
+
+export async function searchProductDatabase(params: {
+  q?: string;
+  category?: string;
+  min_price?: number;
+  max_price?: number;
+  min_rank?: number;
+  max_rank?: number;
+  limit?: number;
+  offset?: number;
+}) {
+  return api.productDatabase(params);
+}
+
+export async function getMyProducts() {
+  return api.myProducts();
+}
+
+export async function saveMyProduct(body: {
+  asin: string;
+  title?: string | null;
+  sku?: string | null;
+  supplier_cost: number;
+  shipping_fee: number;
+  target_margin: number;
+  supplier_details: string;
+  current_stock?: number;
+  lead_time_days?: number;
+}) {
+  const result = await api.saveMyProduct(body);
+  updateTag("my-products");
+  return result;
+}
+
+export async function deleteMyProduct(asin: string) {
+  const result = await api.deleteMyProduct(asin);
+  updateTag("my-products");
+  return result;
+}
+
+export async function compareCompetitors(asins: string[]) {
+  return api.compareCompetitors({ asins });
+}
+
+export async function getListingHealth() {
+  return api.listingHealth();
+}

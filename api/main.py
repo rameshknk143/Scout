@@ -232,3 +232,142 @@ def calc_profit(req: ProfitCalcRequest):
         ppc_per_unit=req.ppc_per_unit,
         own_shipping_cost=req.own_shipping_cost,
     )
+
+
+@app.get("/product-database", dependencies=[Depends(require_key)])
+def get_product_database(
+    q: str = None,
+    category: str = None,
+    min_price: float = None,
+    max_price: float = None,
+    min_rank: int = None,
+    max_rank: int = None,
+    limit: int = 100,
+    offset: int = 0,
+):
+    products = db.query_snapshots(
+        query_text=q,
+        category=category,
+        min_price=min_price,
+        max_price=max_price,
+        min_rank=min_rank,
+        max_rank=max_rank,
+        limit=limit,
+        offset=offset,
+    )
+    total = db.count_snapshots(
+        query_text=q,
+        category=category,
+        min_price=min_price,
+        max_price=max_price,
+        min_rank=min_rank,
+        max_rank=max_rank,
+    )
+    return {"products": products, "total": total}
+
+
+class MyProductRequest(BaseModel):
+    asin: str
+    title: str | None = None
+    sku: str | None = None
+    supplier_cost: float = 0.0
+    shipping_fee: float = 0.0
+    target_margin: float = 30.0
+    supplier_details: str = ""
+    current_stock: int = 100
+    lead_time_days: int = 14
+
+
+@app.get("/my-products", dependencies=[Depends(require_key)])
+def get_my_products():
+    products = db.get_my_products()
+    return {"products": products}
+
+
+@app.post("/my-products", dependencies=[Depends(require_key)])
+def save_my_product(req: MyProductRequest):
+    db.save_my_product(
+        asin=req.asin,
+        title=req.title,
+        sku=req.sku,
+        supplier_cost=req.supplier_cost,
+        shipping_fee=req.shipping_fee,
+        target_margin=req.target_margin,
+        supplier_details=req.supplier_details,
+        current_stock=req.current_stock,
+        lead_time_days=req.lead_time_days,
+    )
+    return {"ok": True}
+
+
+@app.delete("/my-products/{asin}", dependencies=[Depends(require_key)])
+def delete_my_product(asin: str):
+    db.delete_my_product(asin)
+    return {"ok": True}
+
+
+class CompetitorCompareRequest(BaseModel):
+    asins: list[str]
+
+
+@app.post("/competitor-analysis", dependencies=[Depends(require_key)])
+def compare_competitors(req: CompetitorCompareRequest):
+    results = []
+    df = db.get_all_validations_df()
+    for asin in req.asins:
+        asin = asin.strip().upper()
+        if not asin:
+            continue
+        snap = db.get_latest_snapshot(asin)
+        val = None
+        if not df.empty:
+            matches = df[df["asin"] == asin]
+            if not matches.empty:
+                val = matches.iloc[0].to_dict()
+                
+        results.append({
+            "asin": asin,
+            "title": snap["title"] if snap else (val["title"] if val else None),
+            "price": snap["price"] if snap else (val["buy_price"] * 1.5 if val else None),
+            "rank": snap["rank"] if snap else None,
+            "rating": snap["rating"] if snap else None,
+            "review_count": snap["review_count"] if snap else None,
+            "score": val["score"] if val else 50.0,
+            "verdict": val["verdict"] if val else "WATCH",
+            "found": snap is not None or val is not None
+        })
+    return {"comparisons": results}
+
+
+@app.get("/listing-health", dependencies=[Depends(require_key)])
+def get_listing_health():
+    df = db.get_all_validations_df()
+    results = []
+    if df.empty:
+        return {"products": []}
+    
+    latest = df.sort_values("validated_at").groupby("asin").last().reset_index()
+    for _, row in latest.iterrows():
+        asin = row["asin"]
+        snap = db.get_latest_snapshot(asin)
+        
+        gaps = []
+        score = row["score"]
+        
+        title_len = len(snap["title"]) if snap and snap["title"] else 0
+        if title_len < 150:
+            gaps.append(f"Short product title ({title_len}/150+ chars)")
+        if not snap or not snap.get("review_count") or snap["review_count"] < 10:
+            gaps.append("Low review count (under 10 reviews)")
+        if not snap or not snap.get("rating") or snap["rating"] < 4.0:
+            gaps.append("Sub-optimal rating (under 4.0 ⭐)")
+            
+        results.append({
+            "asin": asin,
+            "title": row["title"] or (snap["title"] if snap else "Unknown Product"),
+            "score": score,
+            "verdict": row["verdict"],
+            "gaps": gaps,
+            "price": snap["price"] if snap else None
+        })
+    return {"products": results}

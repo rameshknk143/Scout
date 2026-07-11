@@ -44,6 +44,18 @@ CREATE TABLE IF NOT EXISTS validations (
     notes TEXT,
     validated_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS my_products (
+    id SERIAL PRIMARY KEY,
+    asin TEXT UNIQUE NOT NULL,
+    title TEXT,
+    sku TEXT,
+    supplier_cost REAL,
+    shipping_fee REAL,
+    target_margin REAL,
+    supplier_details TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 
@@ -154,6 +166,99 @@ def update_validation_notes(asin, notes):
                 "UPDATE validations SET notes = %s WHERE asin = %s",
                 (notes, asin),
             )
+
+
+def query_snapshots(query_text=None, category=None, min_price=None, max_price=None, min_rank=None, max_rank=None, limit=100, offset=0):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            sql = "SELECT DISTINCT ON (asin) * FROM snapshots WHERE 1=1"
+            params = []
+            if query_text:
+                sql += " AND (asin ILIKE %s OR title ILIKE %s)"
+                params.extend([f"%{query_text}%", f"%{query_text}%"])
+            if category:
+                sql += " AND category = %s"
+                params.append(category)
+            if min_price is not None:
+                sql += " AND price >= %s"
+                params.append(min_price)
+            if max_price is not None:
+                sql += " AND price <= %s"
+                params.append(max_price)
+            if min_rank is not None:
+                sql += " AND rank >= %s"
+                params.append(min_rank)
+            if max_rank is not None:
+                sql += " AND rank <= %s"
+                params.append(max_rank)
+            
+            sql += " ORDER BY asin, collected_at DESC LIMIT %s OFFSET %s"
+            params.extend([limit, offset])
+            
+            cur.execute(sql, tuple(params))
+            return [_clean_title(dict(r)) for r in cur.fetchall()]
+
+
+def count_snapshots(query_text=None, category=None, min_price=None, max_price=None, min_rank=None, max_rank=None):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            sql = "SELECT COUNT(DISTINCT asin) FROM snapshots WHERE 1=1"
+            params = []
+            if query_text:
+                sql += " AND (asin ILIKE %s OR title ILIKE %s)"
+                params.extend([f"%{query_text}%", f"%{query_text}%"])
+            if category:
+                sql += " AND category = %s"
+                params.append(category)
+            if min_price is not None:
+                sql += " AND price >= %s"
+                params.append(min_price)
+            if max_price is not None:
+                sql += " AND price <= %s"
+                params.append(max_price)
+            if min_rank is not None:
+                sql += " AND rank >= %s"
+                params.append(min_rank)
+            if max_rank is not None:
+                sql += " AND rank <= %s"
+                params.append(max_rank)
+            
+            cur.execute(sql, tuple(params))
+            return cur.fetchone()[0]
+
+
+def get_my_products():
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT * FROM my_products ORDER BY created_at DESC")
+            return [dict(r) for r in cur.fetchall()]
+
+
+def save_my_product(asin, title=None, sku=None, supplier_cost=0.0, shipping_fee=0.0, target_margin=30.0, supplier_details="", current_stock=100, lead_time_days=14):
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO my_products
+                   (asin, title, sku, supplier_cost, shipping_fee, target_margin, supplier_details, current_stock, lead_time_days, created_at)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ON CONFLICT (asin) DO UPDATE SET
+                       title = EXCLUDED.title,
+                       sku = EXCLUDED.sku,
+                       supplier_cost = EXCLUDED.supplier_cost,
+                       shipping_fee = EXCLUDED.shipping_fee,
+                       target_margin = EXCLUDED.target_margin,
+                       supplier_details = EXCLUDED.supplier_details,
+                       current_stock = EXCLUDED.current_stock,
+                       lead_time_days = EXCLUDED.lead_time_days""",
+                (asin, title, sku, supplier_cost, shipping_fee, target_margin, supplier_details, current_stock, lead_time_days, datetime.now(timezone.utc).isoformat()),
+            )
+
+
+def delete_my_product(asin):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM my_products WHERE asin = %s", (asin,))
 
 
 if __name__ == "__main__":

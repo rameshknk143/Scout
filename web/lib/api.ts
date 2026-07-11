@@ -43,6 +43,9 @@ export type SnapshotRow = {
   rating: number | null;
   review_count: number | null;
   image_url: string | null;
+  category: string | null;
+  list_type: string | null;
+  collected_at: string | null;
 };
 
 export type MoverRow = {
@@ -88,6 +91,19 @@ export type ScoreResult = {
     [k: string]: unknown;
   };
   caveats: string[];
+};
+
+export type MyProduct = {
+  asin: string;
+  title: string | null;
+  sku: string | null;
+  supplier_cost: number;
+  shipping_fee: number;
+  target_margin: number;
+  supplier_details: string;
+  current_stock: number;
+  lead_time_days: number;
+  created_at: string;
 };
 
 export type Alert = {
@@ -277,4 +293,73 @@ export const api = {
       method: "POST",
       body: JSON.stringify(body),
     }),
+  productDatabase: (params: {
+    q?: string;
+    category?: string;
+    min_price?: number;
+    max_price?: number;
+    min_rank?: number;
+    max_rank?: number;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const qps = new URLSearchParams();
+    if (params.q) qps.set("q", params.q);
+    if (params.category) qps.set("category", params.category);
+    if (params.min_price !== undefined) qps.set("min_price", params.min_price.toString());
+    if (params.max_price !== undefined) qps.set("max_price", params.max_price.toString());
+    if (params.min_rank !== undefined) qps.set("min_rank", params.min_rank.toString());
+    if (params.max_rank !== undefined) qps.set("max_rank", params.max_rank.toString());
+    if (params.limit !== undefined) qps.set("limit", params.limit.toString());
+    if (params.offset !== undefined) qps.set("offset", params.offset.toString());
+    return request<{ products: SnapshotRow[]; total: number }>(`/product-database?${qps.toString()}`);
+  },
+  myProducts: () => request<{ products: MyProduct[] }>("/my-products"),
+  saveMyProduct: (body: {
+    asin: string;
+    title?: string | null;
+    sku?: string | null;
+    supplier_cost: number;
+    shipping_fee: number;
+    target_margin: number;
+    supplier_details: string;
+    current_stock?: number;
+    lead_time_days?: number;
+  }) =>
+    request<{ ok: boolean }>("/my-products", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  deleteMyProduct: (asin: string) =>
+    request<{ ok: boolean }>(`/my-products/${asin}`, {
+      method: "DELETE",
+    }),
+  compareCompetitors: (body: { asins: string[] }) =>
+    request<{
+      comparisons: {
+        asin: string;
+        title: string | null;
+        price: number | null;
+        rank: number | null;
+        rating: number | null;
+        review_count: number | null;
+        score: number;
+        verdict: "PURSUE" | "WATCH" | "SKIP";
+        found: boolean;
+      }[];
+    }>("/competitor-analysis", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  listingHealth: () =>
+    request<{
+      products: {
+        asin: string;
+        title: string;
+        score: number;
+        verdict: string;
+        gaps: string[];
+        price: number | null;
+      }[];
+    }>("/listing-health"),
 };
