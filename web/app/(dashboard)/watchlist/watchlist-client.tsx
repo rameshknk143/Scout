@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Table, Select, EmptyState, ProductDetailDrawer } from "@/components/ui";
 import type { Validation } from "@/lib/api";
+import { updateWatchlistNotes } from "@/lib/actions";
 
 export default function WatchlistClient({
   validations = [],
@@ -57,6 +58,15 @@ export default function WatchlistClient({
       reviews: 84,
     });
     setIsDrawerOpen(true);
+  };
+
+  const handleUpdateNotes = async (asin: string, newNotes: string) => {
+    try {
+      await updateWatchlistNotes(asin, newNotes);
+      setSelectedProduct((prev: any) => prev ? { ...prev, notes: newNotes } : null);
+    } catch (err) {
+      // handle error
+    }
   };
 
   if (!validations.length) {
@@ -206,6 +216,7 @@ export default function WatchlistClient({
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         product={selectedProduct}
+        onUpdateNotes={handleUpdateNotes}
       />
     </div>
   );

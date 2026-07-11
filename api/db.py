@@ -147,6 +147,15 @@ def get_all_validations_df():
         )
 
 
+def update_validation_notes(asin, notes):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE validations SET notes = %s WHERE asin = %s",
+                (notes, asin),
+            )
+
+
 if __name__ == "__main__":
     init_db()
     print("Initialized Supabase Postgres schema.")

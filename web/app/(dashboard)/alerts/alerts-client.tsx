@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Table, Select, EmptyState, ProductDetailDrawer } from "@/components/ui";
 import type { Alert } from "@/lib/api";
+import { updateWatchlistNotes } from "@/lib/actions";
 
 const ALERT_TYPE_LABELS: Record<Alert["alert_type"], string> = {
   price_change: "Price change",
@@ -38,6 +39,15 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
       return matchesSearch && matchesSeverity && matchesType;
     });
   }, [alerts, searchQuery, severityFilter, typeFilter]);
+
+  const handleUpdateNotes = async (asin: string, newNotes: string) => {
+    try {
+      await updateWatchlistNotes(asin, newNotes);
+      setSelectedProduct((prev: any) => prev ? { ...prev, notes: newNotes } : null);
+    } catch (err) {
+      // handle error
+    }
+  };
 
   const handleRowClick = (row: Alert) => {
     // Extract numerical price if present in message or detail
@@ -190,6 +200,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         product={selectedProduct}
+        onUpdateNotes={handleUpdateNotes}
       />
     </div>
   );

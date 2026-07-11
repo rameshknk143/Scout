@@ -146,3 +146,9 @@ async function fetchSuggestions(term: string): Promise<string[]> {
   }
   return [];
 }
+
+export async function updateWatchlistNotes(asin: string, notes: string) {
+  const result = await api.updateWatchlistNotes({ asin, notes });
+  updateTag("watchlist");
+  return result;
+}

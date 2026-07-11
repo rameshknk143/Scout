@@ -15,7 +15,7 @@ import {
 } from "@/components/ui";
 import type { Digest, SnapshotRow, Validation, Alert } from "@/lib/api";
 import { CATEGORIES, LIST_TYPES } from "@/lib/constants";
-import { getCategoryTable } from "@/lib/actions";
+import { getCategoryTable, updateWatchlistNotes } from "@/lib/actions";
 
 type TabKey = "watchlist" | "radar" | "bestsellers";
 type MoverRow = Digest["top_movers"][number];
@@ -45,6 +45,15 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
   // Selected product details drawer state
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleUpdateNotes = async (asin: string, newNotes: string) => {
+    try {
+      await updateWatchlistNotes(asin, newNotes);
+      setSelectedProduct((prev: any) => prev ? { ...prev, notes: newNotes } : null);
+    } catch (err) {
+      // handle error
+    }
+  };
 
   const coldStart = digest.collection_dates.length < 2;
 
@@ -658,6 +667,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         product={selectedProduct}
+        onUpdateNotes={handleUpdateNotes}
       />
     </div>
   );

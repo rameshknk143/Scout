@@ -217,6 +217,11 @@ export const api = {
       {},
       { revalidate: 60, tags: ["watchlist"] }
     ),
+  updateWatchlistNotes: (body: { asin: string; notes: string }) =>
+    request<{ ok: boolean }>("/watchlist/notes", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
   // Alerts are derived from watched (validated) ASINs, so they ride the
   // same "watchlist" tag -- a new Validator run can change which ASINs
   // get checked, and should be reflected immediately, same as the list itself.

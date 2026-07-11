@@ -134,6 +134,17 @@ def get_watchlist():
     return {"validations": df_to_records(df)}
 
 
+class WatchlistNotesRequest(BaseModel):
+    asin: str
+    notes: str
+
+
+@app.post("/watchlist/notes", dependencies=[Depends(require_key)])
+def update_watchlist_notes(req: WatchlistNotesRequest):
+    db.update_validation_notes(req.asin, req.notes)
+    return {"ok": True}
+
+
 @app.get("/alerts", dependencies=[Depends(require_key)])
 def get_alerts():
     return {"alerts": alerts.compute_alerts()}
