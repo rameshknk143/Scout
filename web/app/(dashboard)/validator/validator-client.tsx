@@ -59,18 +59,18 @@ export default function ValidatorClient() {
     <div className="space-y-8">
       <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-5">
         <div>
-          <label className="block text-sm text-muted mb-1.5">Amazon ASIN</label>
+          <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Amazon ASIN</label>
           <input
             value={asin}
             onChange={(e) => setAsin(e.target.value)}
             placeholder="B0D4DZ7WL2"
             required
-            className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 outline-none focus:border-amber/50 font-mono text-sm"
+            className="input font-mono text-sm"
           />
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <Field label="Buy / cost price (₹)">
+          <Field label="Buy / Sourcing Cost (₹)">
             <input
               type="number"
               min={0}
@@ -90,35 +90,35 @@ export default function ValidatorClient() {
               className="input"
             />
           </Field>
-          <Field label="GST rate">
-            <select value={gst} onChange={(e) => setGst(e.target.value)} className="input">
+          <Field label="GST Rate">
+            <select value={gst} onChange={(e) => setGst(e.target.value)} className="input cursor-pointer">
               {[5, 12, 18, 28].map((g) => (
-                <option key={g} value={g} className="bg-bg-elevated">
+                <option key={g} value={g}>
                   {g}%
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="Fulfillment">
+          <Field label="Fulfillment Type">
             <select
               value={fulfillment}
               onChange={(e) => setFulfillment(e.target.value)}
-              className="input"
+              className="input cursor-pointer"
             >
-              <option value="easy_ship" className="bg-bg-elevated">Easy Ship</option>
-              <option value="fba" className="bg-bg-elevated">FBA</option>
-              <option value="self_ship" className="bg-bg-elevated">Self Ship</option>
+              <option value="easy_ship">Easy Ship</option>
+              <option value="fba">FBA</option>
+              <option value="self_ship">Self Ship</option>
             </select>
           </Field>
           <Field label="Category (optional)">
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="input"
+              className="input cursor-pointer"
             >
-              <option value="" className="bg-bg-elevated">(auto-detect)</option>
+              <option value="">(auto-detect)</option>
               {CATEGORIES.map((c) => (
-                <option key={c} value={c} className="bg-bg-elevated">
+                <option key={c} value={c}>
                   {c}
                 </option>
               ))}
@@ -144,6 +144,7 @@ export default function ValidatorClient() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="input"
+            placeholder="Add target supplier info or sourcing ideas..."
           />
         </Field>
 
@@ -223,8 +224,8 @@ function Slider({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-sm text-muted">{label}</span>
-        <span className="text-amber font-semibold">{value}/5</span>
+        <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{label}</span>
+        <span className="text-zinc-950 font-extrabold">{value}/5</span>
       </div>
       <input
         type="range"
@@ -232,9 +233,9 @@ function Slider({
         max={5}
         value={value}
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        className="w-full accent-text"
+        className="w-full accent-zinc-950 cursor-pointer"
       />
-      <p className="text-xs text-muted/80 mt-1">{hint}</p>
+      <p className="text-[10px] text-zinc-400 font-medium mt-1 leading-relaxed">{hint}</p>
     </div>
   );
 }
