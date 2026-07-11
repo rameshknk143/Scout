@@ -49,8 +49,8 @@ export default function ProfitCalculatorClient() {
   }
 
   return (
-    <div className="space-y-8">
-      <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-5">
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="glass-panel p-6 bg-white space-y-5">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <Field label="Sell price (₹)">
             <input
@@ -58,7 +58,7 @@ export default function ProfitCalculatorClient() {
               min={0}
               value={sellPrice}
               onChange={(e) => setSellPrice(e.target.value)}
-              className="input"
+              className="input text-zinc-900"
               required
             />
           </Field>
@@ -68,7 +68,7 @@ export default function ProfitCalculatorClient() {
               min={0}
               value={buyPrice}
               onChange={(e) => setBuyPrice(e.target.value)}
-              className="input"
+              className="input text-zinc-900"
               required
             />
           </Field>
@@ -78,37 +78,37 @@ export default function ProfitCalculatorClient() {
               min={1}
               value={weightGrams}
               onChange={(e) => setWeightGrams(e.target.value)}
-              className="input"
+              className="input text-zinc-900"
             />
           </Field>
           <Field label="Category (fee table)">
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="input"
+              className="input cursor-pointer"
             >
               {FEE_CATEGORIES.map((c) => (
-                <option key={c} value={c} className="bg-bg-elevated">
+                <option key={c} value={c}>
                   {FEE_LABELS[c]}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="Fulfillment">
+          <Field label="Fulfillment Type">
             <select
               value={fulfillment}
               onChange={(e) => setFulfillment(e.target.value)}
-              className="input"
+              className="input cursor-pointer"
             >
-              <option value="easy_ship" className="bg-bg-elevated">Easy Ship</option>
-              <option value="fba" className="bg-bg-elevated">FBA</option>
-              <option value="self_ship" className="bg-bg-elevated">Self Ship</option>
+              <option value="easy_ship">Easy Ship</option>
+              <option value="fba">FBA</option>
+              <option value="self_ship">Self Ship</option>
             </select>
           </Field>
           <Field label="GST rate">
-            <select value={gst} onChange={(e) => setGst(e.target.value)} className="input">
+            <select value={gst} onChange={(e) => setGst(e.target.value)} className="input cursor-pointer">
               {[5, 12, 18, 28].map((g) => (
-                <option key={g} value={g} className="bg-bg-elevated">
+                <option key={g} value={g}>
                   {g}%
                 </option>
               ))}
@@ -116,10 +116,10 @@ export default function ProfitCalculatorClient() {
           </Field>
           {fulfillment === "easy_ship" && (
             <Field label="Zone">
-              <select value={zone} onChange={(e) => setZone(e.target.value)} className="input">
-                <option value="local" className="bg-bg-elevated">Local</option>
-                <option value="regional" className="bg-bg-elevated">Regional</option>
-                <option value="national" className="bg-bg-elevated">National</option>
+              <select value={zone} onChange={(e) => setZone(e.target.value)} className="input cursor-pointer">
+                <option value="local">Local</option>
+                <option value="regional">Regional</option>
+                <option value="national">National</option>
               </select>
             </Field>
           )}
@@ -130,51 +130,66 @@ export default function ProfitCalculatorClient() {
           disabled={isPending}
           className="btn-primary w-auto disabled:opacity-50"
         >
-          {isPending ? "Calculating…" : "Calculate"}
+          {isPending ? "Calculating fees…" : "Calculate net margin"}
         </button>
       </form>
 
       {result && (
-        <Card>
-          <div className="flex items-center justify-between mb-5">
-            <div className="text-sm text-muted">Net margin</div>
-            <VerdictBadge verdict={result.verdict} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 animate-in fade-in duration-200">
+          {/* Margin Scorecard */}
+          <div className="lg:col-span-4 bg-zinc-50 border border-zinc-200/60 rounded-xl p-6 flex flex-col justify-between shadow-sm">
+            <div>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Audit Verdict</span>
+              <VerdictBadge verdict={result.verdict} />
+            </div>
+            <div className="mt-8">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Net Margin %</span>
+              <span className="text-4xl font-extrabold text-zinc-950 tracking-tight">
+                {result.net_margin_pct.toFixed(1)}%
+              </span>
+              <span className="text-xs font-bold text-zinc-500 block mt-1.5">
+                Profit: ₹{result.net_margin_rupees.toFixed(2)} per unit
+              </span>
+            </div>
+            <div className="mt-8 pt-4 border-t border-zinc-200/60 space-y-2">
+              <div className="flex justify-between text-xs font-semibold">
+                <span className="text-zinc-500">Breakeven Price:</span>
+                <span className="text-zinc-900 font-mono">₹{result.breakeven_price?.toFixed(0)}</span>
+              </div>
+              <div className="flex justify-between text-xs font-semibold">
+                <span className="text-zinc-500">Breakeven ACoS:</span>
+                <span className="text-zinc-900 font-mono">{result.breakeven_acos_pct.toFixed(1)}%</span>
+              </div>
+            </div>
           </div>
-          <div className="text-4xl font-extrabold text-text tracking-tight mb-6">
-            {result.net_margin_pct.toFixed(1)}%
-            <span className="text-lg text-muted font-normal ml-2">
-              (₹{result.net_margin_rupees.toFixed(0)}/unit)
-            </span>
+
+          {/* Fee Breakdown Table */}
+          <div className="lg:col-span-8 bg-white border border-zinc-200/80 rounded-xl p-6 shadow-sm">
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-4">Estimated Amazon Fees (Excl. GST)</span>
+            <div className="space-y-3.5">
+              <div className="flex justify-between items-center text-xs pb-2.5 border-b border-zinc-100 font-semibold">
+                <span className="text-zinc-500 font-medium">Referral Fee ({FEE_LABELS[category]})</span>
+                <span className="text-zinc-900 font-mono">₹{result.referral_fee.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs pb-2.5 border-b border-zinc-100 font-semibold">
+                <span className="text-zinc-500 font-medium">Closing Fee (Price bracket)</span>
+                <span className="text-zinc-900 font-mono">₹{result.closing_fee.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs pb-2.5 border-b border-zinc-100 font-semibold">
+                <span className="text-zinc-500 font-medium">Fulfillment & Weight Fee ({weightGrams}g, {fulfillment})</span>
+                <span className="text-zinc-900 font-mono">₹{result.weight_or_pickpack_fee.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs pb-2.5 border-b border-zinc-100 font-semibold">
+                <span className="text-zinc-500 font-medium">Returns Provision (Estimated risk)</span>
+                <span className="text-zinc-900 font-mono">₹{result.returns_provision.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs pt-1">
+                <span className="text-zinc-950 font-extrabold uppercase text-[10px] tracking-wider">Total Est. Amazon Fees</span>
+                <span className="text-zinc-950 font-extrabold text-sm font-mono">₹{result.amazon_fees_subtotal.toFixed(2)}</span>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <MiniStat label="Referral fee" value={`₹${result.referral_fee}`} />
-            <MiniStat label="Closing fee" value={`₹${result.closing_fee}`} />
-            <MiniStat
-              label="Weight / pick-pack fee"
-              value={`₹${result.weight_or_pickpack_fee}`}
-            />
-            <MiniStat
-              label="Amazon fees (total)"
-              value={`₹${result.amazon_fees_subtotal}`}
-            />
-            <MiniStat
-              label="Returns provision"
-              value={`₹${result.returns_provision}`}
-            />
-            <MiniStat
-              label="Breakeven price"
-              value={
-                result.breakeven_price != null
-                  ? `₹${result.breakeven_price.toFixed(0)}`
-                  : "—"
-              }
-            />
-            <MiniStat
-              label="Breakeven ACoS"
-              value={`${result.breakeven_acos_pct.toFixed(1)}%`}
-            />
-          </div>
-        </Card>
+        </div>
       )}
     </div>
   );
