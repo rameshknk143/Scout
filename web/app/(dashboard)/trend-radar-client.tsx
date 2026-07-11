@@ -393,7 +393,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                   },
                 ]}
                 rows={filteredWatchlist}
-                rowKey={(row) => row.asin}
+                rowKey={(row) => row.id}
                 emptyText="No validated ASINs in your catalog watchlist yet. Run the validator to add one!"
               />
             </div>
@@ -434,7 +434,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
               <div className="space-y-3">
                 {watchlist.slice(0, 4).map((item) => (
                   <div
-                    key={item.asin}
+                    key={item.id}
                     onClick={() => handleRowClick(item)}
                     className="p-3 border border-zinc-200/80 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-zinc-50/20 hover:bg-zinc-50/50 flex items-center justify-between"
                   >

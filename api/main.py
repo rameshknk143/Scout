@@ -375,6 +375,9 @@ def get_listing_health():
 
 @app.get("/products/{asin}/drawer-details", dependencies=[Depends(require_key)])
 def get_drawer_details(asin: str):
+    import profit_calculator
+    from scorer import CATEGORY_TO_FEE_KEY
+
     asin = asin.strip().upper()
     snap = db.get_latest_snapshot(asin)
     history = db.get_history(asin)
@@ -398,12 +401,23 @@ def get_drawer_details(asin: str):
     buy_price = (my_prod["supplier_cost"] if my_prod else None) or (val["buy_price"] if val else None) or 150.0
     sell_price = (snap["price"] if snap else None) or (buy_price * 1.5)
     
-    referral_fee = sell_price * 0.15
-    closing_fee = 40.0
-    shipping_fee = my_prod["shipping_fee"] if my_prod else 60.0
-    total_fees = referral_fee + closing_fee + shipping_fee
-    profit = sell_price - buy_price - total_fees
-    net_margin = (profit / sell_price * 100) if sell_price > 0 else 0.0
+    # Calculate real FBA / Easy Ship margin using profit_calculator
+    fee_category = CATEGORY_TO_FEE_KEY.get(category, "other_default")
+    calc = profit_calculator.calculate(
+        sell_price=sell_price,
+        buy_price=buy_price,
+        category=fee_category,
+        weight_grams=300,
+        fulfillment="fba" if my_prod else "easy_ship",
+        gst_rate_pct=18,
+        zone="national"
+    )
+
+    referral_fee = calc["referral_fee"]
+    closing_fee = calc["closing_fee"]
+    shipping_fee = calc["weight_fee"]
+    total_fees = calc["amazon_fees_subtotal"] + calc["gst_on_amazon_fees"]
+    net_margin = calc["net_margin_pct"]
 
     chart_points = []
     if history:
@@ -413,21 +427,17 @@ def get_drawer_details(asin: str):
                 "BSR": s["rank"] if s["rank"] is not None else 5000,
                 "Price": s["price"] if s["price"] is not None else sell_price
             })
-    else:
-        for i, d in enumerate(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]):
-            chart_points.append({
-                "day": d,
-                "BSR": 4500 - (i * 100),
-                "Price": sell_price
-            })
 
     title_len = len(title)
+    rank = snap["rank"] if snap else None
+    rating = snap["rating"] if snap else None
+    reviews = snap["review_count"] if snap else None
+
     audit_checklist = [
         {"check": f"Title length is optimized ({title_len}/150+ chars)", "pass": title_len >= 150},
-        {"check": "At least 5 bullet points are present", "pass": True if len(title) > 100 else False},
-        {"check": "Contains high-volume search keywords", "pass": len(title) > 80},
-        {"check": "Image count is 6 or more", "pass": True},
-        {"check": "A+ Enhanced Brand Content is active", "pass": False}
+        {"check": f"Review depth checked ({reviews or 0} reviews)", "pass": (reviews or 0) >= 10},
+        {"check": f"Review rating checked ({rating or 0.0} stars)", "pass": (rating or 0.0) >= 4.0},
+        {"check": f"Niche rank validated (BSR #{rank or 'N/A'})", "pass": rank is not None and rank <= 5000}
     ]
 
     return {
@@ -438,10 +448,10 @@ def get_drawer_details(asin: str):
         "buy_price": buy_price,
         "sell_price": sell_price,
         "shipping_cost": shipping_fee,
-        "fees": referral_fee + closing_fee,
+        "fees": referral_fee + closing_fee + calc["gst_on_amazon_fees"],
         "net_margin": net_margin,
-        "rating": snap["rating"] if snap and snap.get("rating") else 4.2,
-        "reviews": snap["review_count"] if snap and snap.get("review_count") else 95,
+        "rating": rating if rating else 4.2,
+        "reviews": reviews if reviews else 95,
         "score": val["score"] if val else 50.0,
         "verdict": val["verdict"] if val else "WATCH",
         "notes": val["notes"] if val else "",

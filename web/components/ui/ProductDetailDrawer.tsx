@@ -167,26 +167,10 @@ export default function ProductDetailDrawer({
                         <div className="grid grid-cols-2 gap-4">
                           <div className="glass-panel p-3.5 bg-zinc-50/50">
                             <span className="block text-[10px] text-zinc-400 font-semibold uppercase">
-                              Buy Box Status
-                            </span>
-                            <span className="text-xs font-bold text-zinc-800 mt-1 block">
-                              Active (100% Share)
-                            </span>
-                          </div>
-                          <div className="glass-panel p-3.5 bg-zinc-50/50">
-                            <span className="block text-[10px] text-zinc-400 font-semibold uppercase">
                               Estimated Monthly Sales
                             </span>
                             <span className="text-xs font-bold text-zinc-800 mt-1 block">
                               {product.reviews ? Math.ceil(product.reviews * 1.5) : "185"} Units
-                            </span>
-                          </div>
-                          <div className="glass-panel p-3.5 bg-zinc-50/50">
-                            <span className="block text-[10px] text-zinc-400 font-semibold uppercase">
-                              Fulfillment
-                            </span>
-                            <span className="text-xs font-bold text-zinc-800 mt-1 block">
-                              FBA (Fulfillment by Amazon)
                             </span>
                           </div>
                           <div className="glass-panel p-3.5 bg-zinc-50/50">
@@ -239,41 +223,52 @@ export default function ProductDetailDrawer({
 
                   {activeTab === "trends" && (
                     <div className="space-y-6">
-                      {/* BSR Trend Chart */}
-                      <div>
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
-                          Best Sellers Rank (BSR) History
-                        </h3>
-                        <div className="h-44 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={product.trend_data}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-                              <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
-                              <YAxis stroke="#71717a" fontSize={11} reversed />
-                              <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 6 }} />
-                              <Line type="monotone" dataKey="BSR" stroke="#b45309" strokeWidth={2} dot={{ r: 3 }} />
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
+                      {product.trend_data && product.trend_data.length > 0 ? (
+                        <>
+                          {/* BSR Trend Chart */}
+                          <div>
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                              Best Sellers Rank (BSR) History (7 Days)
+                            </h3>
+                            <div className="h-44 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={product.trend_data}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
+                                  <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
+                                  <YAxis stroke="#71717a" fontSize={11} reversed />
+                                  <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 6 }} />
+                                  <Line type="monotone" dataKey="BSR" stroke="#b45309" strokeWidth={2} dot={{ r: 3 }} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
 
-                      {/* Price History Chart */}
-                      <div>
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
-                          Buy Box Price History
-                        </h3>
-                        <div className="h-44 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={product.trend_data}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-                              <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
-                              <YAxis stroke="#71717a" fontSize={11} />
-                              <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 6 }} />
-                              <Line type="monotone" dataKey="Price" stroke="#18181b" strokeWidth={2} dot={{ r: 3 }} />
-                            </LineChart>
-                          </ResponsiveContainer>
+                          {/* Price History Chart */}
+                          <div>
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                              Buy Box Price History (7 Days)
+                            </h3>
+                            <div className="h-44 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={product.trend_data}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
+                                  <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
+                                  <YAxis stroke="#71717a" fontSize={11} />
+                                  <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 6 }} />
+                                  <Line type="monotone" dataKey="Price" stroke="#18181b" strokeWidth={2} dot={{ r: 3 }} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-12 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
+                          <span className="text-xl">📈</span>
+                          <span className="text-[11px] text-zinc-400 font-bold mt-2 text-center max-w-xs leading-normal">
+                            No historical snapshots logged for this ASIN yet. Category tracking data will accumulate over the next nightly runs.
+                          </span>
                         </div>
-                      </div>
+                      )}
                     </div>
                   )}
 
