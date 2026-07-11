@@ -27,7 +27,7 @@
   --color-amber: var(--amber);
   --color-green: var(--green);
   --color-red: var(--red);
-  --font-sans: var(--font-inter);
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 * {

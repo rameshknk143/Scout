@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ValidatorClient from "./validator-client";
 
 export default function ValidatorPage() {
@@ -7,7 +8,9 @@ export default function ValidatorPage() {
       <p className="text-zinc-500 text-xs font-medium mt-1 mb-6">
         Audit ASIN suitability, margin structure, and operational fit for new product private labeling.
       </p>
-      <ValidatorClient />
+      <Suspense fallback={<div className="text-xs text-zinc-400 font-semibold animate-pulse">Loading validator...</div>}>
+        <ValidatorClient />
+      </Suspense>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import VerdictBadge from "@/components/VerdictBadge";
 import CaveatBox from "@/components/CaveatBox";
 import { Card, Field, MiniStat } from "@/components/ui";
@@ -19,6 +20,14 @@ const WEIGHT_LABELS: Record<string, string> = {
 
 export default function ValidatorClient() {
   const [asin, setAsin] = useState("");
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const urlAsin = searchParams.get("asin");
+    if (urlAsin) {
+      setAsin(urlAsin);
+    }
+  }, [searchParams]);
   const [buyPrice, setBuyPrice] = useState("100");
   const [weightGrams, setWeightGrams] = useState("300");
   const [fulfillment, setFulfillment] = useState("easy_ship");
