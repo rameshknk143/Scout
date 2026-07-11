@@ -86,9 +86,8 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "#",
+          href: "/keywords",
           label: "Keyword Research",
-          disabled: true,
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m-3.414-1.414A2 2 0 1119 4a2 2 0 01-4.243 2.828M15 7l-3 3M9 13l-4 4v3h3l4-4M9 13L15 7" />

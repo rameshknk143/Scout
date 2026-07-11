@@ -9,7 +9,7 @@ import LoadingPanel from "./LoadingPanel";
 export type Column<T> = {
   key: string;
   header: string;
-  render: (row: T) => ReactNode;
+  render: (row: T, index?: number) => ReactNode;
   headerClassName?: string;
   cellClassName?: string;
 };
@@ -48,11 +48,11 @@ export default function Table<T>({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <tr key={rowKey(row)} className="border-b border-white/5 last:border-0 hover:bg-white/[0.015] transition-colors">
               {columns.map((col) => (
                 <td key={col.key} className={`px-4 py-3 ${col.cellClassName ?? ""}`}>
-                  {col.render(row)}
+                  {col.render(row, index)}
                 </td>
               ))}
             </tr>

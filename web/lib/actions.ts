@@ -64,3 +64,85 @@ export async function calcProfit(input: {
 }) {
   return api.profitCalculator(input);
 }
+
+export async function gatherKeywords(seed: string) {
+  if (!seed || seed.trim().length === 0) return [];
+  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+  const results: Record<string, { term: string; score: number; occurrences: number }> = {};
+
+  // 1. Gather suggestions for the base query
+  const baseSuggestions = await fetchSuggestions(seed.trim());
+  processSuggestions(baseSuggestions, 15); // base suggestions have higher initial weight
+
+  // 2. Fetch suggestions for query + alphabet letter to get deep suggestions
+  // Run in chunks of 5 parallel requests to be polite to Amazon completions servers
+  const chunkSize = 5;
+  for (let i = 0; i < alphabet.length; i += chunkSize) {
+    const chunk = alphabet.slice(i, i + chunkSize);
+    await Promise.all(
+      chunk.map(async (letter) => {
+        const queryWithLetter = `${seed.trim()} ${letter}`;
+        try {
+          const suggestions = await fetchSuggestions(queryWithLetter);
+          processSuggestions(suggestions, 10);
+        } catch {
+          // ignore transient fetch failures
+        }
+      })
+    );
+  }
+
+  function processSuggestions(list: string[], multiplier: number) {
+    list.forEach((term, index) => {
+      const normalized = term.trim().toLowerCase();
+      if (!normalized) return;
+      // Points based on position: index 0 (top suggestion) gets 10 points, index 9 gets 1 point
+      const positionPoints = Math.max(0, 10 - index);
+      const points = positionPoints * multiplier;
+
+      if (results[normalized]) {
+        results[normalized].score += points;
+        results[normalized].occurrences += 1;
+      } else {
+        results[normalized] = {
+          term: term.trim(),
+          score: points,
+          occurrences: 1,
+        };
+      }
+    });
+  }
+
+  // 3. Compile and sort results
+  const compiled = Object.values(results);
+  if (compiled.length === 0) return [];
+
+  // Normalize scores to a 1-100 scale
+  const maxScore = Math.max(...compiled.map((c) => c.score));
+  return compiled
+    .map((c) => ({
+      keyword: c.term,
+      relevancy: maxScore > 0 ? Math.round((c.score / maxScore) * 100) : 10,
+      intent: (c.term.split(" ").length > 3 ? "HIGH" : c.term.split(" ").length > 1 ? "MEDIUM" : "LOW") as "HIGH" | "MEDIUM" | "LOW",
+      occurrences: c.occurrences,
+    }))
+    .sort((a, b) => b.relevancy - a.relevancy)
+    .slice(0, 100); // return top 100 results
+}
+
+async function fetchSuggestions(term: string): Promise<string[]> {
+  const url = `https://completion.amazon.com/search-services/query-action?limit=10&client-type=amazon-search-ui&mkt=3&search-alias=aps&q=${encodeURIComponent(
+    term
+  )}`;
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (Array.isArray(data) && Array.isArray(data[1])) {
+      return data[1] as string[];
+    }
+  } catch {
+    // return empty on error
+  }
+  return [];
+}
