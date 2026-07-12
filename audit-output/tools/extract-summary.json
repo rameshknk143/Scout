@@ -1,0 +1,17 @@
+{
+  "finished_at": "2026-07-11T19:38:23.575Z",
+  "elapsed_s": 242,
+  "requests": 43,
+  "request_failures": 0,
+  "product_database_total_reported": 3680,
+  "product_database_rows_extracted": 3680,
+  "duplicates_skipped": 0,
+  "malformed_skipped": 0,
+  "pages_fetched": 37,
+  "small_dataset_records": 466,
+  "watchlist_rows": 8,
+  "alerts_rows": 3,
+  "my_products_rows": 1,
+  "listing_health_rows": 2,
+  "categories": 31
+}

@@ -1,0 +1,303 @@
+[
+  {
+    "ts": "2026-07-11T19:34:21.497Z",
+    "path": "/trend-radar/categories",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:34:23.957Z",
+    "path": "/trend-radar/digest",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:34:31.042Z",
+    "path": "/watchlist",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:34:34.620Z",
+    "path": "/alerts",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:34:46.582Z",
+    "path": "/my-products",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:34:49.732Z",
+    "path": "/listing-health",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:34:57.201Z",
+    "path": "/product-database?limit=100&offset=0",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:02.760Z",
+    "path": "/product-database?limit=100&offset=100",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:08.259Z",
+    "path": "/product-database?limit=100&offset=200",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:13.682Z",
+    "path": "/product-database?limit=100&offset=300",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:19.281Z",
+    "path": "/product-database?limit=100&offset=400",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:24.872Z",
+    "path": "/product-database?limit=100&offset=500",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:30.510Z",
+    "path": "/product-database?limit=100&offset=600",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:35.975Z",
+    "path": "/product-database?limit=100&offset=700",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:41.475Z",
+    "path": "/product-database?limit=100&offset=800",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:46.936Z",
+    "path": "/product-database?limit=100&offset=900",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:52.421Z",
+    "path": "/product-database?limit=100&offset=1000",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:35:58.051Z",
+    "path": "/product-database?limit=100&offset=1100",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:03.683Z",
+    "path": "/product-database?limit=100&offset=1200",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:09.215Z",
+    "path": "/product-database?limit=100&offset=1300",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:14.759Z",
+    "path": "/product-database?limit=100&offset=1400",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:20.321Z",
+    "path": "/product-database?limit=100&offset=1500",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:25.803Z",
+    "path": "/product-database?limit=100&offset=1600",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:31.296Z",
+    "path": "/product-database?limit=100&offset=1700",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:36.864Z",
+    "path": "/product-database?limit=100&offset=1800",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:42.500Z",
+    "path": "/product-database?limit=100&offset=1900",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:47.992Z",
+    "path": "/product-database?limit=100&offset=2000",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:53.628Z",
+    "path": "/product-database?limit=100&offset=2100",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:36:59.296Z",
+    "path": "/product-database?limit=100&offset=2200",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:04.969Z",
+    "path": "/product-database?limit=100&offset=2300",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:10.447Z",
+    "path": "/product-database?limit=100&offset=2400",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:16.183Z",
+    "path": "/product-database?limit=100&offset=2500",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:21.887Z",
+    "path": "/product-database?limit=100&offset=2600",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:27.409Z",
+    "path": "/product-database?limit=100&offset=2700",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:33.155Z",
+    "path": "/product-database?limit=100&offset=2800",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:38.847Z",
+    "path": "/product-database?limit=100&offset=2900",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:44.558Z",
+    "path": "/product-database?limit=100&offset=3000",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:50.127Z",
+    "path": "/product-database?limit=100&offset=3100",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:37:55.846Z",
+    "path": "/product-database?limit=100&offset=3200",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:38:01.302Z",
+    "path": "/product-database?limit=100&offset=3300",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:38:07.009Z",
+    "path": "/product-database?limit=100&offset=3400",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:38:12.702Z",
+    "path": "/product-database?limit=100&offset=3500",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  },
+  {
+    "ts": "2026-07-11T19:38:18.463Z",
+    "path": "/product-database?limit=100&offset=3600",
+    "status": 200,
+    "attempt": 1,
+    "ok": true
+  }
+]

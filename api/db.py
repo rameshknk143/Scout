@@ -54,6 +54,8 @@ CREATE TABLE IF NOT EXISTS my_products (
     shipping_fee REAL,
     target_margin REAL,
     supplier_details TEXT,
+    current_stock INTEGER DEFAULT 100,
+    lead_time_days INTEGER DEFAULT 14,
     created_at TEXT NOT NULL
 );
 """

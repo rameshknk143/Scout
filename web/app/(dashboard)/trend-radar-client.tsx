@@ -100,10 +100,19 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
     ? Math.round(watchlist.reduce((sum, item) => sum + item.score, 0) / activeASINsCount)
     : 0;
 
-  const totalMonthlySales = watchlist.reduce((sum, item) => sum + Math.round(item.score * 5.2), 0);
-  const totalRevenue = watchlist.reduce((sum, item) => sum + Math.round(item.score * 5.2 * (item.buy_price * 1.5)), 0);
+  const totalMonthlySales = watchlist.reduce((sum, item) => {
+    const estSales = item.review_count ? Math.ceil(item.review_count * 1.5) : 30;
+    return sum + estSales;
+  }, 0);
+
+  const totalRevenue = watchlist.reduce((sum, item) => {
+    const estSales = item.review_count ? Math.ceil(item.review_count * 1.5) : 30;
+    const sellPrice = item.price || (item.buy_price * 1.5);
+    return sum + Math.round(estSales * sellPrice);
+  }, 0);
+
   const margins = watchlist.map((w) => {
-    const sell = w.buy_price * 1.5;
+    const sell = w.price || (w.buy_price * 1.5);
     const profit = sell - w.buy_price - (sell * 0.15 + 100);
     return sell > 0 ? (profit / sell) * 100 : 0;
   });
@@ -135,8 +144,8 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
     setIsDrawerOpen(true);
   };
 
-  const lowStockAsin = watchlist.find((w) => w.score < 60)?.asin || "B08L7V6YF2";
-  const lowQualityAsin = watchlist.find((w) => w.score < 75)?.asin || "B07W8P8M82";
+  const lowStockAsin = watchlist.find((w) => w.score < 60)?.asin || null;
+  const lowQualityAsin = watchlist.find((w) => w.score < 75)?.asin || null;
 
   return (
     <div className="space-y-6">
@@ -192,14 +201,26 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
           ⚡ Recommended Next Actions
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-            <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-              Restock ASIN <strong className="font-mono text-zinc-950">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
-            </p>
-            <Link href="/inventory" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
-              View Inventory Details →
-            </Link>
-          </div>
+          {lowStockAsin ? (
+            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
+                Restock ASIN <strong className="font-mono text-zinc-950">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
+              </p>
+              <Link href="/inventory" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+                View Inventory Details →
+              </Link>
+            </div>
+          ) : (
+            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
+                ✅ Catalog stock levels are healthy. No active restock alerts required.
+              </p>
+              <Link href="/inventory" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+                Manage Inventory →
+              </Link>
+            </div>
+          )}
+
           <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
             <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
               Competitor price fell by 12% on matching ASIN. Review your price strategy in the Profit Calculator.
@@ -208,14 +229,26 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
               Calculate Margins →
             </Link>
           </div>
-          <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-            <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-              Listing quality score is low on ASIN <strong className="font-mono text-zinc-950">{lowQualityAsin}</strong>. Add high-volume keywords to title.
-            </p>
-            <Link href={`/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
-              Optimize Listing →
-            </Link>
-          </div>
+
+          {lowQualityAsin ? (
+            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
+                Listing quality score is low on ASIN <strong className="font-mono text-zinc-950">{lowQualityAsin}</strong>. Add high-volume keywords to title.
+              </p>
+              <Link href={`/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+                Optimize Listing →
+              </Link>
+            </div>
+          ) : (
+            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
+                ✅ Watchlist opportunity scores are optimal. All items meet the quality threshold.
+              </p>
+              <Link href="/listing-health" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+                Audit Listing Health →
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 

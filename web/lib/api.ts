@@ -134,6 +134,8 @@ export type Validation = {
   buy_price: number;
   notes: string | null;
   validated_at: string;
+  price?: number | null;
+  review_count?: number | null;
 };
 
 export type ListingPeer = {

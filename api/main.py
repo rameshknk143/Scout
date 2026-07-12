@@ -131,7 +131,12 @@ def score_asin(req: ScoreRequest):
 @app.get("/watchlist", dependencies=[Depends(require_key)])
 def get_watchlist():
     df = db.get_all_validations_df()
-    return {"validations": df_to_records(df)}
+    records = df_to_records(df)
+    for r in records:
+        snap = db.get_latest_snapshot(r["asin"])
+        r["price"] = snap["price"] if snap else None
+        r["review_count"] = snap["review_count"] if snap else None
+    return {"validations": records}
 
 
 class WatchlistNotesRequest(BaseModel):
@@ -352,20 +357,28 @@ def get_listing_health():
         snap = db.get_latest_snapshot(asin)
         
         gaps = []
-        score = row["score"]
+        listing_score = 100
         
         title_len = len(snap["title"]) if snap and snap["title"] else 0
         if title_len < 150:
             gaps.append(f"Short product title ({title_len}/150+ chars)")
+            listing_score -= 25
         if not snap or not snap.get("review_count") or snap["review_count"] < 10:
             gaps.append("Low review count (under 10 reviews)")
+            listing_score -= 25
         if not snap or not snap.get("rating") or snap["rating"] < 4.0:
             gaps.append("Sub-optimal rating (under 4.0 ⭐)")
+            listing_score -= 25
+        if not snap or not snap.get("price") or snap["price"] <= 0:
+            gaps.append("Missing price snapshot")
+            listing_score -= 25
+            
+        listing_score = max(25, listing_score)
             
         results.append({
             "asin": asin,
             "title": row["title"] or (snap["title"] if snap else "Unknown Product"),
-            "score": score,
+            "score": listing_score,
             "verdict": row["verdict"],
             "gaps": gaps,
             "price": snap["price"] if snap else None
@@ -415,8 +428,8 @@ def get_drawer_details(asin: str):
 
     referral_fee = calc["referral_fee"]
     closing_fee = calc["closing_fee"]
-    shipping_fee = calc["weight_fee"]
-    total_fees = calc["amazon_fees_subtotal"] + calc["gst_on_amazon_fees"]
+    shipping_fee = calc["weight_or_pickpack_fee"]
+    total_fees = calc["amazon_fees_subtotal"] + calc["gst_on_amazon_fees_info_only"]
     net_margin = calc["net_margin_pct"]
 
     chart_points = []
@@ -448,7 +461,7 @@ def get_drawer_details(asin: str):
         "buy_price": buy_price,
         "sell_price": sell_price,
         "shipping_cost": shipping_fee,
-        "fees": referral_fee + closing_fee + calc["gst_on_amazon_fees"],
+        "fees": referral_fee + closing_fee + calc["gst_on_amazon_fees_info_only"],
         "net_margin": net_margin,
         "rating": rating if rating else 4.2,
         "reviews": reviews if reviews else 95,

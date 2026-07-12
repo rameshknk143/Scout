@@ -115,7 +115,9 @@ export async function gatherKeywords(seed: string) {
 
   // 3. Compile and sort results
   const compiled = Object.values(results);
-  if (compiled.length === 0) return [];
+  if (compiled.length === 0) {
+    throw new Error("No suggestion keywords returned from Amazon autocomplete. The upstream service may be temporarily rate-limiting requests. Please try again in a few minutes.");
+  }
 
   // Normalize scores to a 1-100 scale
   const maxScore = Math.max(...compiled.map((c) => c.score));
@@ -131,18 +133,23 @@ export async function gatherKeywords(seed: string) {
 }
 
 async function fetchSuggestions(term: string): Promise<string[]> {
-  const url = `https://completion.amazon.com/search-services/query-action?limit=10&client-type=amazon-search-ui&mkt=3&search-alias=aps&q=${encodeURIComponent(
+  const url = `https://completion.amazon.com/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=ATVPDKIKX0DER&alias=aps&prefix=${encodeURIComponent(
     term
-  )}`;
+  )}&lop=en_US`;
   try {
-    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json"
+      }
+    });
     if (!res.ok) return [];
     const data = await res.json();
-    if (Array.isArray(data) && Array.isArray(data[1])) {
-      return data[1] as string[];
+    if (data && Array.isArray(data.suggestions)) {
+      return data.suggestions.map((s: any) => s.value as string).filter(Boolean);
     }
   } catch {
-    // return empty on error
+    // return empty on transient error
   }
   return [];
 }

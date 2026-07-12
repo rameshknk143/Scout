@@ -16,6 +16,7 @@ export default function KeywordsClient() {
   const [results, setResults] = useState<KeywordResult[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [intentFilter, setIntentFilter] = useState("all");
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleHarvest = (e: React.FormEvent) => {
@@ -24,10 +25,12 @@ export default function KeywordsClient() {
 
     startTransition(async () => {
       try {
+        setError(null);
         const keywords = await gatherKeywords(seed);
         setResults(keywords);
-      } catch (err) {
-        // handle err
+      } catch (err: any) {
+        setError(err?.message || "Failed to harvest suggestions keyword list.");
+        setResults([]);
       }
     });
   };
@@ -71,6 +74,12 @@ export default function KeywordsClient() {
           </p>
         </div>
       </form>
+
+      {error && (
+        <div className="p-4 border border-red-200 rounded-xl bg-red-50 text-red-700 text-xs font-semibold animate-in fade-in duration-200">
+          ⚠️ {error}
+        </div>
+      )}
 
       {results.length > 0 && (
         <div className="space-y-4 animate-in fade-in duration-200">
