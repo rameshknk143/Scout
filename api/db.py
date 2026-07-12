@@ -58,6 +58,14 @@ CREATE TABLE IF NOT EXISTS my_products (
     lead_time_days INTEGER DEFAULT 14,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS seller_credentials (
+    id SERIAL PRIMARY KEY,
+    selling_partner_id TEXT UNIQUE NOT NULL,
+    refresh_token TEXT NOT NULL,
+    marketplace_id TEXT DEFAULT 'A21TJRUUN4KGV',
+    connected_at TEXT NOT NULL
+);
 """
 
 
@@ -261,6 +269,29 @@ def delete_my_product(asin):
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute("DELETE FROM my_products WHERE asin = %s", (asin,))
+
+
+def save_seller_credentials(selling_partner_id, refresh_token, marketplace_id='A21TJRUUN4KGV'):
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO seller_credentials
+                   (selling_partner_id, refresh_token, marketplace_id, connected_at)
+                   VALUES (%s, %s, %s, %s)
+                   ON CONFLICT (selling_partner_id) DO UPDATE SET
+                       refresh_token = EXCLUDED.refresh_token,
+                       marketplace_id = EXCLUDED.marketplace_id,
+                       connected_at = EXCLUDED.connected_at""",
+                (selling_partner_id, refresh_token, marketplace_id, datetime.now(timezone.utc).isoformat()),
+            )
+
+
+def get_seller_credentials():
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT * FROM seller_credentials ORDER BY connected_at DESC")
+            return [dict(r) for r in cur.fetchall()]
 
 
 if __name__ == "__main__":

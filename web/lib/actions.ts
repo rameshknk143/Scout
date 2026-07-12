@@ -210,3 +210,13 @@ export async function getListingHealth() {
 export async function getDrawerDetails(asin: string) {
   return api.drawerDetails(asin);
 }
+
+export async function connectAmazonAccount(body: { code: string; selling_partner_id: string; marketplace_id?: string }) {
+  const result = await api.amazonCallback(body);
+  updateTag("amazon-status");
+  return result;
+}
+
+export async function getAmazonStatus() {
+  return api.amazonStatus();
+}

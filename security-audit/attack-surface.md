@@ -11,6 +11,7 @@
 | Nightly job | GitHub Actions cron | `.github/workflows/nightly-collect.yml` [code] |
 | Optional AI | OpenRouter (free tier) | `api/ai_client.py` [code] |
 | Analytics/trackers | **None found** | no scripts in `web/app/layout.tsx`; no tracker requests observed [code+live] |
+| 3rd-party asset (login) | drei HDRI from raw.githubusercontent.com / raw.githack.com | browser network log on `/login`; `PremiumLanding.tsx:134` `<Environment preset="studio" />` [SEC-11] |
 
 ## Web routes (all gated except /login)
 - Public: `/login` (200). Everything else → **307 → `/login?from=<path>`** via `web/proxy.ts` matcher `((?!_next/static|_next/image|favicon.ico).*)`.

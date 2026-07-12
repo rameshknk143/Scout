@@ -150,6 +150,71 @@ def update_watchlist_notes(req: WatchlistNotesRequest):
     return {"ok": True}
 
 
+class AmazonCallbackRequest(BaseModel):
+    code: str
+    selling_partner_id: str
+    marketplace_id: str = "A21TJRUUN4KGV"
+
+
+@app.post("/auth/amazon/callback", dependencies=[Depends(require_key)])
+def amazon_callback(req: AmazonCallbackRequest):
+    import requests
+    lwa_url = "https://api.amazon.com/auth/o2/token"
+    client_id = os.environ.get("LWA_CLIENT_ID")
+    client_secret = os.environ.get("LWA_CLIENT_SECRET")
+    
+    if not client_id or not client_secret:
+        raise HTTPException(
+            status_code=500,
+            detail="Scout application credentials (LWA_CLIENT_ID / LWA_CLIENT_SECRET) are not configured on the Render server."
+        )
+        
+    payload = {
+        "grant_type": "authorization_code",
+        "code": req.code,
+        "client_id": client_id,
+        "client_secret": client_secret
+    }
+    
+    res = requests.post(lwa_url, data=payload)
+    if res.status_code != 200:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to exchange authorization code: {res.text}"
+        )
+        
+    tokens = res.json()
+    refresh_token = tokens.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(
+            status_code=400,
+            detail="Amazon did not return a refresh token. Make sure you approved all requested catalog and order permissions."
+        )
+        
+    db.save_seller_credentials(
+        selling_partner_id=req.selling_partner_id,
+        refresh_token=refresh_token,
+        marketplace_id=req.marketplace_id
+    )
+    return {"ok": True, "selling_partner_id": req.selling_partner_id}
+
+
+@app.get("/auth/amazon/status", dependencies=[Depends(require_key)])
+def amazon_status():
+    credentials = db.get_seller_credentials()
+    connected = len(credentials) > 0
+    return {
+        "connected": connected,
+        "accounts": [
+            {
+                "selling_partner_id": c["selling_partner_id"],
+                "marketplace_id": c["marketplace_id"],
+                "connected_at": c["connected_at"]
+            } for c in credentials
+        ]
+    }
+
+
 @app.get("/alerts", dependencies=[Depends(require_key)])
 def get_alerts():
     return {"alerts": alerts.compute_alerts()}

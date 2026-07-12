@@ -383,4 +383,18 @@ export const api = {
       trend_data: { day: string; BSR: number; Price: number }[];
       audit_checklist: { check: string; pass: boolean }[];
     }>(`/products/${asin}/drawer-details`),
+  amazonCallback: (body: { code: string; selling_partner_id: string; marketplace_id?: string }) =>
+    request<{ ok: boolean; selling_partner_id: string }>("/auth/amazon/callback", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  amazonStatus: () =>
+    request<{
+      connected: boolean;
+      accounts: {
+        selling_partner_id: string;
+        marketplace_id: string;
+        connected_at: string;
+      }[];
+    }>("/auth/amazon/status"),
 };
