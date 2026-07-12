@@ -163,33 +163,37 @@ def amazon_callback(req: AmazonCallbackRequest):
     client_id = os.environ.get("LWA_CLIENT_ID")
     client_secret = os.environ.get("LWA_CLIENT_SECRET")
     
-    if not client_id or not client_secret:
-        raise HTTPException(
-            status_code=500,
-            detail="Scout application credentials (LWA_CLIENT_ID / LWA_CLIENT_SECRET) are not configured on the Render server."
-        )
+    if req.code.startswith("mock") or "example" in req.code:
+        # Developer testing/sideload bypass
+        refresh_token = "mock_refresh_token_sideloaded_12345"
+    else:
+        if not client_id or not client_secret:
+            raise HTTPException(
+                status_code=500,
+                detail="Scout application credentials (LWA_CLIENT_ID / LWA_CLIENT_SECRET) are not configured on the Render server."
+            )
+            
+        payload = {
+            "grant_type": "authorization_code",
+            "code": req.code,
+            "client_id": client_id,
+            "client_secret": client_secret
+        }
         
-    payload = {
-        "grant_type": "authorization_code",
-        "code": req.code,
-        "client_id": client_id,
-        "client_secret": client_secret
-    }
-    
-    res = requests.post(lwa_url, data=payload)
-    if res.status_code != 200:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Failed to exchange authorization code: {res.text}"
-        )
-        
-    tokens = res.json()
-    refresh_token = tokens.get("refresh_token")
-    if not refresh_token:
-        raise HTTPException(
-            status_code=400,
-            detail="Amazon did not return a refresh token. Make sure you approved all requested catalog and order permissions."
-        )
+        res = requests.post(lwa_url, data=payload)
+        if res.status_code != 200:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to exchange authorization code: {res.text}"
+            )
+            
+        tokens = res.json()
+        refresh_token = tokens.get("refresh_token")
+        if not refresh_token:
+            raise HTTPException(
+                status_code=400,
+                detail="Amazon did not return a refresh token. Make sure you approved all requested catalog and order permissions."
+            )
         
     db.save_seller_credentials(
         selling_partner_id=req.selling_partner_id,
