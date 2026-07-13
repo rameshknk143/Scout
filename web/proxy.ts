@@ -14,7 +14,13 @@ export function proxy(req: NextRequest) {
   // Fail closed: a missing SITE_PASSWORD must never verify tokens against an
   // empty HMAC key (which anyone could forge) — treat it as "nobody gets in".
   const sitePassword = process.env.SITE_PASSWORD;
-  if (!sitePassword || !verifyToken(cookie, sitePassword)) {
+  if (!sitePassword) {
+    const loginUrl = new URL("/login", req.nextUrl);
+    loginUrl.searchParams.set("from", path);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (!verifyToken(cookie, sitePassword)) {
     const loginUrl = new URL("/login", req.nextUrl);
     loginUrl.searchParams.set("from", path);
     return NextResponse.redirect(loginUrl);

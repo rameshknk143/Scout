@@ -20,7 +20,7 @@ import re
 import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 import alerts
 import db
@@ -128,7 +128,7 @@ def get_category_table(category: str, list_type: str = "bestsellers"):
 
 
 class ScoreRequest(BaseModel):
-    asin: str
+    asin: str = Field(pattern=r"^[a-zA-Z0-9]{10}$")
     buy_price: float
     category: str | None = None
     weight_grams: int = scorer.DEFAULT_WEIGHT_GRAMS
@@ -168,7 +168,7 @@ def get_watchlist():
 
 
 class WatchlistNotesRequest(BaseModel):
-    asin: str
+    asin: str = Field(pattern=r"^[a-zA-Z0-9]{10}$")
     notes: str
 
 
@@ -191,7 +191,7 @@ def amazon_callback(req: AmazonCallbackRequest):
     client_id = os.environ.get("LWA_CLIENT_ID")
     client_secret = os.environ.get("LWA_CLIENT_SECRET")
     
-    if ALLOW_MOCK_LWA and req.code.startswith("mock"):
+    if ALLOW_MOCK_LWA and req.code == "mock":
         # Developer testing/sideload bypass — only reachable when ALLOW_MOCK_LWA=1
         # is explicitly set (never on Render), so it can't be triggered in prod.
         refresh_token = "mock_refresh_token_sideloaded_12345"
@@ -254,7 +254,7 @@ def get_alerts():
 
 
 class ListingAnalyzeRequest(BaseModel):
-    asin: str
+    asin: str = Field(pattern=r"^[a-zA-Z0-9]{10}$")
     category: str | None = None
 
 
@@ -370,7 +370,7 @@ def get_product_database(
 
 
 class MyProductRequest(BaseModel):
-    asin: str
+    asin: str = Field(pattern=r"^[a-zA-Z0-9]{10}$")
     title: str | None = None
     sku: str | None = None
     supplier_cost: float = 0.0
@@ -411,6 +411,14 @@ def delete_my_product(asin: str):
 
 class CompetitorCompareRequest(BaseModel):
     asins: list[str]
+
+    @field_validator("asins")
+    @classmethod
+    def validate_asins(cls, v):
+        for asin in v:
+            if not ASIN_RE.match(asin.strip().upper()):
+                raise ValueError(f"Invalid ASIN format: {asin}")
+        return [asin.strip().upper() for asin in v]
 
 
 @app.post("/competitor-analysis", dependencies=[Depends(require_key)])
