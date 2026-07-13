@@ -23,7 +23,9 @@ export async function login(
   }
 
   const password = formData.get("password");
-  const from = (formData.get("from") as string) || "/";
+  const rawFrom = (formData.get("from") as string) || "/";
+  // SEC-10: Prevent open redirects by ensuring the path is relative
+  const safeFrom = rawFrom.startsWith("/") && !rawFrom.startsWith("//") && !rawFrom.startsWith("/\\") ? rawFrom : "/";
 
   if (typeof password !== "string" || password !== process.env.SITE_PASSWORD) {
     const count = (attempt ? attempt.count : 0) + 1;
@@ -45,11 +47,17 @@ export async function login(
   const token = generateToken(process.env.SITE_PASSWORD!);
   cookieStore.set("scout_auth", token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 90, // 90 days — personal device, no need to re-login often
   });
 
-  redirect(from);
+  redirect(safeFrom);
+}
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("scout_auth");
+  redirect("/login");
 }

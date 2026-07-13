@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { logout } from "@/lib/auth-actions";
 
 type SidebarItem = {
   href: string;
@@ -312,6 +313,15 @@ export default function Sidebar() {
               </svg>
               Documentation
             </Link>
+            <button
+              onClick={() => logout()}
+              className="hover:text-red-600 flex items-center gap-2 text-left w-full cursor-pointer mt-1 text-zinc-500 hover:bg-zinc-50 py-1 rounded transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sign Out
+            </button>
           </div>
         </div>
       </aside>
