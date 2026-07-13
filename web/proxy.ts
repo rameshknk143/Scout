@@ -30,5 +30,12 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Exclude Next's internals AND static public assets (by file extension).
+  // Without the extension exclusion, a request for a /public file like
+  // `/studio_small_03_1k.hdr` gets 307-redirected to the login HTML, which
+  // then fails to parse as its real type (e.g. THREE.RGBELoader: "no header
+  // found") and crashes the page. Assets are public by design — no auth needed.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:hdr|svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|txt|xml|json|map)).*)",
+  ],
 };
