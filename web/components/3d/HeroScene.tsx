@@ -123,7 +123,7 @@ export default function HeroScene() {
       />
 
       <Suspense fallback={null}>
-        <Environment preset="night" />
+        <Environment files="/dikhololo_night_1k.hdr" />
         <FloatingAmazonBox />
         <FloatingDataCard />
         <FloatingSearchIcon />

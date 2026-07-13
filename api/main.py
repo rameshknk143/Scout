@@ -18,6 +18,7 @@ import os
 
 import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import alerts
@@ -43,6 +44,17 @@ CATEGORIES = [
 ]
 
 app = FastAPI(title="Scout API")
+
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000")
+origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",") if origin.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def require_key(x_scout_key: str = Header(default="")):

@@ -131,7 +131,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
               castShadow
             />
             <Suspense fallback={null}>
-              <Environment preset="studio" />
+              <Environment files="/studio_small_03_1k.hdr" />
               <FloatingASIN />
               <FloatingData />
               <FloatingChart />
