@@ -15,6 +15,7 @@ to reuse if it ever stopped being personal-only.
 import html
 import math
 import os
+import re
 
 import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -29,6 +30,21 @@ import scorer
 import trend_radar
 
 API_KEY = os.environ["API_KEY"]
+
+# Developer sideload testing only. Never set on Render — with the flag absent,
+# the mock-code path below cannot be reached in production.
+ALLOW_MOCK_LWA = os.environ.get("ALLOW_MOCK_LWA") == "1"
+
+# Amazon ASINs are exactly 10 chars, A-Z/0-9. Validating before the value is
+# interpolated into amazon.in URLs or used in queries keeps those paths inert.
+ASIN_RE = re.compile(r"^[A-Z0-9]{10}$")
+
+
+def clean_asin(asin: str) -> str:
+    asin = (asin or "").strip().upper()
+    if not ASIN_RE.match(asin):
+        raise HTTPException(status_code=400, detail=f"Invalid ASIN format: {asin!r}")
+    return asin
 
 # Keep in sync with scraper/collector.py's CATEGORIES dict keys.
 CATEGORIES = [
@@ -127,7 +143,7 @@ class ScoreRequest(BaseModel):
 @app.post("/validator/score", dependencies=[Depends(require_key)])
 def score_asin(req: ScoreRequest):
     return scorer.score_asin(
-        asin=req.asin,
+        asin=clean_asin(req.asin),
         buy_price=req.buy_price,
         category=req.category,
         weight_grams=req.weight_grams,
@@ -175,8 +191,9 @@ def amazon_callback(req: AmazonCallbackRequest):
     client_id = os.environ.get("LWA_CLIENT_ID")
     client_secret = os.environ.get("LWA_CLIENT_SECRET")
     
-    if req.code.startswith("mock") or "example" in req.code:
-        # Developer testing/sideload bypass
+    if ALLOW_MOCK_LWA and req.code.startswith("mock"):
+        # Developer testing/sideload bypass — only reachable when ALLOW_MOCK_LWA=1
+        # is explicitly set (never on Render), so it can't be triggered in prod.
         refresh_token = "mock_refresh_token_sideloaded_12345"
     else:
         if not client_id or not client_secret:
@@ -244,7 +261,7 @@ class ListingAnalyzeRequest(BaseModel):
 @app.post("/listing/analyze", dependencies=[Depends(require_key)])
 def analyze_listing(req: ListingAnalyzeRequest):
     try:
-        return listing_analyzer.analyze_listing(req.asin.strip(), category=req.category)
+        return listing_analyzer.analyze_listing(clean_asin(req.asin), category=req.category)
     except listing_analyzer.ListingFetchError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
@@ -373,7 +390,7 @@ def get_my_products():
 @app.post("/my-products", dependencies=[Depends(require_key)])
 def save_my_product(req: MyProductRequest):
     db.save_my_product(
-        asin=req.asin,
+        asin=clean_asin(req.asin),
         title=req.title,
         sku=req.sku,
         supplier_cost=req.supplier_cost,
@@ -388,7 +405,7 @@ def save_my_product(req: MyProductRequest):
 
 @app.delete("/my-products/{asin}", dependencies=[Depends(require_key)])
 def delete_my_product(asin: str):
-    db.delete_my_product(asin)
+    db.delete_my_product(clean_asin(asin))
     return {"ok": True}
 
 
@@ -402,7 +419,8 @@ def compare_competitors(req: CompetitorCompareRequest):
     df = db.get_all_validations_df()
     for asin in req.asins:
         asin = asin.strip().upper()
-        if not asin:
+        # list input: skip malformed entries rather than failing the whole compare
+        if not ASIN_RE.match(asin):
             continue
         snap = db.get_latest_snapshot(asin)
         val = None
@@ -472,7 +490,7 @@ def get_drawer_details(asin: str):
     import profit_calculator
     from scorer import CATEGORY_TO_FEE_KEY
 
-    asin = asin.strip().upper()
+    asin = clean_asin(asin)
     snap = db.get_latest_snapshot(asin)
     history = db.get_history(asin)
     

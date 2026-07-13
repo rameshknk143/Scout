@@ -11,5 +11,7 @@ services:
         sync: false
       - key: API_KEY
         sync: false
+      - key: TOKEN_ENCRYPTION_KEY
+        sync: false
       - key: ALLOWED_ORIGINS
         value: http://localhost:3000

@@ -13,8 +13,32 @@ from contextlib import contextmanager
 
 import psycopg2
 import psycopg2.extras
+from cryptography.fernet import Fernet, InvalidToken
 
 DATABASE_URL = os.environ["DATABASE_URL"]
+
+# Encrypts Amazon SP-API refresh tokens at rest so a DATABASE_URL leak alone
+# doesn't hand over seller-account access. Key lives only in the API server's
+# env (Render), never in the DB or repo. Generate one with:
+#   python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# If unset, tokens are stored as before (plaintext) so nothing breaks — but set it.
+TOKEN_ENCRYPTION_KEY = os.environ.get("TOKEN_ENCRYPTION_KEY")
+_fernet = Fernet(TOKEN_ENCRYPTION_KEY.encode()) if TOKEN_ENCRYPTION_KEY else None
+
+
+def _encrypt_token(value):
+    if _fernet and value:
+        return _fernet.encrypt(value.encode()).decode()
+    return value
+
+
+def _decrypt_token(value):
+    if _fernet and value:
+        try:
+            return _fernet.decrypt(value.encode()).decode()
+        except InvalidToken:
+            return value  # legacy row saved before encryption was enabled
+    return value
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS snapshots (
@@ -283,7 +307,7 @@ def save_seller_credentials(selling_partner_id, refresh_token, marketplace_id='A
                        refresh_token = EXCLUDED.refresh_token,
                        marketplace_id = EXCLUDED.marketplace_id,
                        connected_at = EXCLUDED.connected_at""",
-                (selling_partner_id, refresh_token, marketplace_id, datetime.now(timezone.utc).isoformat()),
+                (selling_partner_id, _encrypt_token(refresh_token), marketplace_id, datetime.now(timezone.utc).isoformat()),
             )
 
 
@@ -291,7 +315,10 @@ def get_seller_credentials():
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("SELECT * FROM seller_credentials ORDER BY connected_at DESC")
-            return [dict(r) for r in cur.fetchall()]
+            rows = [dict(r) for r in cur.fetchall()]
+            for r in rows:
+                r["refresh_token"] = _decrypt_token(r.get("refresh_token"))
+            return rows
 
 
 if __name__ == "__main__":
