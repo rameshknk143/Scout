@@ -59,7 +59,13 @@ CATEGORIES = [
     "Software", "Video Games",
 ]
 
-app = FastAPI(title="Scout API")
+is_production = os.environ.get("RENDER") == "true" or os.environ.get("ENV") == "production"
+app = FastAPI(
+    title="Scout API",
+    docs_url=None if is_production else "/docs",
+    redoc_url=None if is_production else "/redoc",
+    openapi_url=None if is_production else "/openapi.json"
+)
 
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000")
 origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",") if origin.strip()]
@@ -189,7 +195,9 @@ def amazon_callback(req: AmazonCallbackRequest):
     client_id = os.environ.get("LWA_CLIENT_ID")
     client_secret = os.environ.get("LWA_CLIENT_SECRET")
     
-    if req.code.startswith("mock"):
+    if ALLOW_MOCK_LWA and req.code.startswith("mock"):
+        # Developer sideload only — unreachable unless ALLOW_MOCK_LWA=1 is set
+        # (never on Render), so real deployments can't mint fake credentials.
         refresh_token = "mock_refresh_token_sideloaded_12345"
     else:
         if not client_id or not client_secret:
