@@ -115,7 +115,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg relative overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#090d16] relative overflow-hidden flex flex-col md:flex-row">
       {/* 3D Scene Left Side (Hidden on Mobile) */}
       <div className="hidden md:block md:w-1/2 h-full absolute inset-0 md:relative z-10 border-r border-white/5">
         {mounted && (
@@ -142,11 +142,11 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
       </div>
 
       {/* Content Right Side */}
-      <div className="w-full md:w-1/2 min-h-screen relative z-20 flex flex-col justify-between px-6 py-12 md:px-16 md:py-20 bg-bg-elevated/80 backdrop-blur-md md:bg-transparent">
+      <div className="w-full md:w-1/2 min-h-screen relative z-20 flex flex-col justify-between px-6 py-12 md:px-16 md:py-20 bg-[#111625]/80 backdrop-blur-md md:bg-transparent">
         {/* Top Header */}
         <div className="flex items-center gap-2">
           <span className="text-2xl">🔭</span>
-          <span className="text-xl font-bold tracking-tight text-text">SCOUT</span>
+          <span className="text-xl font-bold tracking-tight text-white">SCOUT</span>
         </div>
 
         {/* Center Card */}
