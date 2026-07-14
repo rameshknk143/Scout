@@ -3,8 +3,23 @@
 import { cookies } from "next/headers";
 import { updateTag } from "next/cache";
 import { api, type ListingReview } from "./api";
+import { verifyToken } from "./auth-token";
+
+/**
+ * Validates the current user session.
+ * Throws an error if the site password is not configured or the session cookie is missing/invalid.
+ */
+async function requireSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("scout_auth")?.value;
+  const sitePassword = process.env.SITE_PASSWORD;
+  if (!sitePassword || !verifyToken(token, sitePassword)) {
+    throw new Error("Unauthorized: Invalid session");
+  }
+}
 
 export async function getCategoryTable(category: string, listType?: string) {
+  await requireSession();
   return api.categoryTable(category, listType);
 }
 
@@ -20,6 +35,7 @@ export async function scoreAsin(input: {
   operational_fit?: number;
   notes?: string;
 }) {
+  await requireSession();
   const result = await api.score(input);
   // score_asin() writes a new row to the validations table server-side.
   // updateTag (not revalidateTag) is the correct primitive here: this is a
@@ -30,6 +46,7 @@ export async function scoreAsin(input: {
 }
 
 export async function analyzeListing(input: { asin: string; category?: string }) {
+  await requireSession();
   const cookieStore = await cookies();
   const marketplace_id = cookieStore.get("scout_marketplace")?.value || "A21TJRUUN4KGV";
   return api.analyzeListing({ ...input, marketplace_id });
@@ -41,14 +58,17 @@ export async function suggestListingImprovements(input: {
   category?: string | null;
   gaps: string[];
 }) {
+  await requireSession();
   return api.suggestListingImprovements(input);
 }
 
 export async function summarizeReviews(reviews: ListingReview[]) {
+  await requireSession();
   return api.summarizeReviews({ reviews });
 }
 
 export async function getWatchlist() {
+  await requireSession();
   return api.watchlist();
 }
 
@@ -65,10 +85,12 @@ export async function calcProfit(input: {
   ppc_per_unit?: number;
   own_shipping_cost?: number;
 }) {
+  await requireSession();
   return api.profitCalculator(input);
 }
 
 export async function gatherKeywords(seed: string) {
+  await requireSession();
   if (!seed || seed.trim().length === 0) return [];
   const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
   const results: Record<string, { term: string; score: number; occurrences: number }> = {};
@@ -158,6 +180,7 @@ async function fetchSuggestions(term: string): Promise<string[]> {
 }
 
 export async function updateWatchlistNotes(asin: string, notes: string) {
+  await requireSession();
   const result = await api.updateWatchlistNotes({ asin, notes });
   updateTag("watchlist");
   return result;
@@ -173,10 +196,12 @@ export async function searchProductDatabase(params: {
   limit?: number;
   offset?: number;
 }) {
+  await requireSession();
   return api.productDatabase(params);
 }
 
 export async function getMyProducts() {
+  await requireSession();
   return api.myProducts();
 }
 
@@ -191,40 +216,48 @@ export async function saveMyProduct(body: {
   current_stock?: number;
   lead_time_days?: number;
 }) {
+  await requireSession();
   const result = await api.saveMyProduct(body);
   updateTag("my-products");
   return result;
 }
 
 export async function deleteMyProduct(asin: string) {
+  await requireSession();
   const result = await api.deleteMyProduct(asin);
   updateTag("my-products");
   return result;
 }
 
 export async function compareCompetitors(asins: string[]) {
+  await requireSession();
   return api.compareCompetitors({ asins });
 }
 
 export async function getListingHealth() {
+  await requireSession();
   return api.listingHealth();
 }
 
 export async function getDrawerDetails(asin: string) {
+  await requireSession();
   return api.drawerDetails(asin);
 }
 
 export async function connectAmazonAccount(body: { code: string; selling_partner_id: string; marketplace_id?: string }) {
+  await requireSession();
   const result = await api.amazonCallback(body);
   updateTag("amazon-status");
   return result;
 }
 
 export async function getAmazonStatus() {
+  await requireSession();
   return api.amazonStatus();
 }
 
 export async function disconnectAmazonAccount(sellingPartnerId: string) {
+  await requireSession();
   const result = await api.deleteAmazonAccount(sellingPartnerId);
   updateTag("amazon-status");
   return result;

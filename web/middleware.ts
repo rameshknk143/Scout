@@ -4,7 +4,7 @@ import { verifyToken } from "./lib/auth-token";
 // Single shared-password gate — this is a personal, single-user tool, not a
 // multi-tenant app, so a full auth system would be overkill. Optimistic
 // check only (reads the cookie, no DB), per Next.js's own guidance for Proxy.
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   if (path === "/login") {
     return NextResponse.next();

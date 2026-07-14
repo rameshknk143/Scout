@@ -37,10 +37,10 @@ export function verifyToken(token: string | undefined, password: string): boolea
   const timestamp = parseInt(timestampStr, 10);
   if (isNaN(timestamp)) return false;
   
-  // 90 days expiry rule
-  const ninetyDaysMs = 90 * 24 * 60 * 60 * 1000;
+  // 7 days expiry rule
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
   const now = Date.now();
-  if (now - timestamp > ninetyDaysMs || now - timestamp < 0) {
+  if (now - timestamp > sevenDaysMs || now - timestamp < 0) {
     return false;
   }
   
