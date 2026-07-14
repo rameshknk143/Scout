@@ -48,7 +48,8 @@ export async function scoreAsin(input: {
 export async function analyzeListing(input: { asin: string; category?: string }) {
   await requireSession();
   const cookieStore = await cookies();
-  const marketplace_id = cookieStore.get("scout_marketplace")?.value || "A21TJRUUN4KGV";
+  const { DEFAULT_MARKETPLACE_ID } = await import("./marketplaces");
+  const marketplace_id = cookieStore.get("scout_marketplace")?.value || DEFAULT_MARKETPLACE_ID;
   return api.analyzeListing({ ...input, marketplace_id });
 }
 

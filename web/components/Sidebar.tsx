@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "@/lib/auth-actions";
+import { setMarketplacePreference } from "@/lib/marketplace-actions";
 
 type SidebarItem = {
   href: string;
@@ -22,27 +23,22 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [selectedMarketplace, setSelectedMarketplace] = useState("amazon.in");
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedMarketplace") || "amazon.in";
     setSelectedMarketplace(stored);
-    let mktId = "A21TJRUUN4KGV";
-    if (stored === "amazon.com") mktId = "ATVPDKIKX0DER";
-    else if (stored === "amazon.co.uk") mktId = "A1F83G8C2ARO7P";
-    document.cookie = `scout_marketplace=${mktId}; path=/; max-age=31536000; SameSite=Lax`;
   }, []);
 
   const handleMarketplaceChange = (val: string) => {
     setSelectedMarketplace(val);
     localStorage.setItem("selectedMarketplace", val);
     
-    let mktId = "A21TJRUUN4KGV";
-    if (val === "amazon.com") mktId = "ATVPDKIKX0DER";
-    else if (val === "amazon.co.uk") mktId = "A1F83G8C2ARO7P";
-    document.cookie = `scout_marketplace=${mktId}; path=/; max-age=31536000; SameSite=Lax`;
+    startTransition(() => {
+      setMarketplacePreference(val);
+    });
     
     window.dispatchEvent(new Event("marketplaceChanged"));
-    window.location.reload();
   };
 
   // close the mobile drawer on route change
