@@ -223,3 +223,9 @@ export async function connectAmazonAccount(body: { code: string; selling_partner
 export async function getAmazonStatus() {
   return api.amazonStatus();
 }
+
+export async function disconnectAmazonAccount(sellingPartnerId: string) {
+  const result = await api.deleteAmazonAccount(sellingPartnerId);
+  updateTag("amazon-status");
+  return result;
+}

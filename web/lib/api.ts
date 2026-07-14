@@ -397,4 +397,8 @@ export const api = {
         connected_at: string;
       }[];
     }>("/auth/amazon/status"),
+  deleteAmazonAccount: (sellingPartnerId: string) =>
+    request<{ ok: boolean }>(`/auth/amazon/${sellingPartnerId}`, {
+      method: "DELETE",
+    }),
 };

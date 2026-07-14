@@ -119,13 +119,15 @@ export default function ProductDetailDrawer({
                       Opportunity Score
                     </span>
                     <span className={`block text-base font-extrabold mt-1 font-mono ${
-                      product.score >= 70
+                      product.score === null || product.score === undefined
+                        ? "text-zinc-500"
+                        : product.score >= 70
                         ? "text-emerald-400"
                         : product.score >= 50
                         ? "text-amber-400"
                         : "text-red-400"
                     }`}>
-                      {product.score || "N/A"}
+                      {product.score !== null && product.score !== undefined ? product.score : "N/A"}
                     </span>
                   </div>
                   <div className="p-4 text-center">

@@ -50,24 +50,42 @@ def main():
         );
     """)
 
-    if snapshots:
+    # Fetch existing snapshots and validations to ensure idempotency
+    cur.execute("SELECT asin, collected_at FROM snapshots")
+    existing_snaps = {(r[0], r[1]) for r in cur.fetchall()}
+
+    cur.execute("SELECT asin, validated_at FROM validations")
+    existing_vals = {(r[0], r[1]) for r in cur.fetchall()}
+
+    snapshots_to_insert = [
+        r for r in snapshots
+        if (r["asin"], r["collected_at"]) not in existing_snaps
+    ]
+    validations_to_insert = [
+        r for r in validations
+        if (r["asin"], r["validated_at"]) not in existing_vals
+    ]
+
+    print(f"Filtering duplicates: inserting {len(snapshots_to_insert)} new snapshots and {len(validations_to_insert)} new validations.")
+
+    if snapshots_to_insert:
         psycopg2.extras.execute_values(
             cur,
             """INSERT INTO snapshots
                (asin, category, list_type, rank, title, price, rating, review_count, image_url, collected_at)
                VALUES %s""",
             [(r["asin"], r["category"], r["list_type"], r["rank"], r["title"], r["price"],
-              r["rating"], r["review_count"], r["image_url"], r["collected_at"]) for r in snapshots],
+              r["rating"], r["review_count"], r["image_url"], r["collected_at"]) for r in snapshots_to_insert],
         )
 
-    if validations:
+    if validations_to_insert:
         psycopg2.extras.execute_values(
             cur,
             """INSERT INTO validations
                (asin, title, category, score, verdict, buy_price, notes, validated_at)
                VALUES %s""",
             [(r["asin"], r["title"], r["category"], r["score"], r["verdict"],
-              r["buy_price"], r["notes"], r["validated_at"]) for r in validations],
+              r["buy_price"], r["notes"], r["validated_at"]) for r in validations_to_insert],
         )
 
     conn.commit()

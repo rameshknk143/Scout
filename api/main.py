@@ -242,7 +242,10 @@ def amazon_status():
             } for c in credentials
         ]
     }
-
+@app.delete("/auth/amazon/{selling_partner_id}", dependencies=[Depends(require_key)])
+def delete_amazon_account(selling_partner_id: str):
+    db.delete_seller_credentials(selling_partner_id)
+    return {"ok": True}
 
 @app.get("/alerts", dependencies=[Depends(require_key)])
 def get_alerts():
@@ -437,12 +440,12 @@ def compare_competitors(req: CompetitorCompareRequest):
         results.append({
             "asin": asin,
             "title": snap["title"] if snap else (val["title"] if val else None),
-            "price": snap["price"] if snap else (val["buy_price"] * 1.5 if val else None),
+            "price": snap["price"] if snap else None,
             "rank": snap["rank"] if snap else None,
             "rating": snap["rating"] if snap else None,
             "review_count": snap["review_count"] if snap else None,
-            "score": val["score"] if val else 50.0,
-            "verdict": val["verdict"] if val else "WATCH",
+            "score": val["score"] if val else None,
+            "verdict": val["verdict"] if val else None,
             "found": snap is not None or val is not None
         })
     return {"comparisons": results}
@@ -500,33 +503,34 @@ def get_drawer_details(asin: str):
 
     title = (snap["title"] if snap else None) or (val["title"] if val else None) or (my_prod["title"] if my_prod else None) or "Unknown Product"
     category = (snap["category"] if snap else None) or (val["category"] if val else None) or "General"
-    buy_price = (my_prod["supplier_cost"] if my_prod else None) or (val["buy_price"] if val else None) or 150.0
-    sell_price = (snap["price"] if snap else None) or (buy_price * 1.5)
+    buy_price = (my_prod["supplier_cost"] if my_prod else None) or (val["buy_price"] if val else None)
+    sell_price = (snap["price"] if snap else None)
     
-    # Calculate real FBA / Easy Ship margin using profit_calculator
-    fee_category = CATEGORY_TO_FEE_KEY.get(category, "other_default")
-    calc = profit_calculator.calculate(
-        sell_price=sell_price,
-        buy_price=buy_price,
-        category=fee_category,
-        weight_grams=300,
-        fulfillment="fba" if my_prod else "easy_ship",
-        gst_rate_pct=18,
-        zone="national"
-    )
+    # Calculate real FBA / Easy Ship margin using profit_calculator if price details exist
+    calc = None
+    if sell_price is not None and buy_price is not None:
+        fee_category = CATEGORY_TO_FEE_KEY.get(category, "other_default")
+        calc = profit_calculator.calculate(
+            sell_price=sell_price,
+            buy_price=buy_price,
+            category=fee_category,
+            weight_grams=300,
+            fulfillment="fba" if my_prod else "easy_ship",
+            gst_rate_pct=18,
+            zone="national"
+        )
 
-    referral_fee = calc["referral_fee"]
-    closing_fee = calc["closing_fee"]
-    shipping_fee = calc["weight_or_pickpack_fee"]
-    total_fees = calc["amazon_fees_subtotal"] + calc["gst_on_amazon_fees_info_only"]
-    net_margin = calc["net_margin_pct"]
+    referral_fee = calc["referral_fee"] if calc else None
+    closing_fee = calc["closing_fee"] if calc else None
+    shipping_fee = calc["weight_or_pickpack_fee"] if calc else None
+    net_margin = calc["net_margin_pct"] if calc else None
 
     chart_points = []
     if history:
         for s in history[-7:]:
             chart_points.append({
                 "day": s["collected_at"][-5:] if s["collected_at"] else "—",
-                "BSR": s["rank"] if s["rank"] is not None else 5000,
+                "BSR": s["rank"] if s["rank"] is not None else None,
                 "Price": s["price"] if s["price"] is not None else sell_price
             })
 
@@ -550,12 +554,12 @@ def get_drawer_details(asin: str):
         "buy_price": buy_price,
         "sell_price": sell_price,
         "shipping_cost": shipping_fee,
-        "fees": referral_fee + closing_fee + calc["gst_on_amazon_fees_info_only"],
+        "fees": (referral_fee + closing_fee + calc["gst_on_amazon_fees_info_only"]) if (calc and referral_fee is not None and closing_fee is not None) else None,
         "net_margin": net_margin,
-        "rating": rating if rating else 4.2,
-        "reviews": reviews if reviews else 95,
-        "score": val["score"] if val else 50.0,
-        "verdict": val["verdict"] if val else "WATCH",
+        "rating": rating,
+        "reviews": reviews,
+        "score": val["score"] if val else None,
+        "verdict": val["verdict"] if val else None,
         "notes": val["notes"] if val else "",
         "trend_data": chart_points,
         "audit_checklist": audit_checklist

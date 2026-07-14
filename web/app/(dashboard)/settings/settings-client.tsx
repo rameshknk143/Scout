@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { getAmazonStatus, connectAmazonAccount } from "@/lib/actions";
+import { getAmazonStatus, connectAmazonAccount, disconnectAmazonAccount } from "@/lib/actions";
 
 interface ConnectedAccount {
   selling_partner_id: string;
@@ -51,6 +51,21 @@ export default function SettingsClient() {
   useEffect(() => {
     fetchStatus();
   }, []);
+
+  const handleDisconnect = async () => {
+    setMessage(null);
+    startTransition(async () => {
+      try {
+        for (const acc of accounts) {
+          await disconnectAmazonAccount(acc.selling_partner_id);
+        }
+        setMessage("✅ Disconnected successfully! Stored tokens removed from database.");
+        fetchStatus();
+      } catch (err: any) {
+        setMessage(`❌ Error disconnecting: ${err?.message || "Internal failure"}`);
+      }
+    });
+  };
 
   const handleConnectMock = () => {
     setMessage(null);
@@ -129,15 +144,18 @@ export default function SettingsClient() {
 
           <div className="pt-2">
             <button
-              onClick={() => {
-                setConnected(false);
-                setAccounts([]);
-              }}
-              className="text-[10px] font-bold text-red-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer"
+              onClick={handleDisconnect}
+              disabled={isPending}
+              className="text-[10px] font-bold text-red-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer disabled:opacity-50"
             >
-              ⚠️ Disconnect Seller Account
+              {isPending ? "Disconnecting..." : "⚠️ Disconnect Seller Account"}
             </button>
           </div>
+          {message && (
+            <p className="text-[11px] font-bold mt-2 text-zinc-300 leading-normal animate-in fade-in duration-200">
+              {message}
+            </p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -155,7 +173,12 @@ LWA_CLIENT_SECRET="client_secret_example_value..."`}
             </div>
 
             <div className="border-t border-white/5 pt-4 space-y-4">
-              <h3 className="text-sm font-bold text-white">2. Authorize via Seller Central</h3>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                2. Authorize via Seller Central
+                <span className="text-[9px] font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded tracking-wide uppercase">
+                  Demo Mode
+                </span>
+              </h3>
               
               <div className="flex flex-col gap-1 w-64">
                 <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Target Marketplace</label>
@@ -171,7 +194,7 @@ LWA_CLIENT_SECRET="client_secret_example_value..."`}
               </div>
 
               <p className="text-xs text-zinc-400 font-semibold leading-relaxed mt-1">
-                Clicking authorize will redirect you to Amazon Seller Central consent page to grant catalog, order management, and financial reporting access.
+                Clicking authorize will simulate redirecting to the Amazon Seller Central consent page (for testing credentials workflow in this demo application).
               </p>
               <a
                 href={getAuthorizeUrl()}
@@ -183,16 +206,21 @@ LWA_CLIENT_SECRET="client_secret_example_value..."`}
                 }}
                 className="btn-primary inline-block w-auto px-6 py-2.5 mt-3 text-xs font-bold text-center tracking-wide uppercase cursor-pointer"
               >
-                🔌 Authorize Scout Integration
+                🔌 Authorize Scout Integration (Mock)
               </a>
             </div>
           </div>
 
           <div className="glass-panel p-6 bg-[#111625]/20 border border-white/5 space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-white">Developer Sideload Portal</h3>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                Developer Sideload Portal
+                <span className="text-[9px] font-extrabold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded tracking-wide uppercase">
+                  Sandbox
+                </span>
+              </h3>
               <p className="text-[11px] text-zinc-400 font-semibold leading-relaxed mt-1">
-                If you are testing locally or deploying on Vercel preview, use this portal to simulate a successful Amazon SP-API redirect.
+                Use this sandbox portal to register simulation credentials in the database for local/Vercel preview testing.
               </p>
             </div>
 

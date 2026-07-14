@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
   title: "Ram's Scout",
@@ -15,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full bg-bg text-text">
-        <AuthProvider>{children}</AuthProvider>
+        {children}
       </body>
     </html>
   );

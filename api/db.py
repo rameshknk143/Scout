@@ -316,6 +316,15 @@ def get_seller_credentials():
             return rows
 
 
+def delete_seller_credentials(selling_partner_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM seller_credentials WHERE selling_partner_id = %s",
+                (selling_partner_id,),
+            )
+
+
 def get_watchlist_with_latest_snapshots():
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
