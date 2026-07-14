@@ -12,13 +12,13 @@ function FloatingASIN() {
   useFrame((state) => {
     if (ref.current) {
       ref.current.rotation.y += 0.006;
-      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.2;
+      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.2 - 0.6;
     }
   });
 
   return (
     <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.3}>
-      <mesh ref={ref} position={[0, 0, 0]}>
+      <mesh ref={ref} position={[-2.2, -0.6, 0.5]}>
         <boxGeometry args={[1.0, 0.35, 0.2]} />
         <meshStandardMaterial color="#f59e0b" metalness={0.95} roughness={0.05} />
       </mesh>
@@ -30,13 +30,13 @@ function FloatingData() {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame((state) => {
     if (ref.current) {
-      ref.current.position.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.4 + 2;
+      ref.current.position.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.4 + 2.2;
       ref.current.rotation.y = Math.cos(state.clock.getElapsedTime() * 0.15) * 0.15;
     }
   });
 
   return (
-    <mesh ref={ref} position={[2, 0.5, 0.5]}>
+    <mesh ref={ref} position={[2.2, 0.8, 0.5]}>
       <cylinderGeometry args={[0.18, 0.18, 0.35, 32]} />
       <meshStandardMaterial color="#3b82f6" metalness={0.8} roughness={0.15} />
     </mesh>
@@ -52,7 +52,7 @@ function FloatingChart() {
   });
 
   return (
-    <mesh ref={ref} position={[-1.8, 0.8, 0.5]}>
+    <mesh ref={ref} position={[-2.0, 1.2, 0.5]}>
       <coneGeometry args={[0.25, 0.7, 4]} />
       <meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.1} />
     </mesh>
@@ -115,9 +115,9 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#090d16] relative overflow-hidden flex flex-col md:flex-row">
-      {/* 3D Scene Left Side (Hidden on Mobile) */}
-      <div className="hidden md:block md:w-1/2 h-full absolute inset-0 md:relative z-10 border-r border-white/5">
+    <div className="min-h-screen bg-[#090d16] relative overflow-hidden flex items-center justify-center p-4">
+      {/* 3D Scene Background */}
+      <div className="absolute inset-0 z-0">
         {mounted && (
           <Canvas
             shadows
@@ -141,27 +141,27 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
         )}
       </div>
 
-      {/* Content Right Side */}
-      <div className="w-full md:w-1/2 min-h-screen relative z-20 flex flex-col justify-between px-6 py-12 md:px-16 md:py-20 bg-[#111625]/80 backdrop-blur-md md:bg-transparent">
+      {/* Floating Center Glass Login Card */}
+      <div className="w-full max-w-md relative z-10 flex flex-col items-center">
         {/* Top Header */}
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🔭</span>
-          <span className="text-xl font-bold tracking-tight text-white">SCOUT</span>
+        <div className="flex items-center gap-2 mb-6 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+          <span className="text-xl">🔭</span>
+          <span className="text-sm font-bold tracking-widest text-white font-mono">SCOUT</span>
         </div>
 
         {/* Center Card */}
-        <div className="max-w-md w-full mx-auto my-auto py-8">
+        <div className="w-full">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-8"
+            className="mb-6 text-center"
           >
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white">
               Product intelligence, refined.
             </h1>
-            <p className="text-zinc-400 text-sm leading-relaxed">
-              Log in to access your personal global Amazon intelligence radar. Keep track of competitors, analyze listings, and scout next-gen opportunities across India, USA, UK, and more.
+            <p className="text-zinc-400 text-xs leading-relaxed max-w-sm mx-auto">
+              Log in to access your personal global Amazon intelligence radar across India, USA, and UK.
             </p>
           </motion.div>
 
@@ -169,27 +169,29 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="glass-panel p-8"
+            className="glass-panel p-8 bg-slate-950/60 border border-white/10 backdrop-blur-xl shadow-2xl rounded-2xl"
           >
-            <h2 className="text-lg font-bold mb-6 text-white font-sans">Sign In</h2>
+            <h2 className="text-base font-bold mb-5 text-white uppercase tracking-wider text-center font-sans">Sign In</h2>
             <form action={formAction} className="space-y-4">
               <input type="hidden" name="from" value={from} />
               
-              <div>
-                <label htmlFor="password" className="block text-xs text-zinc-400 mb-1.5 font-bold uppercase tracking-wider">Password</label>
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                  Password
+                </label>
                 <input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Enter password"
-                  className="input py-2.5 text-white"
+                  placeholder="••••••••"
+                  className="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all font-mono text-center"
                   required
                   autoFocus
                 />
               </div>
 
               {state?.error && (
-                <div className="text-red-400 text-xs mt-2 border border-red-500/20 bg-red-500/10 px-3 py-2 rounded-lg font-semibold font-mono">
+                <div className="text-red-400 text-xs border border-red-500/20 bg-red-500/10 px-3 py-2 rounded-lg font-semibold font-mono text-center">
                   {state.error}
                 </div>
               )}
@@ -197,17 +199,17 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
               <button
                 type="submit"
                 disabled={pending}
-                className="w-full btn-primary py-2.5 mt-2 disabled:opacity-50"
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl uppercase tracking-wider transition-all shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 cursor-pointer mt-2"
               >
-                {pending ? "Signing In..." : "Sign In"}
+                {pending ? "Signing In..." : "Sign In →"}
               </button>
             </form>
           </motion.div>
         </div>
 
         {/* Footer */}
-        <div className="text-xs text-zinc-500 font-mono mt-8">
-          <p>Version 1.1 • © 2026 KNK Enterprises</p>
+        <div className="text-[10px] text-zinc-600 font-mono mt-8 text-center">
+          <p>Version 1.2 • © 2026 KNK Enterprises</p>
         </div>
       </div>
     </div>

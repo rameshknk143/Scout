@@ -24,16 +24,25 @@ export default function Sidebar() {
   const [selectedMarketplace, setSelectedMarketplace] = useState("amazon.in");
 
   useEffect(() => {
-    const stored = localStorage.getItem("selectedMarketplace");
-    if (stored) {
-      setSelectedMarketplace(stored);
-    }
+    const stored = localStorage.getItem("selectedMarketplace") || "amazon.in";
+    setSelectedMarketplace(stored);
+    let mktId = "A21TJRUUN4KGV";
+    if (stored === "amazon.com") mktId = "ATVPDKIKX0DER";
+    else if (stored === "amazon.co.uk") mktId = "A1F83G8C2ARO7P";
+    document.cookie = `scout_marketplace=${mktId}; path=/; max-age=31536000; SameSite=Lax`;
   }, []);
 
   const handleMarketplaceChange = (val: string) => {
     setSelectedMarketplace(val);
     localStorage.setItem("selectedMarketplace", val);
+    
+    let mktId = "A21TJRUUN4KGV";
+    if (val === "amazon.com") mktId = "ATVPDKIKX0DER";
+    else if (val === "amazon.co.uk") mktId = "A1F83G8C2ARO7P";
+    document.cookie = `scout_marketplace=${mktId}; path=/; max-age=31536000; SameSite=Lax`;
+    
     window.dispatchEvent(new Event("marketplaceChanged"));
+    window.location.reload();
   };
 
   // close the mobile drawer on route change

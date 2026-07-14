@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { updateTag } from "next/cache";
 import { api, type ListingReview } from "./api";
 
@@ -29,7 +30,9 @@ export async function scoreAsin(input: {
 }
 
 export async function analyzeListing(input: { asin: string; category?: string }) {
-  return api.analyzeListing(input);
+  const cookieStore = await cookies();
+  const marketplace_id = cookieStore.get("scout_marketplace")?.value || "A21TJRUUN4KGV";
+  return api.analyzeListing({ ...input, marketplace_id });
 }
 
 export async function suggestListingImprovements(input: {

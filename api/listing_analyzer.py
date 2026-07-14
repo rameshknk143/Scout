@@ -41,25 +41,16 @@ import ai_client
 import db
 import trend_radar
 
-DESKTOP_URL = "https://www.amazon.in/dp/{asin}"
 DESKTOP_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
-DESKTOP_HEADERS = {"User-Agent": DESKTOP_USER_AGENT, "Accept-Language": "en-IN,en;q=0.9"}
 
-# Amazon's mobile product page -- tried first; see module docstring for why.
-MOBILE_URL = "https://www.amazon.in/gp/aw/d/{asin}"
 MOBILE_USER_AGENT = (
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 "
     "(KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
 )
-MOBILE_HEADERS = {"User-Agent": MOBILE_USER_AGENT, "Accept-Language": "en-IN,en;q=0.9"}
 
-FETCH_STRATEGIES = [
-    (MOBILE_URL, MOBILE_HEADERS),
-    (DESKTOP_URL, DESKTOP_HEADERS),
-]
 FETCH_ATTEMPTS_PER_STRATEGY = 2
 RETRY_DELAY_RANGE = (3, 6)
 MIN_REAL_PAGE_BYTES = 50_000  # the bot-check interstitial is ~5KB; real pages are 300KB+
@@ -77,8 +68,30 @@ class ListingFetchError(Exception):
     pass
 
 
-def fetch_detail_page(asin):
-    for url_template, headers in FETCH_STRATEGIES:
+def fetch_detail_page(asin, marketplace_id=None):
+    # Determine the TLD and Accept-Language based on marketplace_id
+    tld = "in"
+    lang = "en-IN,en;q=0.9"
+    
+    if marketplace_id == "ATVPDKIKX0DER": # USA
+        tld = "com"
+        lang = "en-US,en;q=0.9"
+    elif marketplace_id == "A1F83G8C2ARO7P": # UK
+        tld = "co.uk"
+        lang = "en-GB,en;q=0.9"
+        
+    desktop_url = f"https://www.amazon.{tld}/dp/{{asin}}"
+    mobile_url = f"https://www.amazon.{tld}/gp/aw/d/{{asin}}"
+    
+    desktop_headers = {"User-Agent": DESKTOP_USER_AGENT, "Accept-Language": lang}
+    mobile_headers = {"User-Agent": MOBILE_USER_AGENT, "Accept-Language": lang}
+    
+    strategies = [
+        (mobile_url, mobile_headers),
+        (desktop_url, desktop_headers),
+    ]
+    
+    for url_template, headers in strategies:
         for attempt in range(FETCH_ATTEMPTS_PER_STRATEGY):
             resp = requests.get(url_template.format(asin=asin), headers=headers, timeout=20)
             if (
@@ -90,7 +103,7 @@ def fetch_detail_page(asin):
             if attempt < FETCH_ATTEMPTS_PER_STRATEGY - 1:
                 time.sleep(random.uniform(*RETRY_DELAY_RANGE))
     raise ListingFetchError(
-        "Amazon blocked every attempt to load this product page (bot-check "
+        f"Amazon.{tld} blocked every attempt to load this product page (bot-check "
         "interstitial), on both the mobile and desktop page. Rare, but it "
         "happens on individual product pages more than on category pages -- "
         "try again in a moment."
@@ -256,8 +269,8 @@ def _top_peers(table, exclude_asin, limit=8):
     return records
 
 
-def analyze_listing(asin, category=None):
-    page_html = fetch_detail_page(asin)
+def analyze_listing(asin, category=None, marketplace_id=None):
+    page_html = fetch_detail_page(asin, marketplace_id=marketplace_id)
     parsed = parse_listing(page_html)
 
     # Reuse Scout's own tracked data for this ASIN where available, rather

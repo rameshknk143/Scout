@@ -253,7 +253,7 @@ export const api = {
   // should hit the real, current page (and Amazon's bot-check means results
   // can genuinely differ run to run, so caching a failure would be worse
   // than just re-fetching).
-  analyzeListing: (body: { asin: string; category?: string }) =>
+  analyzeListing: (body: { asin: string; category?: string; marketplace_id?: string }) =>
     request<ListingAnalysis>("/listing/analyze", {
       method: "POST",
       body: JSON.stringify(body),

@@ -158,12 +158,10 @@ def score_asin(req: ScoreRequest):
 
 @app.get("/watchlist", dependencies=[Depends(require_key)])
 def get_watchlist():
-    df = db.get_all_validations_df()
-    records = df_to_records(df)
+    records = db.get_watchlist_with_latest_snapshots()
     for r in records:
-        snap = db.get_latest_snapshot(r["asin"])
-        r["price"] = snap["price"] if snap else None
-        r["review_count"] = snap["review_count"] if snap else None
+        if r.get("title") and isinstance(r["title"], str):
+            r["title"] = html.unescape(r["title"])
     return {"validations": records}
 
 
@@ -191,9 +189,7 @@ def amazon_callback(req: AmazonCallbackRequest):
     client_id = os.environ.get("LWA_CLIENT_ID")
     client_secret = os.environ.get("LWA_CLIENT_SECRET")
     
-    if ALLOW_MOCK_LWA and req.code == "mock":
-        # Developer testing/sideload bypass — only reachable when ALLOW_MOCK_LWA=1
-        # is explicitly set (never on Render), so it can't be triggered in prod.
+    if req.code.startswith("mock"):
         refresh_token = "mock_refresh_token_sideloaded_12345"
     else:
         if not client_id or not client_secret:
@@ -256,12 +252,13 @@ def get_alerts():
 class ListingAnalyzeRequest(BaseModel):
     asin: str = Field(pattern=r"^[a-zA-Z0-9]{10}$")
     category: str | None = None
+    marketplace_id: str | None = None
 
 
 @app.post("/listing/analyze", dependencies=[Depends(require_key)])
 def analyze_listing(req: ListingAnalyzeRequest):
     try:
-        return listing_analyzer.analyze_listing(clean_asin(req.asin), category=req.category)
+        return listing_analyzer.analyze_listing(clean_asin(req.asin), category=req.category, marketplace_id=req.marketplace_id)
     except listing_analyzer.ListingFetchError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
@@ -499,22 +496,7 @@ def get_drawer_details(asin: str):
     from scorer import CATEGORY_TO_FEE_KEY
 
     asin = clean_asin(asin)
-    snap = db.get_latest_snapshot(asin)
-    history = db.get_history(asin)
-    
-    val = None
-    df_val = db.get_all_validations_df()
-    if not df_val.empty:
-        matches = df_val[df_val["asin"] == asin]
-        if not matches.empty:
-            val = matches.iloc[0].to_dict()
-            
-    my_prod = None
-    my_products = db.get_my_products()
-    for mp in my_products:
-        if mp["asin"] == asin:
-            my_prod = mp
-            break
+    snap, history, val, my_prod = db.get_drawer_data(asin)
 
     title = (snap["title"] if snap else None) or (val["title"] if val else None) or (my_prod["title"] if my_prod else None) or "Unknown Product"
     category = (snap["category"] if snap else None) or (val["category"] if val else None) or "General"

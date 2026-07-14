@@ -316,6 +316,74 @@ def get_seller_credentials():
             return rows
 
 
+def get_watchlist_with_latest_snapshots():
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT v.*, s.price, s.review_count
+                   FROM validations v
+                   LEFT JOIN (
+                       SELECT DISTINCT ON (asin) asin, price, review_count
+                       FROM snapshots
+                       ORDER BY asin, collected_at DESC
+                   ) s ON v.asin = s.asin
+                   ORDER BY v.validated_at DESC"""
+            )
+            return [dict(r) for r in cur.fetchall()]
+
+
+def get_snapshots_for_asins(asins):
+    if not asins:
+        return []
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM snapshots WHERE asin IN %s ORDER BY collected_at ASC",
+                (tuple(asins),)
+            )
+            return [dict(r) for r in cur.fetchall()]
+
+
+def get_latest_runs_by_category_list_type():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT category, list_type, MAX(collected_at) FROM snapshots GROUP BY category, list_type"
+            )
+            return {(row[0], row[1]): row[2] for row in cur.fetchall()}
+
+
+def get_drawer_data(asin):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            # 1. Latest snapshot
+            cur.execute("SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at DESC LIMIT 1", (asin,))
+            snap = cur.fetchone()
+            if snap:
+                snap = dict(snap)
+                if snap.get("title"):
+                    snap["title"] = html.unescape(snap["title"])
+
+            # 2. History (last 7)
+            cur.execute("SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at DESC LIMIT 7", (asin,))
+            history = [dict(r) for r in cur.fetchall()]
+            history.reverse()
+
+            # 3. Validation matching this ASIN
+            cur.execute("SELECT * FROM validations WHERE asin = %s LIMIT 1", (asin,))
+            val = cur.fetchone()
+            if val:
+                val = dict(val)
+
+            # 4. My Product matching this ASIN
+            cur.execute("SELECT * FROM my_products WHERE asin = %s LIMIT 1", (asin,))
+            my_prod = cur.fetchone()
+            if my_prod:
+                my_prod = dict(my_prod)
+
+            return snap, history, val, my_prod
+
+
 if __name__ == "__main__":
     init_db()
     print("Initialized Supabase Postgres schema.")

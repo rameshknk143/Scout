@@ -150,14 +150,19 @@ def compute_alerts():
     if not watched:
         return []
 
-    df = db.get_all_snapshots_df()
-    latest_run_by_list = {}
-    if not df.empty:
-        latest_run_by_list = df.groupby(["category", "list_type"])["collected_at"].max().to_dict()
+    asins = [w["asin"] for w in watched]
+    all_snaps = db.get_snapshots_for_asins(asins)
+
+    snaps_by_asin = {}
+    for snap in all_snaps:
+        asin = snap["asin"]
+        snaps_by_asin.setdefault(asin, []).append(snap)
+
+    latest_run_by_list = db.get_latest_runs_by_category_list_type()
 
     all_alerts = []
     for w in watched:
-        history = db.get_history(w["asin"])
+        history = snaps_by_asin.get(w["asin"], [])
         if not history:
             continue
         title = w["title"] or history[-1]["title"] or w["asin"]
