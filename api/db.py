@@ -17,22 +17,35 @@ from cryptography.fernet import Fernet, InvalidToken
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
-TOKEN_ENCRYPTION_KEY = os.environ["TOKEN_ENCRYPTION_KEY"]
-_fernet = Fernet(TOKEN_ENCRYPTION_KEY.encode())
+# Fernet is built lazily, only when a seller token is actually
+# encrypted/decrypted. This keeps token handling fail-closed (a missing
+# TOKEN_ENCRYPTION_KEY raises the moment you try to store/read credentials)
+# WITHOUT crashing the whole API — and every non-Amazon feature — at import
+# time just because the key isn't configured. The nightly collector never
+# touches tokens, so it's unaffected either way.
+def _get_fernet():
+    key = os.environ.get("TOKEN_ENCRYPTION_KEY")
+    if not key:
+        raise RuntimeError(
+            "TOKEN_ENCRYPTION_KEY is not set — refusing to store or read Amazon "
+            "seller credentials in plaintext. Set it in the API server environment."
+        )
+    return Fernet(key.encode())
 
 
 def _encrypt_token(value):
     if value:
-        return _fernet.encrypt(value.encode()).decode()
+        return _get_fernet().encrypt(value.encode()).decode()
     return value
 
 
 def _decrypt_token(value):
     if value:
         try:
-            return _fernet.decrypt(value.encode()).decode()
+            return _get_fernet().decrypt(value.encode()).decode()
         except InvalidToken:
-            return value  # legacy row saved before encryption was enabled
+            # Legacy plaintext tokens are no longer allowed for security.
+            return None
     return value
 
 SCHEMA = """
