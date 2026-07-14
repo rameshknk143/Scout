@@ -3,8 +3,8 @@ import ListingClient from "./listing-client";
 export default function ListingPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Listing Quality Score</h1>
-      <p className="text-muted text-sm mb-6">
+      <h1 className="text-xl font-bold tracking-tight text-white mb-1 font-sans">Listing Quality Score</h1>
+      <p className="text-zinc-400 text-xs font-medium mt-1 mb-6">
         Paste an ASIN, get a rule-based read on title/bullet/image completeness and how it
         stacks up against its category — no AI, just objective checks against the live page.
       </p>

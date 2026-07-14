@@ -29,12 +29,12 @@ export default function AlertStrip({ alerts }: AlertStripProps) {
             key={alert.id}
             className={`flex items-center gap-3 px-3.5 py-1.5 rounded-lg border text-xs font-semibold shadow-sm transition-all ${
               isCritical
-                ? "bg-red-50 border-red-200/80 text-red-700"
+                ? "bg-red-500/10 border-red-500/20 text-red-400"
                 : isWarning
-                ? "bg-amber-50 border-amber-200/80 text-amber-800"
+                ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
                 : isSuccess
-                ? "bg-emerald-50 border-emerald-200/80 text-emerald-800"
-                : "bg-blue-50 border-blue-200/80 text-blue-800"
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                : "bg-blue-500/10 border-blue-500/20 text-blue-400"
             }`}
           >
             {/* Status light dot */}

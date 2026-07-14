@@ -196,26 +196,26 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
       </div>
 
       {/* Recommended Next Actions */}
-      <div className="glass-panel p-4 bg-white border border-zinc-200/80 shadow-sm rounded-xl">
-        <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-3">
+      <div className="glass-panel p-4 bg-[#111625] border border-white/5 shadow-sm rounded-xl">
+        <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-3">
           ⚡ Recommended Next Actions
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {lowStockAsin ? (
-            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-                Restock ASIN <strong className="font-mono text-zinc-950">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
+            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
+                Restock ASIN <strong className="font-mono text-white">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
               </p>
-              <Link href="/inventory" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+              <Link href="/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 View Inventory Details →
               </Link>
             </div>
           ) : (
-            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
+            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
                 ✅ Catalog stock levels are healthy. No active restock alerts required.
               </p>
-              <Link href="/inventory" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+              <Link href="/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Manage Inventory →
               </Link>
             </div>
@@ -225,26 +225,26 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
             <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
               Competitor price fell by 12% on matching ASIN. Review your price strategy in the Profit Calculator.
             </p>
-            <Link href="/profit-calculator" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+            <Link href="/profit-calculator" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
               Calculate Margins →
             </Link>
           </div>
 
           {lowQualityAsin ? (
-            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-                Listing quality score is low on ASIN <strong className="font-mono text-zinc-950">{lowQualityAsin}</strong>. Add high-volume keywords to title.
+            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
+                Listing quality score is low on ASIN <strong className="font-mono text-white">{lowQualityAsin}</strong>. Add high-volume keywords to title.
               </p>
-              <Link href={`/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+              <Link href={`/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Optimize Listing →
               </Link>
             </div>
           ) : (
-            <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
+            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
                 ✅ Watchlist opportunity scores are optimal. All items meet the quality threshold.
               </p>
-              <Link href="/listing-health" className="text-[10px] font-bold text-zinc-950 hover:underline mt-2.5 inline-block">
+              <Link href="/listing-health" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Audit Listing Health →
               </Link>
             </div>
@@ -253,14 +253,14 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
       </div>
 
       {/* 3. Primary Dashboard Tabs System */}
-      <div className="border-b border-zinc-200 flex items-center justify-between">
+      <div className="border-b border-white/5 flex items-center justify-between">
         <div className="flex gap-4">
           <button
             onClick={() => setActiveDashboardTab("watchlist")}
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "watchlist"
-                ? "border-zinc-900 text-zinc-950"
-                : "border-transparent text-zinc-400 hover:text-zinc-600"
+                ? "border-[#3b82f6] text-[#3b82f6]"
+                : "border-transparent text-zinc-400 hover:text-white"
             }`}
           >
             📋 Catalog & Watchlist
@@ -269,8 +269,8 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
             onClick={() => setActiveDashboardTab("radar")}
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "radar"
-                ? "border-zinc-900 text-zinc-950"
-                : "border-transparent text-zinc-400 hover:text-zinc-600"
+                ? "border-[#3b82f6] text-[#3b82f6]"
+                : "border-transparent text-zinc-400 hover:text-white"
             }`}
           >
             ⚡ Business Performance & Radar
@@ -279,8 +279,8 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
             onClick={() => setActiveDashboardTab("bestsellers")}
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "bestsellers"
-                ? "border-zinc-900 text-zinc-950"
-                : "border-transparent text-zinc-400 hover:text-zinc-600"
+                ? "border-[#3b82f6] text-[#3b82f6]"
+                : "border-transparent text-zinc-400 hover:text-white"
             }`}
           >
             🔭 Bestsellers Category Explorer
@@ -293,14 +293,14 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
         {activeDashboardTab === "watchlist" && (
           <div className="space-y-4">
             {/* Table Filters & Toolbar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-zinc-200/80 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#111625] p-4 rounded-xl border border-white/5 shadow-sm">
               <div className="flex items-center gap-3 flex-1 max-w-sm">
                 <input
                   type="text"
                   placeholder="Search validated products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input py-1.5 text-xs text-zinc-900"
+                  className="input py-1.5 text-xs text-white"
                 />
               </div>
 
@@ -309,7 +309,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                 <select
                   value={selectedCategoryFilter}
                   onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  className="text-xs font-semibold text-zinc-600 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-400 cursor-pointer"
+                  className="text-xs font-semibold text-zinc-300 bg-[#181d2c] border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 cursor-pointer"
                 >
                   <option value="all">All Categories</option>
                   {Array.from(new Set(watchlist.map((w) => w.category).filter(Boolean))).map((cat) => (
@@ -323,7 +323,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                 <select
                   value={selectedVerdictFilter}
                   onChange={(e) => setSelectedVerdictFilter(e.target.value)}
-                  className="text-xs font-semibold text-zinc-600 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-400 cursor-pointer"
+                  className="text-xs font-semibold text-zinc-300 bg-[#181d2c] border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 cursor-pointer"
                 >
                   <option value="all">All Verdicts</option>
                   <option value="PURSUE">🟢 PURSUE</option>
@@ -344,7 +344,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     link.click();
                     document.body.removeChild(link);
                   }}
-                  className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-1.5 rounded-lg hover:bg-zinc-50 cursor-pointer transition-colors shadow-sm"
+                  className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors shadow-sm"
                 >
                   Export CSV
                 </button>
@@ -352,25 +352,25 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
             </div>
 
             {/* Main Watched Catalog Table */}
-            <div className="bg-white rounded-xl border border-zinc-200/80 shadow-sm overflow-hidden">
+            <div className="bg-transparent overflow-hidden">
               <Table
                 columns={[
                   {
                     key: "asin",
                     header: "ASIN",
-                    cellClassName: "font-mono text-zinc-600 font-bold",
+                    cellClassName: "font-mono text-zinc-400 font-bold",
                     render: (row) => row.asin,
                   },
                   {
                     key: "title",
                     header: "Product Title",
-                    cellClassName: "max-w-md truncate text-zinc-900 font-medium",
+                    cellClassName: "max-w-md truncate text-white font-medium",
                     render: (row) => row.title || "Unresolved Product Title",
                   },
                   {
                     key: "category",
                     header: "Category",
-                    cellClassName: "text-zinc-500 font-semibold",
+                    cellClassName: "text-zinc-400 font-semibold",
                     render: (row) => row.category || "General",
                   },
                   {
@@ -379,10 +379,10 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     render: (row) => (
                       <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                         row.score >= 70
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                           : row.score >= 50
-                          ? "bg-amber-50 text-amber-700 border border-amber-100"
-                          : "bg-red-50 text-red-700 border border-red-100"
+                          ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                          : "bg-red-500/10 text-red-400 border border-red-500/20"
                       }`}>
                         {row.score} / 100
                       </span>
@@ -391,7 +391,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                   {
                     key: "buy_price",
                     header: "Buy Price",
-                    cellClassName: "text-zinc-800 font-bold",
+                    cellClassName: "text-white font-bold font-mono",
                     render: (row) => `₹${row.buy_price}`,
                   },
                   {
@@ -400,10 +400,10 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     render: (row) => (
                       <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md border ${
                         row.verdict === "PURSUE"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200/50"
+                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/25"
                           : row.verdict === "WATCH"
-                          ? "bg-amber-50 text-amber-800 border-amber-200/50"
-                          : "bg-red-50 text-red-700 border-red-200/50"
+                          ? "bg-amber-500/10 text-amber-400 border-amber-500/25"
+                          : "bg-red-500/10 text-red-400 border-red-500/25"
                       }`}>
                         {row.verdict}
                       </span>
@@ -418,7 +418,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                           e.stopPropagation();
                           handleRowClick(row);
                         }}
-                        className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded transition-colors cursor-pointer"
+                        className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors cursor-pointer"
                       >
                         Inspect Details
                       </button>
@@ -436,54 +436,54 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
         {activeDashboardTab === "radar" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Sales & Revenue Chart */}
-            <div className="md:col-span-2 glass-panel p-5 bg-white">
+            <div className="md:col-span-2 glass-panel p-5 bg-[#111625]">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-950">Reseller Performance Trend</h3>
-                  <p className="text-[11px] text-zinc-500 font-semibold mt-0.5">Estimated Weekly Sourcing Margin Metrics</p>
+                  <h3 className="text-sm font-bold text-white">Reseller Performance Trend</h3>
+                  <p className="text-[11px] text-zinc-400 font-semibold mt-0.5">Estimated Weekly Sourcing Margin Metrics</p>
                 </div>
               </div>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={revenueChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-                    <XAxis dataKey="name" stroke="#71717a" fontSize={11} />
-                    <YAxis yAxisId="left" stroke="#71717a" fontSize={11} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#71717a" fontSize={11} />
-                    <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 8 }} />
-                    <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="#18181b" strokeWidth={2} dot={{ r: 4 }} />
-                    <Line yAxisId="right" type="monotone" dataKey="Margin" stroke="#047857" strokeWidth={2} dot={{ r: 4 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                    <YAxis yAxisId="left" stroke="#64748b" fontSize={11} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#64748b" fontSize={11} />
+                    <Tooltip contentStyle={{ fontSize: 11, background: "#111625", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#f8fafc" }} />
+                    <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
+                    <Line yAxisId="right" type="monotone" dataKey="Margin" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Sourcing Opportunity Radar */}
-            <div className="glass-panel p-5 bg-white space-y-4">
+            <div className="glass-panel p-5 bg-[#111625] space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-zinc-950">Opportunity Radar</h3>
-                <p className="text-[11px] text-zinc-500 font-semibold mt-0.5">Top-scoring opportunities to launch</p>
+                <h3 className="text-sm font-bold text-white">Opportunity Radar</h3>
+                <p className="text-[11px] text-zinc-400 font-semibold mt-0.5">Top-scoring opportunities to launch</p>
               </div>
               <div className="space-y-3">
                 {watchlist.slice(0, 4).map((item) => (
                   <div
                     key={item.id}
                     onClick={() => handleRowClick(item)}
-                    className="p-3 border border-zinc-200/80 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-zinc-50/20 hover:bg-zinc-50/50 flex items-center justify-between"
+                    className="p-3 border border-white/5 rounded-xl hover:border-[#3b82f6]/40 transition-all cursor-pointer bg-[#181d2c]/20 hover:bg-[#181d2c]/40 flex items-center justify-between"
                   >
                     <div className="flex-1 min-w-0 pr-3">
-                      <span className="text-[10px] font-bold text-zinc-400 tracking-wider block uppercase">
+                      <span className="text-[10px] font-bold text-zinc-500 tracking-wider block uppercase">
                         {item.category || "General"}
                       </span>
-                      <span className="text-xs font-bold text-zinc-800 truncate block mt-0.5">
+                      <span className="text-xs font-bold text-white truncate block mt-0.5">
                         {item.title || "Validated Product"}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-bold text-emerald-700 block">
+                      <span className="text-xs font-bold text-emerald-400 block font-mono">
                         Score: {item.score}
                       </span>
-                      <span className="text-[9px] font-bold text-zinc-500 block uppercase tracking-wider mt-0.5">
+                      <span className="text-[9px] font-bold text-zinc-400 block uppercase tracking-wider mt-0.5">
                         {item.verdict}
                       </span>
                     </div>
@@ -502,8 +502,8 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
         {activeDashboardTab === "bestsellers" && (
           <div className="space-y-6">
             {/* Category selection bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-zinc-200/80 shadow-sm">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-900">Bestseller List Analysis</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-[#111625] p-4 rounded-xl border border-white/5 shadow-sm">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-white">Bestseller List Analysis</h2>
               <div className="flex flex-wrap gap-2">
                 <Select
                   value={listType}
@@ -544,12 +544,12 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
               {bestsellerTab === "entrants" && (
                 <Table
                   columns={[
-                    { key: "rank", header: "Rank", render: (p) => `#${p.rank}`, cellClassName: "text-zinc-500 font-bold" },
+                    { key: "rank", header: "Rank", render: (p) => `#${p.rank}`, cellClassName: "text-zinc-400 font-bold" },
                     {
                       key: "title",
                       header: "Product Title",
                       render: (p) => (
-                        <div className="max-w-md truncate font-medium text-zinc-800">
+                        <div className="max-w-md truncate font-medium text-zinc-300">
                           {p.title || "Unknown Bestseller Product"}
                         </div>
                       ),
@@ -557,13 +557,13 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     {
                       key: "price",
                       header: "Price",
-                      cellClassName: "font-bold text-zinc-950",
+                      cellClassName: "font-bold text-white font-mono",
                       render: (p) => (p.price ? `₹${p.price}` : "—"),
                     },
                     {
                       key: "reviews",
                       header: "Reviews",
-                      cellClassName: "text-zinc-600 font-semibold",
+                      cellClassName: "text-zinc-400 font-semibold font-mono",
                       render: (p) => (p.review_count ? p.review_count.toLocaleString() : "0"),
                     },
                     {
@@ -572,7 +572,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                       render: (p) => (
                         <Link
                           href={`/validator?asin=${p.asin}`}
-                          className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded transition-colors"
+                          className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                         >
                           Validate
                         </Link>
@@ -591,14 +591,14 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     {
                       key: "asin",
                       header: "ASIN",
-                      cellClassName: "font-mono text-zinc-500 font-bold",
+                      cellClassName: "font-mono text-zinc-400 font-bold",
                       render: (p) => p.asin,
                     },
                     {
                       key: "title",
                       header: "Product Title",
                       render: (p) => (
-                        <div className="max-w-md truncate font-medium text-zinc-800">
+                        <div className="max-w-md truncate font-medium text-zinc-300">
                           {p.title}
                         </div>
                       ),
@@ -606,7 +606,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     {
                       key: "category",
                       header: "Category",
-                      cellClassName: "text-zinc-500 font-semibold",
+                      cellClassName: "text-zinc-400 font-semibold",
                       render: (p) => p.category,
                     },
                     {
@@ -615,7 +615,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                       render: (p) => {
                         const isUp = p.delta < 0; // Rank number getting smaller is an improvement!
                         return (
-                          <span className={`text-xs font-bold ${isUp ? "text-emerald-700" : "text-red-700"}`}>
+                          <span className={`text-xs font-bold ${isUp ? "text-emerald-400" : "text-red-400"}`}>
                             {isUp ? "▲" : "▼"} {Math.abs(p.delta)} positions
                           </span>
                         );
@@ -627,7 +627,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                       render: (p) => (
                         <Link
                           href={`/validator?asin=${p.asin}`}
-                          className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded transition-colors"
+                          className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                         >
                           Validate
                         </Link>
@@ -646,14 +646,14 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     {
                       key: "asin",
                       header: "ASIN",
-                      cellClassName: "font-mono text-zinc-500 font-bold",
+                      cellClassName: "font-mono text-zinc-400 font-bold",
                       render: (p) => p.asin,
                     },
                     {
                       key: "title",
                       header: "Product Title",
                       render: (p) => (
-                        <div className="max-w-md truncate font-medium text-zinc-800">
+                        <div className="max-w-md truncate font-medium text-zinc-300">
                           {p.title}
                         </div>
                       ),
@@ -661,13 +661,13 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     {
                       key: "categories",
                       header: "Featured Categories",
-                      cellClassName: "text-zinc-500 font-semibold max-w-xs truncate",
+                      cellClassName: "text-zinc-400 font-semibold max-w-xs truncate",
                       render: (p) => p.categories,
                     },
                     {
                       key: "num_categories",
                       header: "Featured Count",
-                      cellClassName: "font-bold text-zinc-950",
+                      cellClassName: "font-bold text-white font-mono",
                       render: (p) => p.num_categories,
                     },
                     {
@@ -676,7 +676,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                       render: (p) => (
                         <Link
                           href={`/validator?asin=${p.asin}`}
-                          className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded transition-colors"
+                          className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                         >
                           Validate
                         </Link>

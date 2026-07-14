@@ -78,18 +78,18 @@ export default function InventoryClient() {
     {
       key: "asin",
       header: "ASIN",
-      render: (p: MyProduct) => <span className="font-mono text-xs font-semibold text-zinc-900">{p.asin}</span>,
+      render: (p: MyProduct) => <span className="font-mono text-xs font-semibold text-zinc-300">{p.asin}</span>,
     },
     {
       key: "sku",
       header: "SKU",
-      render: (p: MyProduct) => <span className="font-mono text-[11px] font-medium text-zinc-500">{p.sku || "—"}</span>,
+      render: (p: MyProduct) => <span className="font-mono text-[11px] font-medium text-zinc-400">{p.sku || "—"}</span>,
     },
     {
       key: "title",
       header: "Product / Niche",
       render: (p: MyProduct) => (
-        <span className="font-medium text-zinc-900 max-w-xs truncate block" title={p.title || p.asin}>
+        <span className="font-medium text-white max-w-xs truncate block" title={p.title || p.asin}>
           {p.title || "—"}
         </span>
       ),
@@ -104,7 +104,7 @@ export default function InventoryClient() {
               type="number"
               value={editStock}
               onChange={(e) => setEditStock(e.target.value)}
-              className="w-16 border border-zinc-300 rounded p-1 text-xs outline-none focus:border-zinc-500 font-semibold"
+              className="w-16 border border-white/10 rounded p-1 text-xs outline-none focus:border-zinc-500 font-semibold bg-[#181d2c] text-white font-mono"
             />
           );
         }
@@ -112,7 +112,7 @@ export default function InventoryClient() {
         const daysRemaining = p.current_stock / velocity;
         const isLow = daysRemaining <= p.lead_time_days;
         return (
-          <span className={`font-bold ${isLow ? "text-red-700 font-extrabold" : "text-zinc-900"}`}>
+          <span className={`font-bold font-mono ${isLow ? "text-red-400 font-extrabold" : "text-white"}`}>
             {p.current_stock} units
           </span>
         );
@@ -128,11 +128,11 @@ export default function InventoryClient() {
               type="number"
               value={editLeadTime}
               onChange={(e) => setEditLeadTime(e.target.value)}
-              className="w-16 border border-zinc-300 rounded p-1 text-xs outline-none focus:border-zinc-500 font-semibold"
+              className="w-16 border border-white/10 rounded p-1 text-xs outline-none focus:border-zinc-500 font-semibold bg-[#181d2c] text-white font-mono"
             />
           );
         }
-        return <span className="font-semibold text-zinc-700">{p.lead_time_days} days</span>;
+        return <span className="font-semibold text-zinc-300 font-mono">{p.lead_time_days} days</span>;
       },
     },
     {
@@ -144,10 +144,10 @@ export default function InventoryClient() {
         const isLow = daysRemaining <= p.lead_time_days;
         return (
           <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+            className={`text-[10px] font-bold px-2 py-0.5 rounded border font-mono ${
               isLow
-                ? "bg-red-50 text-red-800 border-red-100 animate-pulse"
-                : "bg-emerald-50 text-emerald-800 border-emerald-100"
+                ? "bg-red-500/10 text-red-400 border-red-500/20 animate-pulse"
+                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
             }`}
           >
             {daysRemaining} days remaining
@@ -165,7 +165,7 @@ export default function InventoryClient() {
         
         if (reorderInDays <= 0) {
           return (
-            <span className="text-[10px] font-extrabold text-red-700 uppercase tracking-wide">
+            <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-wide font-mono animate-pulse">
               ⚠️ Order Immediately
             </span>
           );
@@ -174,9 +174,9 @@ export default function InventoryClient() {
         const reorderDate = new Date();
         reorderDate.setDate(reorderDate.getDate() + reorderInDays);
         return (
-          <span className="font-semibold text-zinc-800">
+          <span className="font-semibold text-zinc-300 font-mono">
             {reorderDate.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
-            <span className="text-[10px] text-zinc-400 font-semibold ml-1.5">(in {reorderInDays}d)</span>
+            <span className="text-[10px] text-zinc-500 font-semibold ml-1.5 font-mono">(in {reorderInDays}d)</span>
           </span>
         );
       },
@@ -190,13 +190,13 @@ export default function InventoryClient() {
             <div className="flex gap-1">
               <button
                 onClick={() => handleSaveEdit(p)}
-                className="text-[10px] font-bold text-white bg-zinc-900 hover:bg-zinc-950 px-2 py-1 rounded transition-colors cursor-pointer"
+                className="btn-primary text-[10px] py-1 px-2.5"
               >
                 Save
               </button>
               <button
                 onClick={() => setEditingAsin(null)}
-                className="text-[10px] font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded border border-zinc-200 transition-colors cursor-pointer"
+                className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -206,7 +206,7 @@ export default function InventoryClient() {
         return (
           <button
             onClick={() => handleStartEdit(p)}
-            className="text-[10px] font-bold text-zinc-700 bg-white hover:bg-zinc-50 border border-zinc-200 px-2 py-1 rounded transition-colors cursor-pointer shadow-sm"
+            className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors cursor-pointer shadow-sm"
           >
             Update Levels
           </button>
@@ -231,12 +231,12 @@ export default function InventoryClient() {
       </div>
 
       {/* Main Table Panel */}
-      <div className="bg-white border border-zinc-200/80 rounded-xl p-5 shadow-sm space-y-4">
-        <div className="text-sm font-semibold text-zinc-950">Active Stock Audits</div>
+      <div className="glass-panel p-5 bg-[#111625]/20 border border-white/5 rounded-xl shadow-sm space-y-4">
+        <div className="text-sm font-semibold text-white">Active Stock Audits</div>
         {isPending ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-6 h-6 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-            <div className="text-xs text-zinc-400 font-semibold">Updating stock analytics...</div>
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-xs text-zinc-500 font-semibold font-mono">Updating stock analytics...</div>
           </div>
         ) : (
           <Table

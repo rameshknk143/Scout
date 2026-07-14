@@ -26,16 +26,16 @@ export default function MetricCard({
     <div
       onClick={onClick}
       className={`glass-panel p-4 flex flex-col justify-between transition-all ${
-        onClick ? "hover:border-zinc-300 cursor-pointer active:scale-[0.99]" : "cursor-default"
+        onClick ? "hover:border-[#3b82f6]/40 cursor-pointer active:scale-[0.99]" : "cursor-default"
       }`}
     >
       <div className="flex items-start justify-between">
-        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
           {title}
         </span>
         {tooltip && (
           <span
-            className="text-[10px] text-zinc-400 hover:text-zinc-600 cursor-help"
+            className="text-[10px] text-zinc-500 hover:text-zinc-300 cursor-help"
             title={tooltip}
           >
             ⓘ
@@ -44,7 +44,7 @@ export default function MetricCard({
       </div>
 
       <div className="mt-2 flex items-baseline justify-between gap-2">
-        <span className="text-xl font-bold tracking-tight text-zinc-900">
+        <span className="text-xl font-bold tracking-tight text-white font-mono">
           {value}
         </span>
 
@@ -52,10 +52,10 @@ export default function MetricCard({
           <span
             className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
               isPositive
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200/50"
+                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                 : isNegative
-                ? "bg-red-50 text-red-700 border border-red-200/50"
-                : "bg-zinc-50 text-zinc-600 border border-zinc-200/50"
+                ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                : "bg-zinc-800 text-zinc-400 border border-zinc-700/50"
             }`}
           >
             {isPositive ? "▲" : isNegative ? "▼" : ""} {change}
@@ -76,10 +76,10 @@ export default function MetricCard({
                 style={{ height: `${heightPct}%` }}
                 className={`flex-1 rounded-sm transition-all ${
                   isPositive 
-                    ? "bg-emerald-600/30 group-hover:bg-emerald-600/50" 
+                    ? "bg-emerald-500/30 hover:bg-emerald-500/50" 
                     : isNegative 
-                      ? "bg-red-600/30 group-hover:bg-red-600/50" 
-                      : "bg-zinc-300 group-hover:bg-zinc-400"
+                      ? "bg-red-500/30 hover:bg-red-500/50" 
+                      : "bg-zinc-700 hover:bg-zinc-600"
                 }`}
               />
             );

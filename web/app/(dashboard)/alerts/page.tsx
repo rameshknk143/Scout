@@ -16,8 +16,8 @@ async function AlertsData() {
 export default function AlertsPage() {
   return (
     <div>
-      <h1 className="text-xl font-bold tracking-tight text-zinc-950">Activity / Alerts Log</h1>
-      <p className="text-zinc-500 text-xs font-medium mt-1 mb-6">
+      <h1 className="text-xl font-bold tracking-tight text-white font-sans">Activity / Alerts Log</h1>
+      <p className="text-zinc-400 text-xs font-medium mt-1 mb-6">
         Price, rank, and review-count changes detected across your catalog.
       </p>
       <Suspense fallback={<div className="text-muted text-sm">Loading alerts…</div>}>

@@ -125,13 +125,13 @@ export default function ListingClient() {
   return (
     <div className="space-y-6">
       {/* Tabs Switcher */}
-      <div className="flex border-b border-zinc-200">
+      <div className="flex border-b border-white/5">
         <button
           onClick={() => setActiveMode("analyze")}
           className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
             activeMode === "analyze"
-              ? "border-zinc-950 text-zinc-950 font-extrabold animate-pulse-subtle"
-              : "border-transparent text-zinc-400 hover:text-zinc-600"
+              ? "border-white text-white font-extrabold"
+              : "border-transparent text-zinc-500 hover:text-zinc-300"
           }`}
         >
           🔍 Live Listing Analyzer
@@ -140,8 +140,8 @@ export default function ListingClient() {
           onClick={() => setActiveMode("scribbles")}
           className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
             activeMode === "scribbles"
-              ? "border-zinc-950 text-zinc-950 font-extrabold animate-pulse-subtle"
-              : "border-transparent text-zinc-400 hover:text-zinc-600"
+              ? "border-white text-white font-extrabold"
+              : "border-transparent text-zinc-500 hover:text-zinc-300"
           }`}
         >
           ✨ Scribbles Keyword Sandbox
@@ -150,19 +150,19 @@ export default function ListingClient() {
 
       {activeMode === "analyze" && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-5 bg-white">
+          <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-5 bg-[#111625]">
             <div>
-              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Amazon ASIN</label>
+              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Amazon ASIN</label>
               <input
                 value={asin}
                 onChange={(e) => setAsin(e.target.value)}
                 placeholder="B0D4DZ7WL2"
                 required
-                className="input font-mono text-sm"
+                className="input font-mono text-sm text-white"
               />
             </div>
             <Field label="Category (optional — helps benchmark against peers)">
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="input cursor-pointer">
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className="input cursor-pointer text-white bg-[#181d2c]">
                 <option value="">(auto-detect from Scout's own data)</option>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -190,9 +190,9 @@ export default function ListingClient() {
             <Card>
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
-                  <div className="text-xs text-muted mb-1">{result.asin}</div>
-                  <div className="font-semibold leading-snug">{result.title ?? "(title not found)"}</div>
-                  <div className="text-xs text-muted mt-1">
+                  <div className="text-xs text-muted mb-1 font-mono">{result.asin}</div>
+                  <div className="font-semibold leading-snug text-white">{result.title ?? "(title not found)"}</div>
+                  <div className="text-xs text-muted mt-1 font-mono">
                     {result.category ?? "unknown category"}
                     {result.price != null && ` · ₹${result.price.toLocaleString("en-IN")}`}
                     {result.rating != null && ` · ${result.rating} ⭐`}
@@ -200,8 +200,8 @@ export default function ListingClient() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-4xl font-extrabold text-zinc-950 tracking-tight">{result.score}</div>
-                  <div className="text-xs text-zinc-400 mt-1.5">/ 100 Score</div>
+                  <div className="text-4xl font-extrabold text-white tracking-tight font-mono">{result.score}</div>
+                  <div className="text-xs text-zinc-500 mt-1.5 font-mono">/ 100 Score</div>
                 </div>
               </div>
 
@@ -211,10 +211,10 @@ export default function ListingClient() {
                     key={key}
                     label={COMPONENT_LABELS[key] ?? key}
                     value={
-                      <>
+                      <span className="font-mono">
                         {value}
-                        <span className="text-zinc-400 text-xs">/100</span>
-                      </>
+                        <span className="text-zinc-500 text-xs">/100</span>
+                      </span>
                     }
                   />
                 ))}
@@ -228,12 +228,12 @@ export default function ListingClient() {
                 </div>
               )}
 
-              <div className="pt-3 border-t border-zinc-200/80 flex flex-wrap gap-2">
+              <div className="pt-3 border-t border-white/5 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={handleSuggest}
                   disabled={isSuggesting}
-                  className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-2 rounded-lg hover:bg-zinc-50 cursor-pointer shadow-sm transition-colors disabled:opacity-50"
+                  className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer shadow-sm transition-colors disabled:opacity-50"
                 >
                   {isSuggesting ? "Asking the AI…" : "✨ Suggest AI improvements"}
                 </button>
@@ -242,7 +242,7 @@ export default function ListingClient() {
                     type="button"
                     onClick={handleSummarizeReviews}
                     disabled={isSummarizing}
-                    className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-2 rounded-lg hover:bg-zinc-50 cursor-pointer shadow-sm transition-colors disabled:opacity-50"
+                    className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer shadow-sm transition-colors disabled:opacity-50"
                   >
                     {isSummarizing
                       ? "Reading reviews…"
@@ -252,26 +252,26 @@ export default function ListingClient() {
               </div>
 
               <div>
-                {suggestError && <div className="text-xs text-zinc-500 mt-3">{suggestError}</div>}
+                {suggestError && <div className="text-xs text-red-400 mt-3 font-semibold">{suggestError}</div>}
 
                 {suggestion && (
                   <div className="mt-4 space-y-3">
                     {suggestion.title && (
                       <div>
-                        <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Suggested title</div>
-                        <div className="text-xs font-medium text-zinc-900 bg-zinc-50 rounded-lg px-3 py-2 border border-zinc-200/60">
+                        <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Suggested title</div>
+                        <div className="text-xs font-medium text-white bg-[#181d2c] rounded-lg px-3 py-2 border border-white/5">
                           {suggestion.title}
                         </div>
                       </div>
                     )}
                     {suggestion.bullets.length > 0 && (
                       <div>
-                        <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Suggested bullets</div>
+                        <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Suggested bullets</div>
                         <ul className="space-y-1.5">
                           {suggestion.bullets.map((b, i) => (
                             <li
                               key={i}
-                              className="text-xs font-medium text-zinc-900 bg-zinc-50 rounded-lg px-3 py-2 border border-zinc-200/60 leading-relaxed"
+                              className="text-xs font-medium text-white bg-[#181d2c] rounded-lg px-3 py-2 border border-white/5 leading-relaxed"
                             >
                               {b}
                             </li>
@@ -279,24 +279,24 @@ export default function ListingClient() {
                         </ul>
                       </div>
                     )}
-                    <div className="text-[10px] text-zinc-400 font-semibold">
+                    <div className="text-[10px] text-zinc-500 font-semibold font-mono">
                       * AI-generated via a free model router — review before using, not auto-published.
                     </div>
                   </div>
                 )}
 
-                {reviewSummaryError && <div className="text-xs text-zinc-500 mt-3">{reviewSummaryError}</div>}
+                {reviewSummaryError && <div className="text-xs text-red-400 mt-3 font-semibold">{reviewSummaryError}</div>}
 
                 {reviewSummary && (
                   <div className="mt-4 space-y-3">
                     {reviewSummary.pros.length > 0 && (
                       <div>
-                        <div className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-1">Pros customers mention</div>
+                        <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">Pros customers mention</div>
                         <ul className="space-y-1.5">
                           {reviewSummary.pros.map((p, i) => (
                             <li
                               key={i}
-                              className="text-xs font-medium bg-emerald-50 text-emerald-900 rounded-lg px-3 py-2 border border-emerald-100"
+                              className="text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-lg px-3 py-2 border border-emerald-500/20"
                             >
                               {p}
                             </li>
@@ -306,12 +306,12 @@ export default function ListingClient() {
                     )}
                     {reviewSummary.cons.length > 0 && (
                       <div>
-                        <div className="text-[10px] font-bold text-red-700 uppercase tracking-wider mb-1">Cons customers mention</div>
+                        <div className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">Cons customers mention</div>
                         <ul className="space-y-1.5">
                           {reviewSummary.cons.map((c, i) => (
                             <li
                               key={i}
-                              className="text-xs font-medium bg-red-50 text-red-900 rounded-lg px-3 py-2 border border-red-100"
+                              className="text-xs font-medium bg-red-500/10 text-red-400 rounded-lg px-3 py-2 border border-red-500/20"
                             >
                               {c}
                             </li>
@@ -319,7 +319,7 @@ export default function ListingClient() {
                         </ul>
                       </div>
                     )}
-                    <div className="text-[10px] text-zinc-400 font-semibold">
+                    <div className="text-[10px] text-zinc-500 font-semibold font-mono">
                       * From {result.reviews.length} of Amazon&apos;s own featured reviews on this listing.
                     </div>
                   </div>
@@ -330,7 +330,7 @@ export default function ListingClient() {
 
           {result && result.peers.length > 0 && (
             <Card>
-              <div className="text-sm font-semibold mb-3 text-zinc-950">
+              <div className="text-sm font-semibold mb-3 text-white">
                 Category peers — top {result.peers.length} in {result.category ?? "this category"}
               </div>
               <Table
@@ -339,7 +339,7 @@ export default function ListingClient() {
                 rowKey={(p) => p.asin}
                 emptyText="No peer data for this category yet."
               />
-              <div className="text-xs text-zinc-400 mt-3 font-semibold">
+              <div className="text-xs text-zinc-500 mt-3 font-semibold font-mono">
                 * From Scout&apos;s own nightly-collected snapshot data — same source as Trend Radar.
               </div>
             </Card>
@@ -350,21 +350,21 @@ export default function ListingClient() {
       {activeMode === "scribbles" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 animate-in fade-in duration-200">
           {/* Keyword Bank Panel */}
-          <div className="lg:col-span-4 bg-white border border-zinc-200/85 rounded-xl p-5 shadow-sm space-y-5 flex flex-col">
+          <div className="lg:col-span-4 bg-[#111625] border border-white/5 rounded-xl p-5 shadow-sm space-y-5 flex flex-col">
             <div>
-              <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-1.5">
+              <span className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-wider block mb-1.5">
                 Keyword Bank (Enter newlines or commas)
               </span>
               <textarea
                 value={keywordInput}
                 onChange={(e) => setKeywordInput(e.target.value)}
                 placeholder="Paste keywords list..."
-                className="w-full h-36 border border-zinc-200 rounded-lg p-3 text-xs outline-none focus:border-zinc-400 text-zinc-950 leading-relaxed font-mono resize-none shadow-inner"
+                className="w-full h-36 border border-white/10 rounded-lg p-3 text-xs outline-none focus:border-zinc-500 text-white bg-[#181d2c] leading-relaxed font-mono resize-none shadow-inner"
               />
             </div>
 
             <div className="flex-1 space-y-2.5">
-              <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-wider block">
+              <span className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-wider block">
                 SEO Indexation Checks ({usedKeywords.size} / {targetKeywords.length} Used)
               </span>
               <div className="space-y-1.5 overflow-y-auto max-h-[360px] pr-1">
@@ -375,13 +375,13 @@ export default function ListingClient() {
                       key={i}
                       className={`flex items-center justify-between p-2 rounded border text-xs font-semibold transition-all ${
                         isUsed
-                          ? "bg-emerald-50 border-emerald-100 text-emerald-800 line-through decoration-emerald-300"
-                          : "bg-zinc-50 border-zinc-200/60 text-zinc-600"
+                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 line-through decoration-emerald-500/40"
+                          : "bg-[#181d2c]/50 border-white/5 text-zinc-400"
                       }`}
                     >
                       <span className="truncate pr-2">{kw}</span>
                       <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                        isUsed ? "bg-emerald-100/50 text-emerald-800" : "bg-zinc-200/60 text-zinc-500"
+                        isUsed ? "bg-emerald-500/20 text-emerald-400" : "bg-[#181d2c] text-zinc-500 border border-white/5"
                       }`}>
                         {isUsed ? "✓ Used" : "Unused"}
                       </span>
@@ -389,7 +389,7 @@ export default function ListingClient() {
                   );
                 })}
                 {targetKeywords.length === 0 && (
-                  <div className="text-xs text-zinc-400 font-semibold py-4 text-center">
+                  <div className="text-xs text-zinc-500 font-semibold py-4 text-center">
                     No keywords entered yet.
                   </div>
                 )}
@@ -398,12 +398,12 @@ export default function ListingClient() {
           </div>
 
           {/* Listing Draft Optimizer Editor */}
-          <div className="lg:col-span-8 bg-white border border-zinc-200/85 rounded-xl p-6 shadow-sm space-y-5">
+          <div className="lg:col-span-8 bg-[#111625]/20 border border-white/5 rounded-xl p-6 shadow-sm space-y-5">
             {/* Title Section */}
             <div>
               <div className="flex items-baseline justify-between mb-1.5">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Draft Product Title</span>
-                <span className={`text-[10px] font-mono font-bold ${titleDraft.length > 200 ? "text-amber-700 font-extrabold" : "text-zinc-400"}`}>
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Draft Product Title</span>
+                <span className={`text-[10px] font-mono font-bold ${titleDraft.length > 200 ? "text-amber-400 font-extrabold" : "text-zinc-500"}`}>
                   {titleDraft.length} / 200 characters
                 </span>
               </div>
@@ -412,13 +412,13 @@ export default function ListingClient() {
                 value={titleDraft}
                 onChange={(e) => setTitleDraft(e.target.value)}
                 placeholder="Draft your optimized product title..."
-                className="input text-zinc-950 font-medium"
+                className="input text-white font-medium bg-[#181d2c]"
               />
             </div>
 
             {/* Bullets Section */}
             <div className="space-y-4">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">
                 Features & Bullet Points (Drafting Checklist)
               </span>
               {[
@@ -430,8 +430,8 @@ export default function ListingClient() {
               ].map((b, idx) => (
                 <div key={idx} className="space-y-1">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{b.label}</span>
-                    <span className={`text-[9px] font-mono font-bold ${b.val.length > 500 ? "text-amber-700 font-extrabold" : "text-zinc-400"}`}>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{b.label}</span>
+                    <span className={`text-[9px] font-mono font-bold ${b.val.length > 500 ? "text-amber-400 font-extrabold" : "text-zinc-500"}`}>
                       {b.val.length} / 500 characters
                     </span>
                   </div>
@@ -440,7 +440,7 @@ export default function ListingClient() {
                     value={b.val}
                     onChange={(e) => b.set(e.target.value)}
                     placeholder={`Key feature copy block ${idx + 1}...`}
-                    className="input text-zinc-950 py-2 text-xs"
+                    className="input text-white py-2 text-xs bg-[#181d2c]"
                   />
                 </div>
               ))}
@@ -449,8 +449,8 @@ export default function ListingClient() {
             {/* Description Section */}
             <div>
               <div className="flex items-baseline justify-between mb-1.5">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Product Detailed Description</span>
-                <span className={`text-[10px] font-mono font-bold ${descriptionDraft.length > 2000 ? "text-amber-700 font-extrabold" : "text-zinc-400"}`}>
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Product Detailed Description</span>
+                <span className={`text-[10px] font-mono font-bold ${descriptionDraft.length > 2000 ? "text-amber-400 font-extrabold" : "text-zinc-500"}`}>
                   {descriptionDraft.length} / 2000 characters
                 </span>
               </div>
@@ -458,7 +458,7 @@ export default function ListingClient() {
                 value={descriptionDraft}
                 onChange={(e) => setDescriptionDraft(e.target.value)}
                 placeholder="Draft product specifications description copy..."
-                className="w-full h-36 border border-zinc-200 rounded-lg p-3 text-xs outline-none focus:border-zinc-400 text-zinc-950 leading-relaxed resize-none shadow-inner"
+                className="w-full h-36 border border-white/10 rounded-lg p-3 text-xs outline-none focus:border-zinc-500 text-white bg-[#181d2c] leading-relaxed resize-none shadow-inner"
               />
             </div>
           </div>
@@ -469,21 +469,23 @@ export default function ListingClient() {
 }
 
 const peerColumns: Column<ListingPeer>[] = [
-  { key: "rank", header: "Rank", render: (p) => (p.rank != null ? `#${p.rank}` : "—"), cellClassName: "text-muted" },
+  { key: "rank", header: "Rank", render: (p) => (p.rank != null ? `#${p.rank}` : "—"), cellClassName: "text-zinc-500 font-mono text-xs" },
   {
     key: "title",
     header: "Product",
+    cellClassName: "text-white font-semibold",
     render: (p) => (
       <span className="max-w-sm truncate block" title={p.title ?? p.asin}>
         {p.title ?? p.asin}
       </span>
     ),
   },
-  { key: "price", header: "Price", render: (p) => (p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—") },
-  { key: "rating", header: "Rating", render: (p) => `${p.rating ?? "—"} ⭐` },
+  { key: "price", header: "Price", render: (p) => (p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—"), cellClassName: "font-mono text-white" },
+  { key: "rating", header: "Rating", render: (p) => `${p.rating ?? "—"} ⭐`, cellClassName: "font-mono text-white" },
   {
     key: "review_count",
     header: "Reviews",
+    cellClassName: "font-mono text-white",
     render: (p) => p.review_count?.toLocaleString("en-IN") ?? "—",
   },
 ];

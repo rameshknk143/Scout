@@ -166,15 +166,15 @@ export default function ValidatorClient() {
         </button>
       </form>
 
-      {error && <div className="text-red text-sm">{error}</div>}
+      {error && <div className="text-red-400 text-sm font-semibold">{error}</div>}
 
       {result && (
         <Card>
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <div className="text-xs text-muted mb-1">{result.asin}</div>
-              <div className="font-semibold leading-snug">{result.title}</div>
-              <div className="text-xs text-muted mt-1">
+              <div className="text-xs text-muted mb-1 font-mono">{result.asin}</div>
+              <div className="font-semibold leading-snug text-white">{result.title}</div>
+              <div className="text-xs text-muted mt-1 font-mono">
                 {result.category ?? "unknown category"} · sell ₹
                 {result.sell_price?.toLocaleString("en-IN")} · buy ₹
                 {result.buy_price.toLocaleString("en-IN")} · net margin{" "}
@@ -182,7 +182,7 @@ export default function ValidatorClient() {
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-4xl font-extrabold text-text tracking-tight">
+              <div className="text-4xl font-extrabold text-white tracking-tight font-mono">
                 {result.score}
               </div>
               <div className="mt-1.5">
@@ -197,10 +197,10 @@ export default function ValidatorClient() {
                 key={key}
                 label={`${WEIGHT_LABELS[key]} · ${weight}%`}
                 value={
-                  <>
+                  <span className="font-mono">
                     {result.components[key].toFixed(0)}
                     <span className="text-muted text-sm">/100</span>
-                  </>
+                  </span>
                 }
               />
             ))}
@@ -234,7 +234,7 @@ function Slider({
     <div>
       <div className="flex items-baseline justify-between mb-1">
         <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{label}</span>
-        <span className="text-zinc-950 font-extrabold">{value}/5</span>
+        <span className="text-white font-extrabold font-mono">{value}/5</span>
       </div>
       <input
         type="range"
@@ -242,9 +242,9 @@ function Slider({
         max={5}
         value={value}
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        className="w-full accent-zinc-950 cursor-pointer"
+        className="w-full accent-[#3b82f6] cursor-pointer"
       />
-      <p className="text-[10px] text-zinc-400 font-medium mt-1 leading-relaxed">{hint}</p>
+      <p className="text-[10px] text-zinc-500 font-medium mt-1 leading-relaxed">{hint}</p>
     </div>
   );
 }

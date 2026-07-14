@@ -68,11 +68,11 @@ export default function ProductDetailDrawer({
             animate={{ translateX: 0 }}
             exit={{ translateX: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 280 }}
-            className="fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-white shadow-2xl border-l border-zinc-200 flex flex-col h-full"
+            className="fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-[#111625] shadow-2xl border-l border-white/5 flex flex-col h-full"
           >
             {loading || !product ? (
               <div className="flex flex-col items-center justify-center flex-1 space-y-3">
-                <div className="w-8 h-8 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 <div className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">
                   Loading Real-time Metrics...
                 </div>
@@ -80,24 +80,24 @@ export default function ProductDetailDrawer({
             ) : (
               <>
                 {/* Header */}
-                <div className="p-6 border-b border-zinc-200/80">
+                <div className="p-6 border-b border-white/5">
                   <div className="flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest bg-[#1a2236] border border-white/5 px-2 py-0.5 rounded">
                         {product.category || "General"}
                       </span>
-                      <h2 className="text-base font-bold text-zinc-950 mt-2 line-clamp-2">
+                      <h2 className="text-base font-bold text-white mt-2 line-clamp-2">
                         {product.title}
                       </h2>
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-zinc-500 font-semibold">
-                        <span>ASIN: <strong className="text-zinc-800">{product.asin}</strong></span>
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-zinc-500 font-semibold font-mono">
+                        <span>ASIN: <strong className="text-white">{product.asin}</strong></span>
                         <span>•</span>
-                        <span>Marketplace: <strong className="text-zinc-800">Amazon.in</strong></span>
+                        <span>Marketplace: <strong className="text-white">Amazon.in</strong></span>
                       </div>
                     </div>
                     <button
                       onClick={onClose}
-                      className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 cursor-pointer"
+                      className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 cursor-pointer"
                     >
                       ✕
                     </button>
@@ -105,49 +105,49 @@ export default function ProductDetailDrawer({
                 </div>
 
                 {/* Quick Metrics Bar */}
-                <div className="grid grid-cols-3 divide-x divide-zinc-200 border-b border-zinc-200/80 bg-zinc-50/50">
+                <div className="grid grid-cols-3 divide-x divide-white/5 border-b border-white/5 bg-[#181d2c]/30">
                   <div className="p-4 text-center">
-                    <span className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
+                    <span className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
                       Current Price
                     </span>
-                    <span className="block text-base font-extrabold text-zinc-950 mt-1">
+                    <span className="block text-base font-extrabold text-white mt-1 font-mono">
                       ₹{product.price?.toLocaleString("en-IN") || "—"}
                     </span>
                   </div>
                   <div className="p-4 text-center">
-                    <span className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
+                    <span className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
                       Opportunity Score
                     </span>
-                    <span className={`block text-base font-extrabold mt-1 ${
+                    <span className={`block text-base font-extrabold mt-1 font-mono ${
                       product.score >= 70
-                        ? "text-emerald-700"
+                        ? "text-emerald-400"
                         : product.score >= 50
-                        ? "text-amber-700"
-                        : "text-red-700"
+                        ? "text-amber-400"
+                        : "text-red-400"
                     }`}>
                       {product.score || "N/A"}
                     </span>
                   </div>
                   <div className="p-4 text-center">
-                    <span className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
+                    <span className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
                       Net Margin
                     </span>
-                    <span className={`block text-base font-extrabold mt-1 ${product.net_margin >= 20 ? "text-emerald-700" : "text-zinc-700"}`}>
+                    <span className={`block text-base font-extrabold mt-1 font-mono ${product.net_margin >= 20 ? "text-emerald-400" : "text-zinc-300"}`}>
                       {product.net_margin ? `${product.net_margin.toFixed(1)}%` : "N/A"}
                     </span>
                   </div>
                 </div>
 
                 {/* Tabs Navigation */}
-                <div className="flex border-b border-zinc-200/80 px-4">
+                <div className="flex border-b border-white/5 px-4">
                   {(["overview", "trends", "listing", "notes"] as const).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`py-3 px-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
                         activeTab === tab
-                          ? "border-zinc-900 text-zinc-950"
-                          : "border-transparent text-zinc-400 hover:text-zinc-600"
+                          ? "border-[#3b82f6] text-[#3b82f6]"
+                          : "border-transparent text-zinc-400 hover:text-white"
                       }`}
                     >
                       {tab}
@@ -165,21 +165,21 @@ export default function ProductDetailDrawer({
                           Performance Summary
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="glass-panel p-3.5 bg-zinc-50/50">
-                            <span className="block text-[10px] text-zinc-400 font-semibold uppercase">
+                          <div className="glass-panel p-3.5 bg-[#181d2c]/50">
+                            <span className="block text-[10px] text-zinc-500 font-semibold uppercase">
                               Estimated Monthly Sales
                             </span>
-                            <span className="text-xs font-bold text-zinc-800 mt-1 block">
+                            <span className="text-xs font-bold text-white mt-1 block font-mono">
                               {product.reviews ? Math.ceil(product.reviews * 1.5) : "185"} Units
                             </span>
                           </div>
-                          <div className="glass-panel p-3.5 bg-zinc-50/50">
-                            <span className="block text-[10px] text-zinc-400 font-semibold uppercase">
+                          <div className="glass-panel p-3.5 bg-[#181d2c]/50">
+                            <span className="block text-[10px] text-zinc-500 font-semibold uppercase">
                               Review Rating
                             </span>
-                            <div className="flex items-center gap-1 mt-1 text-xs font-bold text-zinc-800">
+                            <div className="flex items-center gap-1 mt-1 text-xs font-bold text-white font-mono">
                               ⭐️ {product.rating || "4.2"}
-                              <span className="text-[10px] text-zinc-400 font-normal">
+                              <span className="text-[10px] text-zinc-500 font-normal">
                                 ({product.reviews || "120"} reviews)
                               </span>
                             </div>
@@ -192,27 +192,27 @@ export default function ProductDetailDrawer({
                         <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
                           Margin & Cost Breakdown
                         </h3>
-                        <div className="glass-panel p-4 space-y-2.5 bg-zinc-50/20">
+                        <div className="glass-panel p-4 space-y-2.5 bg-[#181d2c]/20">
                           <div className="flex justify-between text-xs font-medium">
-                            <span className="text-zinc-500">Retail Listing Price</span>
-                            <span className="text-zinc-900 font-semibold">₹{product.sell_price?.toLocaleString("en-IN")}</span>
+                            <span className="text-zinc-400">Retail Listing Price</span>
+                            <span className="text-white font-semibold font-mono">₹{product.sell_price?.toLocaleString("en-IN")}</span>
                           </div>
                           <div className="flex justify-between text-xs font-medium">
-                            <span className="text-zinc-500">Estimated Supplier Buy Price</span>
-                            <span className="text-zinc-900 font-semibold">₹{product.buy_price?.toLocaleString("en-IN") || "—"}</span>
+                            <span className="text-zinc-400">Estimated Supplier Buy Price</span>
+                            <span className="text-white font-semibold font-mono">₹{product.buy_price?.toLocaleString("en-IN") || "—"}</span>
                           </div>
                           <div className="flex justify-between text-xs font-medium">
-                            <span className="text-zinc-500">Shipping & Logistics</span>
-                            <span className="text-zinc-900 font-semibold">₹{product.shipping_cost?.toLocaleString("en-IN") || "—"}</span>
+                            <span className="text-zinc-400">Shipping & Logistics</span>
+                            <span className="text-white font-semibold font-mono">₹{product.shipping_cost?.toLocaleString("en-IN") || "—"}</span>
                           </div>
                           <div className="flex justify-between text-xs font-medium">
-                            <span className="text-zinc-500">Amazon Referral & Closing Fees</span>
-                            <span className="text-zinc-900 font-semibold">₹{product.fees?.toLocaleString("en-IN") || "—"}</span>
+                            <span className="text-zinc-400">Amazon Referral & Closing Fees</span>
+                            <span className="text-white font-semibold font-mono">₹{product.fees?.toLocaleString("en-IN") || "—"}</span>
                           </div>
-                          <div className="h-px bg-zinc-200 my-1" />
+                          <div className="h-px bg-white/5 my-1" />
                           <div className="flex justify-between text-xs font-bold">
-                            <span className="text-zinc-800">Estimated Profit per Unit</span>
-                            <span className="text-emerald-700">
+                            <span className="text-zinc-300">Estimated Profit per Unit</span>
+                            <span className="text-emerald-400 font-mono">
                               ₹{(product.sell_price - product.buy_price - product.shipping_cost - product.fees).toFixed(1)}
                             </span>
                           </div>
@@ -233,11 +233,11 @@ export default function ProductDetailDrawer({
                             <div className="h-44 w-full">
                               <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={product.trend_data}>
-                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-                                  <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
-                                  <YAxis stroke="#71717a" fontSize={11} reversed />
-                                  <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 6 }} />
-                                  <Line type="monotone" dataKey="BSR" stroke="#b45309" strokeWidth={2} dot={{ r: 3 }} />
+                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                  <XAxis dataKey="day" stroke="#64748b" fontSize={11} />
+                                  <YAxis stroke="#64748b" fontSize={11} reversed />
+                                  <Tooltip contentStyle={{ fontSize: 11, background: "#111625", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "#f8fafc" }} />
+                                  <Line type="monotone" dataKey="BSR" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
                                 </LineChart>
                               </ResponsiveContainer>
                             </div>
@@ -251,18 +251,18 @@ export default function ProductDetailDrawer({
                             <div className="h-44 w-full">
                               <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={product.trend_data}>
-                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-                                  <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
-                                  <YAxis stroke="#71717a" fontSize={11} />
-                                  <Tooltip contentStyle={{ fontSize: 11, background: "#fff", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 6 }} />
-                                  <Line type="monotone" dataKey="Price" stroke="#18181b" strokeWidth={2} dot={{ r: 3 }} />
+                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                  <XAxis dataKey="day" stroke="#64748b" fontSize={11} />
+                                  <YAxis stroke="#64748b" fontSize={11} />
+                                  <Tooltip contentStyle={{ fontSize: 11, background: "#111625", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "#f8fafc" }} />
+                                  <Line type="monotone" dataKey="Price" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
                                 </LineChart>
                               </ResponsiveContainer>
                             </div>
                           </div>
                         </>
                       ) : (
-                        <div className="flex flex-col items-center justify-center py-12 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
+                        <div className="flex flex-col items-center justify-center py-12 border border-dashed border-white/5 rounded-xl bg-[#181d2c]/30">
                           <span className="text-xl">📈</span>
                           <span className="text-[11px] text-zinc-400 font-bold mt-2 text-center max-w-xs leading-normal">
                             No historical snapshots logged for this ASIN yet. Category tracking data will accumulate over the next nightly runs.
@@ -281,10 +281,10 @@ export default function ProductDetailDrawer({
                         {product.audit_checklist.map((item: any, idx: number) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between p-3 rounded-lg border border-zinc-200 bg-zinc-50/30 text-xs font-semibold"
+                            className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-[#181d2c]/20 text-xs font-semibold"
                           >
-                            <span className="text-zinc-700">{item.check}</span>
-                            <span className={item.pass ? "text-emerald-700" : "text-amber-700"}>
+                            <span className="text-zinc-300">{item.check}</span>
+                            <span className={item.pass ? "text-emerald-400" : "text-amber-400"}>
                               {item.pass ? "✓ Pass" : "⚠ Missing"}
                             </span>
                           </div>
@@ -302,7 +302,7 @@ export default function ProductDetailDrawer({
                         value={notesText}
                         onChange={(e) => setNotesText(e.target.value)}
                         placeholder="Enter supplier contact details, MOQ notes, or target unit cost ideas..."
-                        className="w-full h-40 border border-zinc-200 rounded-lg p-3 text-xs outline-none focus:border-zinc-400 bg-zinc-50/30 focus:bg-white text-zinc-900 leading-relaxed resize-none"
+                        className="w-full h-40 border border-white/10 rounded-lg p-3 text-xs outline-none focus:border-zinc-700 bg-[#181d2c] text-white leading-relaxed resize-none"
                       />
                       <div className="flex justify-end">
                         <button
@@ -318,12 +318,12 @@ export default function ProductDetailDrawer({
                 </div>
 
                 {/* Bottom Actions Panel */}
-                <div className="p-4 border-t border-zinc-200 bg-zinc-50 flex items-center justify-between gap-3">
+                <div className="p-4 border-t border-white/5 bg-[#181d2c]/30 flex items-center justify-between gap-3">
                   <button
                     onClick={() => {
                       window.open(`https://www.amazon.in/dp/${product.asin}`, "_blank");
                     }}
-                    className="btn-primary bg-white text-zinc-800 border border-zinc-200 hover:bg-zinc-100 flex-1 text-xs"
+                    className="btn-primary bg-[#181d2c] text-zinc-300 border border-white/10 hover:bg-white/5 flex-1 text-xs"
                   >
                     View on Amazon ↗
                   </button>

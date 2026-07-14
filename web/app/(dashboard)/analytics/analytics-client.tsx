@@ -59,7 +59,7 @@ export default function AnalyticsClient({
       key: "score", 
       header: "Score", 
       render: (v) => v.score, 
-      cellClassName: "font-mono font-bold text-text" 
+      cellClassName: "font-mono font-bold text-white" 
     },
     { 
       key: "verdict", 
@@ -70,7 +70,7 @@ export default function AnalyticsClient({
       key: "title",
       header: "Product",
       render: (v) => (
-        <span className="max-w-sm truncate block font-medium" title={v.title ?? ""}>
+        <span className="max-w-sm truncate block font-medium text-white" title={v.title ?? ""}>
           {v.title ?? v.asin}
         </span>
       ),
@@ -79,37 +79,29 @@ export default function AnalyticsClient({
       key: "category", 
       header: "Category", 
       render: (v) => v.category ?? "—", 
-      cellClassName: "text-muted font-medium" 
+      cellClassName: "text-zinc-400 font-medium" 
     },
   ];
 
   return (
     <div className="space-y-10">
-      {/* Top Header Block */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-white/5 pb-6">
-        <div>
-          <h1 className="text-3xl font-extrabold text-text tracking-tight">Analytics</h1>
-          <p className="text-sm text-muted mt-1.5">Aggregate insights and historical patterns across logged validations.</p>
-        </div>
-      </div>
-
       {/* Cohesive Stat Grid (Apple-style divide list) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 border border-white/5 rounded-xl overflow-hidden divide-x divide-y md:divide-y-0 divide-white/5 bg-white/[0.01] shadow-sm">
+      <div className="grid grid-cols-2 md:grid-cols-4 border border-white/5 rounded-xl overflow-hidden divide-x divide-y md:divide-y-0 divide-white/5 bg-[#111625]/20 shadow-sm">
         <div className="p-6">
-          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Total Validations</p>
-          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{stats.total}</p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Total Validations</p>
+          <p className="text-3xl font-extrabold text-white mt-2.5 tracking-tight font-mono">{stats.total}</p>
         </div>
         <div className="p-6">
-          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Unique Products</p>
-          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{stats.uniqueAsins}</p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Unique Products</p>
+          <p className="text-3xl font-extrabold text-white mt-2.5 tracking-tight font-mono">{stats.uniqueAsins}</p>
         </div>
         <div className="p-6">
-          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Average Score</p>
-          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">{stats.avgScore.toFixed(1)}</p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Average Score</p>
+          <p className="text-3xl font-extrabold text-white mt-2.5 tracking-tight font-mono">{stats.avgScore.toFixed(1)}</p>
         </div>
         <div className="p-6">
-          <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Pursue Candidates</p>
-          <p className="text-3xl font-extrabold text-text mt-2.5 tracking-tight">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Pursue Candidates</p>
+          <p className="text-3xl font-extrabold text-white mt-2.5 tracking-tight font-mono">
             {stats.verdictData.find((d) => d.verdict === "PURSUE")?.count ?? 0}
           </p>
         </div>
@@ -133,28 +125,28 @@ export default function AnalyticsClient({
 
       {/* Top candidates list */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold tracking-tight text-text">Top-scoring candidates</h2>
+        <h2 className="text-lg font-bold tracking-tight text-white">Top-scoring candidates</h2>
         <Table columns={columns} rows={stats.topCandidates} rowKey={(v) => v.id} />
       </div>
 
       {/* Average score by category slider block */}
       {stats.categoryData.length > 0 && (
         <Card className="p-6">
-          <h2 className="text-lg font-bold tracking-tight text-text mb-6">Average score by category</h2>
+          <h2 className="text-lg font-bold tracking-tight text-white mb-6">Average score by category</h2>
           <div className="space-y-4">
             {stats.categoryData
               .slice()
               .sort((a, b) => b.avgScore - a.avgScore)
               .map((c) => (
                 <div key={c.category} className="flex items-center gap-4">
-                  <span className="w-44 shrink-0 text-xs font-semibold text-muted truncate">{c.category}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <span className="w-44 shrink-0 text-xs font-semibold text-zinc-400 truncate">{c.category}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-[#181d2c] border border-white/5 overflow-hidden">
                     <div
-                      className="h-full bg-text rounded-full"
+                      className="h-full bg-[#3b82f6] rounded-full"
                       style={{ width: `${Math.min(100, c.avgScore)}%` }}
                     />
                   </div>
-                  <span className="w-12 text-right text-xs font-bold text-text font-mono">
+                  <span className="w-12 text-right text-xs font-bold text-white font-mono">
                     {c.avgScore}
                   </span>
                 </div>

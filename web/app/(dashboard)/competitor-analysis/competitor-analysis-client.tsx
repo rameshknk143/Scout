@@ -67,20 +67,20 @@ export default function CompetitorAnalysisClient() {
   return (
     <div className="space-y-6">
       {/* Input panel */}
-      <form onSubmit={handleCompare} className="glass-panel p-5 bg-white space-y-4">
-        <div className="text-sm font-semibold text-zinc-950 mb-1">Enter Competitor ASINs</div>
+      <form onSubmit={handleCompare} className="glass-panel p-5 bg-[#111625] space-y-4">
+        <div className="text-sm font-semibold text-white mb-1">Enter Competitor ASINs</div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {asinInputs.map((input, idx) => (
             <div key={idx} className="relative space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
                   ASIN {idx + 1}
                 </label>
                 {asinInputs.length > 2 && (
                   <button
                     type="button"
                     onClick={() => handleRemoveInput(idx)}
-                    className="text-[9px] font-bold text-zinc-400 hover:text-red-700 transition-colors"
+                    className="text-[9px] font-bold text-zinc-500 hover:text-red-400 transition-colors"
                   >
                     Remove
                   </button>
@@ -102,7 +102,7 @@ export default function CompetitorAnalysisClient() {
             <button
               type="button"
               onClick={handleAddInput}
-              className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-2 rounded-lg hover:bg-zinc-50 cursor-pointer shadow-sm transition-colors"
+              className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer shadow-sm transition-colors"
             >
               + Add ASIN Slot ({5 - asinInputs.length} remaining)
             </button>
@@ -119,43 +119,43 @@ export default function CompetitorAnalysisClient() {
           </button>
         </div>
 
-        {error && <div className="text-xs text-red-700 font-semibold">{error}</div>}
+        {error && <div className="text-xs text-red-400 font-semibold">{error}</div>}
       </form>
 
       {/* Comparison Grid Matrix */}
       {hasResults && (
-        <div className="bg-white border border-zinc-200/80 rounded-xl shadow-sm overflow-x-auto">
+        <div className="bg-[#111625]/20 border border-white/5 rounded-xl shadow-sm overflow-x-auto">
           {isPending ? (
             <div className="flex flex-col items-center justify-center py-24 space-y-3">
-              <div className="w-6 h-6 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-              <div className="text-xs text-zinc-400 font-semibold">Updating comparison matrix...</div>
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="text-xs text-zinc-500 font-semibold">Updating comparison matrix...</div>
             </div>
           ) : (
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-zinc-50/70 border-b border-zinc-200/80">
-                  <th className="p-4 font-bold text-zinc-500 uppercase tracking-wider w-1/5">Niche Metric</th>
+                <tr className="bg-[#181d2c]/50 border-b border-white/5">
+                  <th className="p-4 font-bold text-zinc-400 uppercase tracking-wider w-1/5">Niche Metric</th>
                   {results.map((r, i) => (
-                    <th key={i} className="p-4 font-bold text-zinc-900 border-l border-zinc-200/60 w-1/5">
-                      <span className="font-mono text-xs text-zinc-900 bg-zinc-100/70 px-1.5 py-0.5 rounded border border-zinc-200/50">
+                    <th key={i} className="p-4 font-bold text-white border-l border-white/5 w-1/5">
+                      <span className="font-mono text-xs text-zinc-300 bg-[#181d2c] px-1.5 py-0.5 rounded border border-white/5">
                         {r.asin}
                       </span>
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200/60 font-semibold text-zinc-800">
+              <tbody className="divide-y divide-white/5 font-semibold text-zinc-300">
                 {/* Title */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">Title</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Title</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60 align-top text-zinc-900 text-xs leading-normal">
+                    <td key={i} className="p-4 border-l border-white/5 align-top text-white text-xs leading-normal font-sans">
                       {r.found ? (
                         <span className="line-clamp-3" title={r.title || ""}>
                           {r.title || "(no title found)"}
                         </span>
                       ) : (
-                        <span className="text-zinc-400 font-medium">ASIN not in database</span>
+                        <span className="text-zinc-500 font-medium">ASIN not in database</span>
                       )}
                     </td>
                   ))}
@@ -163,9 +163,9 @@ export default function CompetitorAnalysisClient() {
 
                 {/* Price */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">Buy Box Price</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Buy Box Price</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60 text-zinc-950 font-bold text-sm">
+                    <td key={i} className="p-4 border-l border-white/5 text-white font-bold text-sm font-mono">
                       {r.found && r.price != null ? `₹${r.price.toLocaleString("en-IN")}` : "—"}
                     </td>
                   ))}
@@ -173,9 +173,9 @@ export default function CompetitorAnalysisClient() {
 
                 {/* BSR */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">BSR Rank</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">BSR Rank</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60 font-bold">
+                    <td key={i} className="p-4 border-l border-white/5 font-bold font-mono text-white">
                       {r.found && r.rank != null ? `#${r.rank.toLocaleString("en-IN")}` : "—"}
                     </td>
                   ))}
@@ -183,14 +183,14 @@ export default function CompetitorAnalysisClient() {
 
                 {/* Reviews */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">Reviews</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Reviews</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60">
+                    <td key={i} className="p-4 border-l border-white/5 font-mono text-white">
                       {r.found && r.review_count != null ? (
                         <div className="flex items-center gap-1.5">
                           <span>{r.review_count.toLocaleString("en-IN")}</span>
                           {r.rating != null && (
-                            <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-100 rounded px-1.5 py-0.5">
+                            <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded px-1.5 py-0.5 font-bold">
                               {r.rating} ⭐
                             </span>
                           )}
@@ -204,9 +204,9 @@ export default function CompetitorAnalysisClient() {
 
                 {/* Opportunity Score */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">Opportunity Score</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Opportunity Score</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60 font-black text-lg text-zinc-950">
+                    <td key={i} className="p-4 border-l border-white/5 font-black text-lg text-white font-mono">
                       {r.found ? `${r.score} / 100` : "—"}
                     </td>
                   ))}
@@ -214,9 +214,9 @@ export default function CompetitorAnalysisClient() {
 
                 {/* Verdict */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">Verdict</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Verdict</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60">
+                    <td key={i} className="p-4 border-l border-white/5">
                       {r.found ? <VerdictBadge verdict={r.verdict} /> : "—"}
                     </td>
                   ))}
@@ -224,20 +224,20 @@ export default function CompetitorAnalysisClient() {
 
                 {/* Actions */}
                 <tr>
-                  <td className="p-4 text-[10px] text-zinc-400 font-bold uppercase tracking-wider bg-zinc-50/20">Quick Actions</td>
+                  <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Quick Actions</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-zinc-200/60">
+                    <td key={i} className="p-4 border-l border-white/5">
                       {r.found ? (
                         <div className="flex flex-col gap-1.5">
                           <Link
-                            href={`/validator?asin=${r.asin}`}
-                            className="text-[10px] font-bold text-center text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded transition-colors border border-zinc-200/40"
+                             href={`/validator?asin=${r.asin}`}
+                             className="text-[10px] font-bold text-center text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                           >
                             Re-Validate Cost
                           </Link>
                           <Link
                             href={`/listing?asin=${r.asin}`}
-                            className="text-[10px] font-bold text-center text-zinc-700 bg-white hover:bg-zinc-50 px-2 py-1 rounded transition-colors border border-zinc-200"
+                            className="text-[10px] font-bold text-center text-zinc-400 bg-transparent hover:text-white px-2 py-1 rounded transition-colors border border-white/10"
                           >
                             Analyze Copy
                           </Link>
@@ -245,7 +245,7 @@ export default function CompetitorAnalysisClient() {
                       ) : (
                         <Link
                           href={`/validator?asin=${r.asin}`}
-                          className="text-[10px] font-bold text-center text-white bg-zinc-900 hover:bg-zinc-950 px-2.5 py-1 rounded transition-colors shadow-sm block"
+                          className="btn-primary text-center block text-[10px] py-1"
                         >
                           Scout ASIN
                         </Link>

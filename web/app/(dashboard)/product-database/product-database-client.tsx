@@ -110,7 +110,7 @@ export default function ProductDatabaseClient() {
       key: "asin",
       header: "ASIN",
       render: (p: SnapshotRow) => (
-        <span className="font-mono text-xs font-semibold text-zinc-900 bg-zinc-100/70 px-1.5 py-0.5 rounded border border-zinc-200/50">
+        <span className="font-mono text-xs font-semibold text-zinc-300 bg-[#181d2c] px-1.5 py-0.5 rounded border border-white/5">
           {p.asin}
         </span>
       ),
@@ -121,7 +121,7 @@ export default function ProductDatabaseClient() {
       render: (p: SnapshotRow) => (
         <span
           onClick={() => handleRowClick(p)}
-          className="font-medium text-zinc-900 hover:text-zinc-950 hover:underline cursor-pointer max-w-md truncate block"
+          className="font-medium text-white hover:text-white hover:underline cursor-pointer max-w-md truncate block"
           title={p.title || p.asin}
         >
           {p.title || "(no title)"}
@@ -132,14 +132,14 @@ export default function ProductDatabaseClient() {
       key: "category",
       header: "Category",
       render: (p: SnapshotRow) => (
-        <span className="text-zinc-500 font-medium">{p.category || "—"}</span>
+        <span className="text-zinc-400 font-medium">{p.category || "—"}</span>
       ),
     },
     {
       key: "rank",
       header: "BSR Rank",
       render: (p: SnapshotRow) => (
-        <span className="font-semibold text-zinc-800">
+        <span className="font-semibold text-white font-mono">
           {p.rank != null ? `#${p.rank.toLocaleString("en-IN")}` : "—"}
         </span>
       ),
@@ -148,7 +148,7 @@ export default function ProductDatabaseClient() {
       key: "price",
       header: "Price",
       render: (p: SnapshotRow) => (
-        <span className="font-semibold text-zinc-950">
+        <span className="font-semibold text-white font-mono">
           {p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—"}
         </span>
       ),
@@ -158,11 +158,11 @@ export default function ProductDatabaseClient() {
       header: "Reviews",
       render: (p: SnapshotRow) => (
         <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-zinc-700">
+          <span className="font-semibold text-zinc-300 font-mono">
             {p.review_count != null ? p.review_count.toLocaleString("en-IN") : "—"}
           </span>
           {p.rating != null && (
-            <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-100 rounded px-1 font-bold">
+            <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded px-1 font-bold">
               {p.rating} ⭐
             </span>
           )}
@@ -175,7 +175,7 @@ export default function ProductDatabaseClient() {
       render: (p: SnapshotRow) => (
         <Link
           href={`/validator?asin=${p.asin}`}
-          className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1.5 rounded transition-colors"
+          className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1.5 rounded transition-colors"
         >
           Validate Opportunity
         </Link>
@@ -186,10 +186,10 @@ export default function ProductDatabaseClient() {
   return (
     <div className="space-y-6">
       {/* Search and Filters panel */}
-      <form onSubmit={handleApplyFilters} className="glass-panel p-5 bg-white space-y-4">
+      <form onSubmit={handleApplyFilters} className="glass-panel p-5 bg-[#111625] space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="md:col-span-2">
-            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
+            <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
               Search Title or ASIN
             </label>
             <input
@@ -197,17 +197,17 @@ export default function ProductDatabaseClient() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="e.g. kick scooter, B0D4DZ7WL2..."
-              className="input text-xs"
+              className="input text-xs text-white bg-[#181d2c]"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
+            <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
               Category
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="input text-xs cursor-pointer"
+              className="input text-xs cursor-pointer text-white bg-[#181d2c] border-white/10"
             >
               <option value="">All Categories</option>
               {CATEGORIES.map((c) => (
@@ -224,7 +224,7 @@ export default function ProductDatabaseClient() {
             <button
               type="button"
               onClick={handleClearFilters}
-              className="text-xs font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 px-3 py-2 rounded-lg transition-colors border border-zinc-200"
+              className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-3 py-2 rounded-lg transition-colors"
             >
               Clear
             </button>
@@ -232,9 +232,9 @@ export default function ProductDatabaseClient() {
         </div>
 
         {/* Detailed limits sliders / numeric overrides */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-zinc-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-white/5">
           <div>
-            <label className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">
+            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
               Min Price (₹)
             </label>
             <input
@@ -246,7 +246,7 @@ export default function ProductDatabaseClient() {
             />
           </div>
           <div>
-            <label className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">
+            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
               Max Price (₹)
             </label>
             <input
@@ -258,7 +258,7 @@ export default function ProductDatabaseClient() {
             />
           </div>
           <div>
-            <label className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">
+            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
               Min BSR Rank
             </label>
             <input
@@ -270,7 +270,7 @@ export default function ProductDatabaseClient() {
             />
           </div>
           <div>
-            <label className="block text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">
+            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
               Max BSR Rank
             </label>
             <input
@@ -285,22 +285,22 @@ export default function ProductDatabaseClient() {
       </form>
 
       {/* Database Listing Card */}
-      <div className="bg-white border border-zinc-200/80 rounded-xl p-5 shadow-sm space-y-4">
+      <div className="glass-panel p-5 shadow-sm space-y-4 bg-[#111625]/20 border border-white/5">
         <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold text-zinc-950">
+          <div className="text-sm font-semibold text-white">
             Search Results ({total.toLocaleString("en-IN")} products found)
           </div>
           
           {/* Pagination status */}
-          <div className="text-xs text-zinc-400 font-semibold">
+          <div className="text-xs text-zinc-500 font-semibold font-mono">
             Page {page} of {totalPages}
           </div>
         </div>
 
         {isPending ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-6 h-6 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-            <div className="text-xs text-zinc-400 font-semibold">Querying database snapshots...</div>
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-xs text-zinc-500 font-semibold">Querying database snapshots...</div>
           </div>
         ) : (
           <Table
@@ -313,18 +313,18 @@ export default function ProductDatabaseClient() {
 
         {/* Pagination controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
+          <div className="flex items-center justify-between pt-4 border-t border-white/5">
             <button
               onClick={() => setOffset(Math.max(0, offset - limit))}
               disabled={offset === 0 || isPending}
-              className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-2 rounded-lg hover:bg-zinc-50 disabled:opacity-50 cursor-pointer transition-colors"
+              className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-2 rounded-lg hover:bg-white/5 disabled:opacity-50 cursor-pointer transition-colors"
             >
               ← Previous Page
             </button>
             <button
               onClick={() => setOffset(offset + limit)}
               disabled={offset + limit >= total || isPending}
-              className="text-xs font-bold text-zinc-700 bg-white border border-zinc-200 px-3 py-2 rounded-lg hover:bg-zinc-50 disabled:opacity-50 cursor-pointer transition-colors"
+              className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-2 rounded-lg hover:bg-white/5 disabled:opacity-50 cursor-pointer transition-colors"
             >
               Next Page →
             </button>

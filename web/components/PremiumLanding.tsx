@@ -20,7 +20,7 @@ function FloatingASIN() {
     <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.3}>
       <mesh ref={ref} position={[0, 0, 0]}>
         <boxGeometry args={[1.0, 0.35, 0.2]} />
-        <meshStandardMaterial color="#ffffff" metalness={0.9} roughness={0.08} />
+        <meshStandardMaterial color="#f59e0b" metalness={0.95} roughness={0.05} />
       </mesh>
     </Float>
   );
@@ -38,7 +38,7 @@ function FloatingData() {
   return (
     <mesh ref={ref} position={[2, 0.5, 0.5]}>
       <cylinderGeometry args={[0.18, 0.18, 0.35, 32]} />
-      <meshStandardMaterial color="#27272a" metalness={0.8} roughness={0.15} />
+      <meshStandardMaterial color="#3b82f6" metalness={0.8} roughness={0.15} />
     </mesh>
   );
 }
@@ -54,7 +54,7 @@ function FloatingChart() {
   return (
     <mesh ref={ref} position={[-1.8, 0.8, 0.5]}>
       <coneGeometry args={[0.25, 0.7, 4]} />
-      <meshStandardMaterial color="#3f3f46" metalness={0.7} roughness={0.2} />
+      <meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.1} />
     </mesh>
   );
 }
@@ -157,11 +157,11 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             transition={{ duration: 0.6 }}
             className="mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-text">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
               Product intelligence, refined.
             </h1>
-            <p className="text-muted text-sm leading-relaxed">
-              Log in to access your personal Amazon India reseller radar. Keep track of competitors, analyze listings, and scout next-gen opportunities.
+            <p className="text-zinc-400 text-sm leading-relaxed">
+              Log in to access your personal global Amazon intelligence radar. Keep track of competitors, analyze listings, and scout next-gen opportunities across India, USA, UK, and more.
             </p>
           </motion.div>
 
@@ -171,25 +171,25 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="glass-panel p-8"
           >
-            <h2 className="text-lg font-semibold mb-6 text-text">Sign In</h2>
+            <h2 className="text-lg font-bold mb-6 text-white font-sans">Sign In</h2>
             <form action={formAction} className="space-y-4">
               <input type="hidden" name="from" value={from} />
               
               <div>
-                <label htmlFor="password" className="block text-xs text-muted mb-1.5 font-medium">Password</label>
+                <label htmlFor="password" className="block text-xs text-zinc-400 mb-1.5 font-bold uppercase tracking-wider">Password</label>
                 <input
                   id="password"
                   name="password"
                   type="password"
                   placeholder="Enter password"
-                  className="input py-2.5 text-text"
+                  className="input py-2.5 text-white"
                   required
                   autoFocus
                 />
               </div>
 
               {state?.error && (
-                <div className="text-red text-xs mt-2 border border-red/20 bg-red-soft px-3 py-2 rounded-lg">
+                <div className="text-red-400 text-xs mt-2 border border-red-500/20 bg-red-500/10 px-3 py-2 rounded-lg font-semibold font-mono">
                   {state.error}
                 </div>
               )}
@@ -206,8 +206,8 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
         </div>
 
         {/* Footer */}
-        <div className="text-xs text-muted/60 mt-8">
-          <p>Version 1.0 • © 2026 KNK Enterprises</p>
+        <div className="text-xs text-zinc-500 font-mono mt-8">
+          <p>Version 1.1 • © 2026 KNK Enterprises</p>
         </div>
       </div>
     </div>

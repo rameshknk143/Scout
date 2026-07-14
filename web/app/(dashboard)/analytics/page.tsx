@@ -13,8 +13,8 @@ async function AnalyticsData() {
 export default function AnalyticsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Analytics</h1>
-      <p className="text-muted text-sm mb-6">
+      <h1 className="text-xl font-bold tracking-tight text-white mb-1 font-sans">Analytics</h1>
+      <p className="text-zinc-400 text-xs font-medium mt-1 mb-6">
         Patterns across everything you&apos;ve run through the Opportunity
         Scorer so far.
       </p>

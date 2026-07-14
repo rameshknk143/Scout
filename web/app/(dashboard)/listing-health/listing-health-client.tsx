@@ -42,7 +42,7 @@ export default function ListingHealthClient() {
       key: "asin",
       header: "ASIN",
       render: (p: AuditedProduct) => (
-        <span className="font-mono text-xs font-semibold text-zinc-900 bg-zinc-100/70 px-1.5 py-0.5 rounded border border-zinc-200/50">
+        <span className="font-mono text-xs font-semibold text-zinc-300 bg-[#181d2c] px-1.5 py-0.5 rounded border border-white/5">
           {p.asin}
         </span>
       ),
@@ -51,7 +51,7 @@ export default function ListingHealthClient() {
       key: "title",
       header: "Product Title",
       render: (p: AuditedProduct) => (
-        <span className="font-medium text-zinc-900 max-w-sm truncate block" title={p.title}>
+        <span className="font-medium text-white max-w-sm truncate block" title={p.title}>
           {p.title}
         </span>
       ),
@@ -61,7 +61,7 @@ export default function ListingHealthClient() {
       header: "Listing Quality Score",
       render: (p: AuditedProduct) => (
         <div className="flex items-center gap-3">
-          <div className="flex-1 w-20 bg-zinc-100 rounded-full h-2 overflow-hidden border border-zinc-200/50">
+          <div className="flex-1 w-20 bg-[#181d2c] rounded-full h-2 overflow-hidden border border-white/5">
             <div
               className={`h-full rounded-full transition-all ${
                 p.score >= 80 ? "bg-emerald-500" : p.score >= 60 ? "bg-amber-500" : "bg-red-500"
@@ -69,7 +69,7 @@ export default function ListingHealthClient() {
               style={{ width: `${p.score}%` }}
             />
           </div>
-          <span className="font-bold text-zinc-900 shrink-0">{p.score}%</span>
+          <span className="font-bold text-white shrink-0 font-mono">{p.score}%</span>
         </div>
       ),
     },
@@ -81,13 +81,13 @@ export default function ListingHealthClient() {
           {p.gaps.map((gap, i) => (
             <span
               key={i}
-              className="text-[9px] font-bold text-red-800 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded"
+              className="text-[9px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-1.5 py-0.5 rounded"
             >
               ⚠️ {gap}
             </span>
           ))}
           {p.gaps.length === 0 && (
-            <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded">
+            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
               ✓ All Checks Passed
             </span>
           )}
@@ -100,7 +100,7 @@ export default function ListingHealthClient() {
       render: (p: AuditedProduct) => (
         <Link
           href={`/listing?asin=${p.asin}`}
-          className="text-[10px] font-bold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-2 py-1 rounded border border-zinc-200/50 transition-colors"
+          className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
         >
           Optimize Listing
         </Link>
@@ -124,12 +124,12 @@ export default function ListingHealthClient() {
       </div>
 
       {/* Main Audit Grid */}
-      <div className="bg-white border border-zinc-200/80 rounded-xl p-5 shadow-sm space-y-4">
-        <div className="text-sm font-semibold text-zinc-950">Active Audit Logs</div>
+      <div className="glass-panel p-5 bg-[#111625]/20 border border-white/5 rounded-xl shadow-sm space-y-4">
+        <div className="text-sm font-semibold text-white">Active Audit Logs</div>
         {isPending ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-6 h-6 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
-            <div className="text-xs text-zinc-400 font-semibold">Running listing diagnostics...</div>
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-xs text-zinc-500 font-semibold font-mono">Running listing diagnostics...</div>
           </div>
         ) : (
           <Table
