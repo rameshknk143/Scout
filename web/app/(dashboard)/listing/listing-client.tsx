@@ -163,7 +163,7 @@ export default function ListingClient() {
             </div>
             <Field label="Category (optional — helps benchmark against peers)">
               <select value={category} onChange={(e) => setCategory(e.target.value)} className="input cursor-pointer text-white bg-[#181d2c]">
-                <option value="">(auto-detect from Scout's own data)</option>
+                <option value="">(auto-detect from ScoutVeda's own data)</option>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -340,7 +340,7 @@ export default function ListingClient() {
                 emptyText="No peer data for this category yet."
               />
               <div className="text-xs text-zinc-500 mt-3 font-semibold font-mono">
-                * From Scout&apos;s own nightly-collected snapshot data — same source as Trend Radar.
+                * From ScoutVeda&apos;s own nightly-collected snapshot data — same source as Trend Radar.
               </div>
             </Card>
           )}

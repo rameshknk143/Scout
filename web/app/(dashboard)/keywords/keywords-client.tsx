@@ -70,7 +70,7 @@ export default function KeywordsClient() {
             </button>
           </div>
           <p className="text-[10px] text-zinc-500 font-semibold mt-2">
-            * Scout runs 27 recursive queries (base query + letters a-z) in parallel to harvest deep suggestions.
+            * ScoutVeda runs 27 recursive queries (base query + letters a-z) in parallel to harvest deep suggestions.
           </p>
         </div>
       </form>
@@ -116,7 +116,7 @@ export default function KeywordsClient() {
                   const encodedUri = encodeURI(csvContent);
                   const link = document.createElement("a");
                   link.setAttribute("href", encodedUri);
-                  link.setAttribute("download", `scout_keywords_${seed.trim().replace(/\s+/g, "_")}.csv`);
+                  link.setAttribute("download", `scoutveda_keywords_${seed.trim().replace(/\s+/g, "_")}.csv`);
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);

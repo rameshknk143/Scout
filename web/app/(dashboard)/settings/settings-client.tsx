@@ -206,7 +206,7 @@ LWA_CLIENT_SECRET="client_secret_example_value..."`}
                 }}
                 className="btn-primary inline-block w-auto px-6 py-2.5 mt-3 text-xs font-bold text-center tracking-wide uppercase cursor-pointer"
               >
-                🔌 Authorize Scout Integration (Mock)
+                🔌 Authorize ScoutVeda Integration (Mock)
               </a>
             </div>
           </div>

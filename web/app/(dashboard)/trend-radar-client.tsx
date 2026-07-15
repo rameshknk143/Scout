@@ -339,7 +339,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                     const encodedUri = encodeURI(csvContent);
                     const link = document.createElement("a");
                     link.setAttribute("href", encodedUri);
-                    link.setAttribute("download", "scout_validated_opportunities.csv");
+                    link.setAttribute("download", "scoutveda_validated_opportunities.csv");
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
