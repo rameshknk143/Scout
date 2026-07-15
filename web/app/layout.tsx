@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ram's Scout",
-  description: "Personal product-intelligence radar — KNK Enterprises",
+  title: "ScoutVeda",
+  description: "Find products worth sourcing — KNK Enterprises",
 };
 
 export default function RootLayout({

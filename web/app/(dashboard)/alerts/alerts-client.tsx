@@ -83,7 +83,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
     <div className="space-y-4">
       {/* Disclaimer Caveat Box */}
       <div className="caveat-box bg-[#181d2c]/20 border border-white/5 rounded-xl p-4 text-xs text-zinc-400 leading-relaxed">
-        <strong>⚠️ Information Note:</strong> &quot;Dropped from list&quot; means the ASIN fell out of that category&apos;s top-30 ranked page. Scout reads the public bestseller/new-releases list, not live inventory, so it can&apos;t tell a real stock-out apart from just losing rank. Treat it as a sourcing indicator to review, not confirmed stock exhaustion.
+        <strong>⚠️ Information Note:</strong> &quot;Dropped from list&quot; means the ASIN fell out of that category&apos;s top-30 ranked page. ScoutVeda reads the public bestseller/new-releases list, not live inventory, so it can&apos;t tell a real stock-out apart from just losing rank. Treat it as a sourcing indicator to review, not confirmed stock exhaustion.
       </div>
 
       {/* Search and Filters Toolbar */}

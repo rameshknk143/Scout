@@ -200,7 +200,7 @@ export default function Sidebar() {
       <div className="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#090d16]">
         <div className="flex items-center gap-2">
           <span className="text-xl">🔭</span>
-          <span className="font-bold tracking-tight text-white">SCOUT</span>
+          <span className="font-bold tracking-tight text-white">ScoutVeda</span>
         </div>
         <button
           onClick={() => setOpen(true)}
@@ -237,7 +237,7 @@ export default function Sidebar() {
         <div className="mb-6 px-2">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-white">
-              🔭 SCOUT
+              🔭 ScoutVeda
             </span>
           </div>
           <p className="text-[10px] text-zinc-500 mt-2 leading-relaxed font-semibold uppercase tracking-wider">

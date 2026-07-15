@@ -146,7 +146,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
         {/* Top Header */}
         <div className="flex items-center gap-2 mb-6 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
           <span className="text-xl">🔭</span>
-          <span className="text-sm font-bold tracking-widest text-white font-mono">SCOUT</span>
+          <span className="text-sm font-bold tracking-widest text-white font-mono">ScoutVeda</span>
         </div>
 
         {/* Center Card */}

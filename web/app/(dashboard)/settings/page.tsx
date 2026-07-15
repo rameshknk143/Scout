@@ -1,7 +1,7 @@
 import SettingsClient from "./settings-client";
 
 export const metadata = {
-  title: "Connection Settings | Scout Reseller OS",
+  title: "Connection Settings | ScoutVeda Reseller OS",
   description: "Manage Selling Partner API credential links for your Amazon India storefront",
 };
 
