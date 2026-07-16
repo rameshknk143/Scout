@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Tilt from "@/components/3d/Tilt";
 
 /* ScoutVeda public landing page. All copy/data here is marketing-only sample
    content — it deliberately does NOT touch the real product-research logic. */
@@ -27,7 +28,11 @@ export default function Landing() {
 
   return (
     <div className="sv-page">
-      <div className="sv-bg" aria-hidden />
+      <div className="sv-bg" aria-hidden>
+        <div className="sv-grid-perspective">
+          <div className="sv-grid-plane" />
+        </div>
+      </div>
 
       <header className="sv-header">
         <div className="sv-wrap sv-header-inner">
@@ -113,19 +118,93 @@ export default function Landing() {
           <span className="sv-eyebrow">Features</span>
           <h2 className="sv-h2">Everything you need to vet an opportunity.</h2>
         </div>
-        <div className="sv-feature-grid">
-          {[
-            { t: "Opportunity scoring", d: "See which products deserve a closer look.", viz: "score" },
-            { t: "Market analysis", d: "Understand prices, demand, ratings, and competition.", viz: "bars" },
-            { t: "Profit insights", d: "Estimate potential margins before committing capital.", viz: "margin" },
-            { t: "Trend tracking", d: "Spot growing, stable, seasonal, and declining products.", viz: "line" },
-          ].map((f) => (
-            <div key={f.t} className="sv-glass sv-feature">
-              <FeatureViz kind={f.viz} />
-              <h3>{f.t}</h3>
-              <p>{f.d}</p>
+        <div className="bento-grid">
+          {/* Card 1: Opportunity Scoring (Span 4) */}
+          <div className="bento-card bento-col-4 sv-glass p-6 flex flex-col justify-between h-[280px]">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded font-mono">SCORING ENGINE</span>
+              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+              </svg>
             </div>
-          ))}
+            <div className="my-auto py-4 flex items-center justify-center">
+              <div className="sv-score-ring" style={{ "--v": 82 } as React.CSSProperties}><span className="text-xl">82</span></div>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Opportunity Scoring</h3>
+              <p className="text-xs text-zinc-400 font-medium mt-1">See which products deserve a closer look, computed across demand metrics instantly.</p>
+            </div>
+          </div>
+
+          {/* Card 2: Market Analysis (Span 8) */}
+          <div className="bento-card bento-col-8 sv-glass p-6 flex flex-col justify-between h-[280px]">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded font-mono">COMPETITION MAP</span>
+              <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+              </svg>
+            </div>
+            <div className="my-auto py-4 flex items-end justify-center gap-3.5 h-[100px]">
+              {[35, 68, 48, 92, 54, 76, 62].map((val, idx) => (
+                <div key={idx} className="w-6 bg-blue-500 rounded-t-sm" style={{ height: `${val}%` }} />
+              ))}
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Market Analysis</h3>
+              <p className="text-xs text-zinc-400 font-medium mt-1">Deep-dive into competitor pricing, ratings, reviews depth, and listing entrenchment.</p>
+            </div>
+          </div>
+
+          {/* Card 3: Profit Insights (Span 8) */}
+          <div className="bento-card bento-col-8 sv-glass p-6 flex flex-col justify-between h-[280px]">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded font-mono">MARGIN ESTIMATOR</span>
+              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h6M9 13h6M9 17h6" />
+              </svg>
+            </div>
+            <div className="my-auto py-4 flex flex-col justify-center space-y-3 w-full">
+              <div className="flex justify-between items-center text-xs font-mono">
+                <span className="text-zinc-500 font-bold uppercase">Estimated Gross Profit</span>
+                <span className="text-emerald-400 font-bold">31% Margin</span>
+              </div>
+              <div className="w-full bg-white/[0.04] h-2.5 rounded-full overflow-hidden">
+                <div className="bg-gradient-to-r from-emerald-500/70 to-emerald-400 h-full w-[31%]" />
+              </div>
+              <div className="flex justify-between text-[10px] text-zinc-400 font-medium">
+                <span>FBA Fees: ₹184</span>
+                <span>GST (18%): ₹89</span>
+                <span>Closing Fee: ₹25</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Profit Insights</h3>
+              <p className="text-xs text-zinc-400 font-medium mt-1">Model Amazon India Easy Ship / FBA referral fees and taxes before buying stock.</p>
+            </div>
+          </div>
+
+          {/* Card 4: Trend Tracking (Span 4) */}
+          <div className="bento-card bento-col-4 sv-glass p-6 flex flex-col justify-between h-[280px]">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded font-mono">TREND RADAR</span>
+              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <div className="my-auto py-4 flex items-center justify-center w-full">
+              <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: "100%", height: 52 }}>
+                <defs><linearGradient id="trend-bento-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--sv-teal)" stopOpacity="0.4" /><stop offset="1" stopColor="var(--sv-teal)" stopOpacity="0" /></linearGradient></defs>
+                <polygon points="0,40 16,36 33,39 50,22 66,28 83,12 100,5 100,40" fill="url(#trend-bento-grad)" />
+                <polyline points="0,40 16,36 33,39 50,22 66,28 83,12 100,5" fill="none" stroke="var(--sv-teal)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Trend Radar</h3>
+              <p className="text-xs text-zinc-400 font-medium mt-1">Spot rising, stable, seasonal, or fading product niches with historical charts.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -194,82 +273,79 @@ function HeroPreview() {
   const spark = [38, 44, 41, 52, 49, 63, 60, 72, 78, 74, 86, 92];
   const max = Math.max(...spark);
   const pts = spark.map((v, i) => `${(i / (spark.length - 1)) * 100},${40 - (v / max) * 34}`).join(" ");
+
   return (
-    <div className="sv-glass sv-preview" role="img" aria-label="ScoutVeda research preview">
-      <div className="sv-preview-search">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-        Wireless earbuds
-        <span className="sv-tag g" style={{ marginLeft: "auto" }}>ANALYZED</span>
-      </div>
+    <Tilt className="relative w-full max-w-[480px] mx-auto py-10">
+      <div className="isometric-view relative w-full h-[380px] transform-style-3d select-none">
+        {/* Layer 1: Base Shadow Plate */}
+        <div className="absolute inset-0 bg-blue-500/5 rounded-2xl filter blur-xl layer-base" />
 
-      <div className="sv-preview-top">
-        <div className="sv-soft" style={{ padding: 14, textAlign: "center" }}>
-          <div style={{ fontSize: "0.66rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)" }}>Opportunity score</div>
-          <div className="sv-score-ring"><span>82</span></div>
-          <div className="sv-tag g" style={{ marginTop: 10, display: "inline-block" }}>PURSUE</div>
-        </div>
-        <div className="sv-stat-grid">
-          <div className="sv-soft sv-stat"><div className="k">Est. sales / mo</div><div className="v">2,140</div></div>
-          <div className="sv-soft sv-stat"><div className="k">Est. revenue</div><div className="v">₹18.2L</div></div>
-          <div className="sv-soft sv-stat"><div className="k">Price range</div><div className="v">₹699–1,299</div></div>
-          <div className="sv-soft sv-stat"><div className="k">Net margin</div><div className="v" style={{ color: "var(--green)" }}>31%</div></div>
-        </div>
-      </div>
-
-      <div className="sv-soft sv-spark">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-          <span style={{ fontSize: "0.66rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)" }}>Demand trend · 12 wk</span>
-          <span className="sv-tag g">▲ 24%</span>
-        </div>
-        <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: "100%", height: 44 }}>
-          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--sv-teal)" stopOpacity="0.35" /><stop offset="1" stopColor="var(--sv-teal)" stopOpacity="0" /></linearGradient></defs>
-          <polygon points={`0,40 ${pts} 100,40`} fill="url(#g)" />
-          <polyline points={pts} fill="none" stroke="var(--sv-teal)" strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
-        </svg>
-      </div>
-
-      <div className="sv-rows">
-        {[
-          { n: "Noise-cancel earbuds", c: "Low", t: "g", s: "88" },
-          { n: "Sport wireless buds", c: "Medium", t: "a", s: "64" },
-          { n: "Budget TWS clone", c: "High", t: "r", s: "41" },
-        ].map((r) => (
-          <div key={r.n} className="sv-row">
-            <span className="nm">{r.n}</span>
-            <span className={`sv-tag ${r.t}`}>{r.c} comp</span>
-            <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--sv-teal)" }}>{r.s}</span>
+        {/* Layer 2: Main Console Board (Layer Base) */}
+        <div className="absolute inset-0 sv-glass p-5 flex flex-col justify-between layer-base border border-white/10 bg-[#0f1524]/90 backdrop-blur-md">
+          <div className="flex items-center justify-between border-b border-white/5 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-red-500/60" />
+              <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
+              <div className="w-2 h-2 rounded-full bg-green-500/60" />
+            </div>
+            <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest font-mono">SCOUTVEDA CONSOLE</span>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-/* ---------- small inline visuals ---------- */
-function FeatureViz({ kind }: { kind: string }) {
-  if (kind === "bars") {
-    const h = [40, 62, 48, 80, 55, 72];
-    return <div className="sv-feature-viz">{h.map((v, i) => <div key={i} className="sv-bar" style={{ height: `${v}%` }} />)}</div>;
-  }
-  if (kind === "score") {
-    return <div className="sv-feature-viz" style={{ alignItems: "center", justifyContent: "center" }}>
-      <div className="sv-score-ring" style={{ width: 52, height: 52 }}><span style={{ fontSize: "0.85rem" }}>82</span></div>
-    </div>;
-  }
-  if (kind === "margin") {
-    return <div className="sv-feature-viz" style={{ alignItems: "center", padding: 12 }}>
-      <div style={{ width: "100%", height: 8, borderRadius: 4, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-        <div style={{ width: "31%", height: "100%", background: "var(--green)" }} />
+          <div className="sv-preview-search bg-[#060a13] border border-white/5 p-2.5 rounded-lg flex items-center gap-2 text-xs text-zinc-400 font-medium font-mono mt-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+            <span>Wireless earbuds</span>
+            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded ml-auto">ACTIVE</span>
+          </div>
+
+          {/* List items representing products */}
+          <div className="space-y-2 mt-4 flex-1">
+            {[
+              { n: "Noise-cancel earbuds", c: "Low", t: "g", s: "88" },
+              { n: "Sport wireless buds", c: "Medium", t: "a", s: "64" },
+              { n: "Budget TWS clone", c: "High", t: "r", s: "41" },
+            ].map((r, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2 rounded bg-white/[0.01] border border-white/5 text-xs">
+                <span className="text-zinc-300 font-medium font-sans truncate max-w-[150px]">{r.n}</span>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${r.t === "g" ? "text-emerald-400 bg-emerald-500/10" : (r.t === "a" ? "text-amber-400 bg-amber-500/10" : "text-red-400 bg-red-500/10")}`}>{r.c}</span>
+                  <span className="font-bold text-white font-mono">{r.s}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Layer 3: Floating Opportunity Score (Layer Middle) */}
+        <div className="absolute top-4 right-[-20px] w-[145px] bg-[#141b2c] border border-white/10 rounded-xl p-4 shadow-2xl layer-middle flex flex-col items-center justify-center">
+          <div className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest font-mono">OPPORTUNITY SCORE</div>
+          <div className="sv-score-ring mt-2.5" style={{ "--v": 82 } as React.CSSProperties}><span>82</span></div>
+          <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider mt-3">PURSUE</span>
+        </div>
+
+        {/* Layer 4: Floating Stats Widget (Layer High) */}
+        <div className="absolute bottom-[40px] left-[-30px] w-[165px] bg-[#141b2c] border border-white/10 rounded-xl p-3.5 shadow-2xl layer-high space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest font-mono">EST. MONTHLY SALES</span>
+            <span className="text-emerald-400 text-[10px] font-bold">▲ 24%</span>
+          </div>
+          <div className="text-lg font-bold text-white font-mono">2,140 <span className="text-[10px] text-zinc-400 font-sans font-medium">units</span></div>
+          <div className="w-full bg-white/[0.04] h-1.5 rounded-full overflow-hidden">
+            <div className="bg-emerald-500 h-full w-[72%]" />
+          </div>
+        </div>
+
+        {/* Layer 5: Floating Trend Sparkline (Layer Top) */}
+        <div className="absolute bottom-[20px] right-[-10px] w-[190px] bg-[#141b2c] border border-white/10 rounded-xl p-3.5 shadow-2xl layer-top">
+          <div className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest font-mono mb-2">12-WEEK DEMAND RADAR</div>
+          <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: "100%", height: 36 }}>
+            <defs><linearGradient id="glow-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--sv-teal)" stopOpacity="0.4" /><stop offset="1" stopColor="var(--sv-teal)" stopOpacity="0" /></linearGradient></defs>
+            <polygon points={`0,40 ${pts} 100,40`} fill="url(#glow-grad)" />
+            <polyline points={pts} fill="none" stroke="var(--sv-teal)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+          </svg>
+        </div>
       </div>
-      <span style={{ marginLeft: 10, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--green)", fontSize: "0.85rem" }}>31%</span>
-    </div>;
-  }
-  const pts = [30, 34, 28, 42, 38, 52, 60].map((v, i) => `${(i / 6) * 100},${40 - (v / 60) * 30}`).join(" ");
-  return <div className="sv-feature-viz" style={{ padding: 8 }}>
-    <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: "100%", height: "100%" }}>
-      <polyline points={pts} fill="none" stroke="var(--sv-teal)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-    </svg>
-  </div>;
+    </Tilt>
+  );
 }
 
 function Icon({ name }: { name: string }) {
