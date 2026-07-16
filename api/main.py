@@ -13,9 +13,11 @@ to reuse if it ever stopped being personal-only.
 """
 
 import html
+import json
 import math
 import os
 import re
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -23,6 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 
 import alerts
+import auth
 import db
 import listing_analyzer
 import profit_calculator
@@ -82,6 +85,187 @@ app.add_middleware(
 def require_key(x_scout_key: str = Header(default="")):
     if x_scout_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid or missing X-Scout-Key header")
+
+
+def require_user(x_scout_user: str = Header(default="")) -> int:
+    """Tenant scoping. The Next.js frontend (already authenticated by X-Scout-Key)
+    forwards the signed-in user's id in X-Scout-User. Because the API is only
+    reachable with the shared key held server-side, this header is trusted. Data
+    endpoints depend on this so every query is scoped to one account."""
+    if not x_scout_user or not x_scout_user.isdigit():
+        raise HTTPException(status_code=401, detail="Missing user context")
+    return int(x_scout_user)
+
+
+# ============================ Authentication ================================
+# All auth endpoints sit behind require_key (only the trusted frontend calls
+# them). OTP generation/validation/expiry/rate-limiting all live here; responses
+# never reveal whether an email is already registered.
+
+def _uniform_otp_response(email, purpose):
+    """Issue-and-send an OTP with server-side throttling, returning a response
+    shape that is identical whether or not the email exists / was really sent."""
+    now = datetime.now(timezone.utc)
+    hour_ago = (now - timedelta(hours=1)).isoformat()
+    if db.count_recent_otps(email, purpose, hour_ago) >= auth.MAX_SENDS_PER_HOUR:
+        raise HTTPException(status_code=429, detail="Too many codes requested. Try again later.")
+
+    existing = db.get_active_otp(email, purpose)
+    if existing:
+        created = datetime.fromisoformat(existing["created_at"])
+        elapsed = (now - created).total_seconds()
+        if elapsed < auth.RESEND_COOLDOWN_SECONDS:
+            wait = int(auth.RESEND_COOLDOWN_SECONDS - elapsed)
+            raise HTTPException(status_code=429, detail=f"Please wait {wait}s before requesting another code.")
+
+    code = auth.generate_otp()
+    expires = (now + timedelta(minutes=auth.OTP_TTL_MINUTES)).isoformat()
+    payload = existing.get("payload") if existing else None
+    db.save_otp(email, auth.hash_otp(code, email), purpose, expires, payload=payload)
+    delivery = auth.send_otp_email(email, code, purpose)
+    return {
+        "ok": True,
+        "masked_email": auth.mask_email(email),
+        "resend_after": auth.RESEND_COOLDOWN_SECONDS,
+        "mock": delivery["mock"],
+    }
+
+
+def _consume_otp(email, purpose, code):
+    """Validate a submitted OTP. Raises HTTPException with a user-safe message on
+    any failure; returns the OTP row's payload on success (and deletes it)."""
+    otp = db.get_active_otp(email, purpose)
+    if not otp:
+        raise HTTPException(status_code=400, detail="That code is invalid or has expired. Request a new one.")
+    if datetime.fromisoformat(otp["expires_at"]) < datetime.now(timezone.utc):
+        db.delete_otps(email, purpose)
+        raise HTTPException(status_code=400, detail="That code has expired. Request a new one.")
+    if otp["attempts"] >= auth.MAX_VERIFY_ATTEMPTS:
+        db.delete_otps(email, purpose)
+        raise HTTPException(status_code=429, detail="Too many attempts. Request a new code.")
+    if not auth.otp_matches((code or "").strip(), email, otp["code_hash"]):
+        db.increment_otp_attempts(otp["id"])
+        raise HTTPException(status_code=400, detail="Incorrect code. Please try again.")
+    payload = otp.get("payload")
+    db.delete_otps(email, purpose)
+    return payload
+
+
+class RegisterStartRequest(BaseModel):
+    full_name: str
+    email: str
+    password: str
+
+
+@app.post("/auth/register/start", dependencies=[Depends(require_key)])
+def register_start(req: RegisterStartRequest):
+    email = req.email.strip().lower()
+    if not auth.is_valid_email(email):
+        raise HTTPException(status_code=400, detail="Enter a valid email address.")
+    if not (req.full_name or "").strip():
+        raise HTTPException(status_code=400, detail="Enter your name.")
+    pw_error = auth.validate_password_strength(req.password)
+    if pw_error:
+        raise HTTPException(status_code=400, detail=pw_error)
+
+    # Hold the pending account (name + password hash) in the OTP payload; the
+    # user row is created only after the code is verified. If the email is
+    # already registered we still behave identically (no enumeration) — the
+    # verify step simply won't create a duplicate.
+    payload = json.dumps({"full_name": req.full_name.strip(), "password_hash": auth.hash_password(req.password)})
+    now = datetime.now(timezone.utc)
+    hour_ago = (now - timedelta(hours=1)).isoformat()
+    if db.count_recent_otps(email, "signup", hour_ago) >= auth.MAX_SENDS_PER_HOUR:
+        raise HTTPException(status_code=429, detail="Too many codes requested. Try again later.")
+    code = auth.generate_otp()
+    expires = (now + timedelta(minutes=auth.OTP_TTL_MINUTES)).isoformat()
+    db.save_otp(email, auth.hash_otp(code, email), "signup", expires, payload=payload)
+    delivery = auth.send_otp_email(email, code, "signup")
+    return {"ok": True, "masked_email": auth.mask_email(email),
+            "resend_after": auth.RESEND_COOLDOWN_SECONDS, "mock": delivery["mock"]}
+
+
+class OtpVerifyRequest(BaseModel):
+    email: str
+    code: str
+
+
+@app.post("/auth/register/verify", dependencies=[Depends(require_key)])
+def register_verify(req: OtpVerifyRequest):
+    email = req.email.strip().lower()
+    payload = _consume_otp(email, "signup", req.code)
+    existing = db.get_user_by_email(email)
+    if existing:
+        # Email already had an account; don't duplicate. Log them in.
+        user = existing
+    else:
+        data = json.loads(payload) if payload else {}
+        user = db.create_user(email, data.get("password_hash"), data.get("full_name"), email_verified=True)
+    return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/auth/login", dependencies=[Depends(require_key)])
+def login(req: LoginRequest):
+    email = req.email.strip().lower()
+    user = db.get_user_by_email(email)
+    # Uniform failure — same message whether the email is unknown or the
+    # password is wrong — so login can't be used to enumerate accounts.
+    if not user or not auth.verify_password(user["password_hash"], req.password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
+
+
+class EmailOnlyRequest(BaseModel):
+    email: str
+
+
+@app.post("/auth/password/forgot", dependencies=[Depends(require_key)])
+def password_forgot(req: EmailOnlyRequest):
+    email = req.email.strip().lower()
+    # Only really send if the account exists, but ALWAYS return the same shape.
+    if auth.is_valid_email(email) and db.get_user_by_email(email):
+        try:
+            return _uniform_otp_response(email, "reset")
+        except HTTPException as e:
+            if e.status_code == 429:
+                raise
+    return {"ok": True, "masked_email": auth.mask_email(email),
+            "resend_after": auth.RESEND_COOLDOWN_SECONDS, "mock": not bool(auth.RESEND_API_KEY)}
+
+
+class ResetRequest(BaseModel):
+    email: str
+    code: str
+    new_password: str
+
+
+@app.post("/auth/password/reset", dependencies=[Depends(require_key)])
+def password_reset(req: ResetRequest):
+    email = req.email.strip().lower()
+    pw_error = auth.validate_password_strength(req.new_password)
+    if pw_error:
+        raise HTTPException(status_code=400, detail=pw_error)
+    _consume_otp(email, "reset", req.code)
+    if not db.update_user_password(email, auth.hash_password(req.new_password)):
+        raise HTTPException(status_code=400, detail="Could not reset password. Start over.")
+    return {"ok": True}
+
+
+class ResendRequest(BaseModel):
+    email: str
+    purpose: str  # 'signup' | 'reset'
+
+
+@app.post("/auth/otp/resend", dependencies=[Depends(require_key)])
+def otp_resend(req: ResendRequest):
+    email = req.email.strip().lower()
+    purpose = req.purpose if req.purpose in ("signup", "reset") else "signup"
+    return _uniform_otp_response(email, purpose)
 
 
 def df_to_records(df: pd.DataFrame):

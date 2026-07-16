@@ -98,6 +98,58 @@ CREATE TABLE IF NOT EXISTS seller_credentials (
     marketplace_id TEXT DEFAULT 'A21TJRUUN4KGV',
     connected_at TEXT NOT NULL
 );
+
+-- Multi-tenant accounts. snapshots stays global (shared market data from the
+-- nightly collector); validations / my_products / seller_credentials get scoped
+-- per user via the migrate_multitenant() migration below.
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT,
+    email_verified BOOLEAN DEFAULT FALSE,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(lower(email));
+
+-- Backs signup + password-reset OTP flows. code_hash is a peppered SHA-256 (no
+-- plaintext codes). payload holds pending signup data (name + password hash) so
+-- the account is created only after the email is verified.
+CREATE TABLE IF NOT EXISTS email_otps (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL,
+    code_hash TEXT NOT NULL,
+    purpose TEXT NOT NULL,
+    payload TEXT,
+    expires_at TEXT NOT NULL,
+    attempts INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_email_otps_lookup ON email_otps(lower(email), purpose, created_at);
+"""
+
+
+# Adds per-user scoping to the user-owned tables without disturbing the shared
+# `snapshots` data. Idempotent: safe to run on every startup. Existing rows keep
+# user_id = NULL (owned by nobody, invisible to all tenants) until an admin
+# claims them via claim_legacy_data(). The UNIQUE constraints move to composite
+# (user_id, key) so two tenants can independently track the same ASIN / seller.
+MULTITENANT_MIGRATION = """
+ALTER TABLE validations        ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE my_products        ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE seller_credentials ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+
+CREATE INDEX IF NOT EXISTS idx_validations_user ON validations(user_id);
+CREATE INDEX IF NOT EXISTS idx_my_products_user ON my_products(user_id);
+CREATE INDEX IF NOT EXISTS idx_seller_credentials_user ON seller_credentials(user_id);
+
+ALTER TABLE my_products        DROP CONSTRAINT IF EXISTS my_products_asin_key;
+ALTER TABLE seller_credentials DROP CONSTRAINT IF EXISTS seller_credentials_selling_partner_id_key;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_my_products_user_asin
+    ON my_products(user_id, asin);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_seller_credentials_user_spid
+    ON seller_credentials(user_id, selling_partner_id);
 """
 
 
@@ -119,6 +171,110 @@ def init_db():
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(SCHEMA)
+            cur.execute(MULTITENANT_MIGRATION)
+
+
+# --- Accounts -----------------------------------------------------------------
+def get_user_by_email(email):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT * FROM users WHERE lower(email) = lower(%s)", (email,))
+            row = cur.fetchone()
+            return dict(row) if row else None
+
+
+def get_user_by_id(user_id):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+            row = cur.fetchone()
+            return dict(row) if row else None
+
+
+def create_user(email, password_hash, full_name, email_verified=True):
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """INSERT INTO users (email, password_hash, full_name, email_verified, created_at)
+                   VALUES (lower(%s), %s, %s, %s, %s) RETURNING id, email, full_name, email_verified""",
+                (email, password_hash, full_name, email_verified, datetime.now(timezone.utc).isoformat()),
+            )
+            return dict(cur.fetchone())
+
+
+def update_user_password(email, password_hash):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE users SET password_hash = %s WHERE lower(email) = lower(%s)",
+                (password_hash, email),
+            )
+            return cur.rowcount > 0
+
+
+# --- Email OTPs ---------------------------------------------------------------
+def save_otp(email, code_hash, purpose, expires_at, payload=None):
+    """Store a fresh OTP, clearing any prior ones for this email+purpose so only
+    the newest code is ever valid."""
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM email_otps WHERE lower(email) = lower(%s) AND purpose = %s",
+                (email, purpose),
+            )
+            cur.execute(
+                """INSERT INTO email_otps (email, code_hash, purpose, payload, expires_at, attempts, created_at)
+                   VALUES (lower(%s), %s, %s, %s, %s, 0, %s)""",
+                (email, code_hash, purpose, payload, expires_at, datetime.now(timezone.utc).isoformat()),
+            )
+
+
+def get_active_otp(email, purpose):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT * FROM email_otps
+                   WHERE lower(email) = lower(%s) AND purpose = %s
+                   ORDER BY created_at DESC LIMIT 1""",
+                (email, purpose),
+            )
+            row = cur.fetchone()
+            return dict(row) if row else None
+
+
+def increment_otp_attempts(otp_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE email_otps SET attempts = attempts + 1 WHERE id = %s RETURNING attempts",
+                (otp_id,),
+            )
+            r = cur.fetchone()
+            return r[0] if r else 0
+
+
+def delete_otps(email, purpose):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM email_otps WHERE lower(email) = lower(%s) AND purpose = %s",
+                (email, purpose),
+            )
+
+
+def count_recent_otps(email, purpose, since_iso):
+    """How many OTPs were issued for this email+purpose since a timestamp — for
+    per-hour send throttling."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """SELECT COUNT(*) FROM email_otps
+                   WHERE lower(email) = lower(%s) AND purpose = %s AND created_at >= %s""",
+                (email, purpose, since_iso),
+            )
+            return cur.fetchone()[0]
 
 
 def insert_snapshot_rows(rows):
