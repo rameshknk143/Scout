@@ -14,7 +14,7 @@ type NextFetchOptions = { revalidate?: number | false; tags?: string[] };
 async function currentUserId(): Promise<number | null> {
   try {
     const store = await cookies();
-    return verifySessionToken(store.get(SESSION_COOKIE)?.value)?.uid ?? null;
+    return (await verifySessionToken(store.get(SESSION_COOKIE)?.value))?.uid ?? null;
   } catch {
     return null;
   }

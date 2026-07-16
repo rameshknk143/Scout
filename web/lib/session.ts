@@ -1,24 +1,34 @@
-import { createHmac } from "crypto";
-
 /**
  * Per-user session token: `uid.issuedAt.signature`, where the signature is
- * HMAC-SHA256 of `uid.issuedAt` keyed by SESSION_SECRET. This replaces the old
+ * HMAC-SHA256 of `uid.issuedAt` keyed by SESSION_SECRET. Replaces the old
  * single-shared-password token so each account gets its own signed session.
  *
- * Kept string-only (no Buffer/base64) to match the runtime the existing
- * middleware already relies on. Fails closed: no secret ⇒ nothing verifies.
+ * Uses the Web Crypto API (globalThis.crypto.subtle) rather than Node's
+ * `crypto` module so it runs in BOTH the Edge middleware runtime and Node
+ * server actions. That makes signing/verifying async — callers await them.
+ * Fails closed: no secret ⇒ nothing verifies.
  */
 
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+export const SESSION_COOKIE = "scout_auth";
+export const SESSION_MAX_AGE_SECONDS = MAX_AGE_MS / 1000;
+
 function secret(): string {
-  // SESSION_SECRET is preferred; fall back to SITE_PASSWORD so existing
-  // deployments keep a working signing key until SESSION_SECRET is set.
   return process.env.SESSION_SECRET || process.env.SITE_PASSWORD || "";
 }
 
-function sign(payload: string): string {
-  return createHmac("sha256", secret()).update(payload).digest("hex");
+async function hmacHex(payload: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret()),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(payload));
+  return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 function safeEqual(a: string, b: string): boolean {
@@ -28,23 +38,22 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-export function createSessionToken(userId: number): string {
+export async function createSessionToken(userId: number): Promise<string> {
   const payload = `${userId}.${Date.now()}`;
-  return `${payload}.${sign(payload)}`;
+  return `${payload}.${await hmacHex(payload)}`;
 }
 
-export function verifySessionToken(token: string | undefined): { uid: number } | null {
+export async function verifySessionToken(
+  token: string | undefined
+): Promise<{ uid: number } | null> {
   if (!token || !secret()) return null;
   const parts = token.split(".");
   if (parts.length !== 3) return null;
   const [uid, iat, sig] = parts;
-  if (!safeEqual(sig, sign(`${uid}.${iat}`))) return null;
+  if (!safeEqual(sig, await hmacHex(`${uid}.${iat}`))) return null;
   const issued = Number(iat);
   const userId = Number(uid);
   if (!Number.isInteger(userId) || userId <= 0) return null;
   if (!Number.isFinite(issued) || Date.now() - issued > MAX_AGE_MS || Date.now() - issued < 0) return null;
   return { uid: userId };
 }
-
-export const SESSION_COOKIE = "scout_auth";
-export const SESSION_MAX_AGE_SECONDS = MAX_AGE_MS / 1000;

@@ -6,9 +6,9 @@ import { verifySessionToken, SESSION_COOKIE } from "./lib/session";
 // check only (no DB), per Next.js middleware guidance.
 const AUTH_PAGES = ["/login", "/signup", "/forgot-password"];
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const session = verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
+  const session = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
 
   // Already signed in? Skip the auth pages and go to the dashboard.
   if (session && AUTH_PAGES.includes(path)) {

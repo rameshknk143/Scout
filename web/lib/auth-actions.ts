@@ -39,7 +39,7 @@ async function callAuth<T = Record<string, unknown>>(
 
 async function setSession(userId: number) {
   const store = await cookies();
-  store.set(SESSION_COOKIE, createSessionToken(userId), {
+  store.set(SESSION_COOKIE, await createSessionToken(userId), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

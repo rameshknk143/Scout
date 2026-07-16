@@ -12,7 +12,7 @@ import { verifySessionToken, SESSION_COOKIE } from "./session";
  */
 async function requireSession(): Promise<number> {
   const cookieStore = await cookies();
-  const session = verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
+  const session = await verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
   if (!session) {
     throw new Error("Unauthorized: Invalid session");
   }
