@@ -25,6 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 
 import alerts
+import amazon_sp_api
 import auth
 import db
 import listing_analyzer
@@ -756,3 +757,24 @@ def get_drawer_details(asin: str):
         "trend_data": chart_points,
         "audit_checklist": audit_checklist
     }
+
+
+@app.post("/storefront/sync", dependencies=[Depends(require_key)])
+def sync_storefront(user_id: int = Depends(require_user)):
+    result = amazon_sp_api.sync_storefront_data(user_id)
+    if not result.get("ok"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Sync failed"))
+    return result
+
+
+@app.get("/storefront/sales", dependencies=[Depends(require_key)])
+def get_storefront_sales(user_id: int = Depends(require_user)):
+    metrics = db.get_storefront_sales_metrics(user_id)
+    return {"metrics": metrics}
+
+
+@app.get("/storefront/orders", dependencies=[Depends(require_key)])
+def get_storefront_orders(user_id: int = Depends(require_user)):
+    orders = db.get_storefront_orders(user_id, limit=20)
+    return {"orders": orders}
+

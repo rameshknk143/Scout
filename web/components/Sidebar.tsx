@@ -51,7 +51,7 @@ export default function Sidebar() {
       title: "Overview",
       items: [
         {
-          href: "/",
+          href: "/dashboard",
           label: "Dashboard",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -60,7 +60,16 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/alerts",
+          href: "/dashboard/storefront",
+          label: "Storefront Performance",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          ),
+        },
+        {
+          href: "/dashboard/alerts",
           label: "Activity / Alerts",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -74,7 +83,7 @@ export default function Sidebar() {
       title: "Research",
       items: [
         {
-          href: "/validator",
+          href: "/dashboard/validator",
           label: "Product Opportunity Finder",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -85,7 +94,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/product-database",
+          href: "/dashboard/product-database",
           label: "Product Database",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -94,7 +103,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/competitor-analysis",
+          href: "/dashboard/competitor-analysis",
           label: "Competitor Analysis",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -103,7 +112,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/keywords",
+          href: "/dashboard/keywords",
           label: "Keyword Research",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -112,7 +121,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/watchlist",
+          href: "/dashboard/watchlist",
           label: "Trend Explorer",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -126,7 +135,7 @@ export default function Sidebar() {
       title: "Catalog & Listings",
       items: [
         {
-          href: "/my-products",
+          href: "/dashboard/my-products",
           label: "My Products",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -135,7 +144,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/listing",
+          href: "/dashboard/listing",
           label: "Listing Optimizer",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -144,7 +153,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/listing-health",
+          href: "/dashboard/listing-health",
           label: "Listing Health",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -158,7 +167,7 @@ export default function Sidebar() {
       title: "Operations",
       items: [
         {
-          href: "/inventory",
+          href: "/dashboard/inventory",
           label: "Inventory",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -167,7 +176,7 @@ export default function Sidebar() {
           ),
         },
         {
-          href: "/profit-calculator",
+          href: "/dashboard/profit-calculator",
           label: "Profit & Fees",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -182,7 +191,7 @@ export default function Sidebar() {
       title: "Connections",
       items: [
         {
-          href: "/settings",
+          href: "/dashboard/settings",
           label: "Amazon Connection",
           icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -318,7 +327,7 @@ export default function Sidebar() {
 
           {/* Settings & Help */}
           <div className="flex flex-col gap-1 px-2 text-xs font-medium text-zinc-400">
-            <Link href="/settings" className="hover:text-white flex items-center gap-2">
+            <Link href="/dashboard/settings" className="hover:text-white flex items-center gap-2">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="3" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />

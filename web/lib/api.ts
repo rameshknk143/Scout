@@ -1,32 +1,46 @@
 import "server-only";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "./session";
 
 // Fetched from Server Components / Server Actions only — API_KEY never
 // reaches the browser bundle this way (unlike a NEXT_PUBLIC_ var would).
 const API_URL = process.env.API_URL!;
 const API_KEY = process.env.API_KEY!;
 
-// GET-style reads default to a short time-based revalidation window instead
-// of the old blanket `cache: "no-store"` (which meant zero caching on every
-// call, GET or POST). POST-style mutations (score, profitCalculator) pass
-// `cache: "no-store"` explicitly via `options` and are left untouched below.
 type NextFetchOptions = { revalidate?: number | false; tags?: string[] };
+
+// The signed-in account id, read from the session cookie. Forwarded to the
+// backend as X-Scout-User so every data query is scoped to one tenant.
+async function currentUserId(): Promise<number | null> {
+  try {
+    const store = await cookies();
+    return verifySessionToken(store.get(SESSION_COOKIE)?.value)?.uid ?? null;
+  } catch {
+    return null;
+  }
+}
 
 async function request<T>(
   path: string,
   options: RequestInit = {},
   next?: NextFetchOptions
 ): Promise<T> {
+  const uid = await currentUserId();
+  const headers: Record<string, string> = {
+    "X-Scout-Key": API_KEY,
+    "Content-Type": "application/json",
+    ...((options.headers as Record<string, string>) || {}),
+  };
+  if (uid !== null) headers["X-Scout-User"] = String(uid);
+
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    headers: {
-      "X-Scout-Key": API_KEY,
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    // Mutations (POST) still pass their own cache/next via `options` if
-    // ever needed; reads get the revalidate/tags below unless overridden.
-    cache: options.cache ?? (next ? undefined : "no-store"),
-    next: next ?? undefined,
+    headers,
+    // With a signed-in user the response is tenant-specific, so never let it
+    // sit in Next's shared data cache — force a fresh fetch. Anonymous/global
+    // reads keep the time-based revalidation window.
+    cache: options.cache ?? (uid !== null ? "no-store" : next ? undefined : "no-store"),
+    next: uid !== null ? undefined : next ?? undefined,
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -401,4 +415,44 @@ export const api = {
     request<{ ok: boolean }>(`/auth/amazon/${sellingPartnerId}`, {
       method: "DELETE",
     }),
+  syncStorefront: () =>
+    request<{ ok: boolean; message: string; warning?: string }>("/storefront/sync", {
+      method: "POST",
+    }),
+  storefrontSales: () =>
+    request<{ metrics: StorefrontSalesMetric[] }>(
+      "/storefront/sales",
+      {},
+      { revalidate: 60, tags: ["storefront-status"] }
+    ),
+  storefrontOrders: () =>
+    request<{ orders: StorefrontOrder[] }>(
+      "/storefront/orders",
+      {},
+      { revalidate: 60, tags: ["storefront-status"] }
+    ),
 };
+
+export type StorefrontSalesMetric = {
+  id: number;
+  selling_partner_id: string;
+  marketplace_id: string;
+  interval_start: string;
+  order_count: number;
+  unit_count: number;
+  total_sales_amount: number;
+  currency: string;
+  updated_at: string;
+};
+
+export type StorefrontOrder = {
+  id: number;
+  amazon_order_id: string;
+  purchase_date: string;
+  order_status: string;
+  amount: number | null;
+  currency: string | null;
+  items_count: number;
+  updated_at: string;
+};
+

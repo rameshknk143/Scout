@@ -126,6 +126,35 @@ CREATE TABLE IF NOT EXISTS email_otps (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_email_otps_lookup ON email_otps(lower(email), purpose, created_at);
+
+CREATE TABLE IF NOT EXISTS storefront_sales_metrics (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    selling_partner_id TEXT NOT NULL,
+    marketplace_id TEXT NOT NULL,
+    interval_start TEXT NOT NULL,
+    order_count INTEGER NOT NULL,
+    unit_count INTEGER NOT NULL,
+    total_sales_amount REAL NOT NULL,
+    currency TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_storefront_sales_user_date
+    ON storefront_sales_metrics(user_id, selling_partner_id, marketplace_id, interval_start);
+
+CREATE TABLE IF NOT EXISTS storefront_orders (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    amazon_order_id TEXT NOT NULL,
+    purchase_date TEXT NOT NULL,
+    order_status TEXT NOT NULL,
+    amount REAL,
+    currency TEXT,
+    items_count INTEGER NOT NULL DEFAULT 1,
+    updated_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_storefront_orders_user_id
+    ON storefront_orders(user_id, amazon_order_id);
 """
 
 
@@ -560,6 +589,70 @@ def get_drawer_data(asin):
                 my_prod = dict(my_prod)
 
             return snap, history, val, my_prod
+
+
+# --- Storefront Sync ----------------------------------------------------------
+def save_storefront_sales_metric(user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency):
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO storefront_sales_metrics 
+                   (user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, updated_at)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ON CONFLICT (user_id, selling_partner_id, marketplace_id, interval_start)
+                   DO UPDATE SET 
+                       order_count = EXCLUDED.order_count,
+                       unit_count = EXCLUDED.unit_count,
+                       total_sales_amount = EXCLUDED.total_sales_amount,
+                       currency = EXCLUDED.currency,
+                       updated_at = EXCLUDED.updated_at""",
+                (user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, datetime.now(timezone.utc).isoformat())
+            )
+
+
+def get_storefront_sales_metrics(user_id):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT * FROM storefront_sales_metrics 
+                   WHERE user_id = %s 
+                   ORDER BY interval_start ASC""",
+                (user_id,)
+            )
+            return [dict(r) for r in cur.fetchall()]
+
+
+def save_storefront_order(user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count):
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO storefront_orders 
+                   (user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, updated_at)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                   ON CONFLICT (user_id, amazon_order_id)
+                   DO UPDATE SET 
+                       order_status = EXCLUDED.order_status,
+                       amount = EXCLUDED.amount,
+                       currency = EXCLUDED.currency,
+                       items_count = EXCLUDED.items_count,
+                       updated_at = EXCLUDED.updated_at""",
+                (user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, datetime.now(timezone.utc).isoformat())
+            )
+
+
+def get_storefront_orders(user_id, limit=20):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT * FROM storefront_orders 
+                   WHERE user_id = %s 
+                   ORDER BY purchase_date DESC 
+                   LIMIT %s""",
+                (user_id, limit)
+            )
+            return [dict(r) for r in cur.fetchall()]
 
 
 if __name__ == "__main__":

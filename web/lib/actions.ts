@@ -3,19 +3,20 @@
 import { cookies } from "next/headers";
 import { updateTag } from "next/cache";
 import { api, type ListingReview } from "./api";
-import { verifyToken } from "./auth-token";
+import { verifySessionToken, SESSION_COOKIE } from "./session";
 
 /**
- * Validates the current user session.
- * Throws an error if the site password is not configured or the session cookie is missing/invalid.
+ * Validates the current per-user session and returns the account id.
+ * Throws if the session cookie is missing or invalid. The account id is used
+ * to scope data (api.ts forwards it to the backend as X-Scout-User).
  */
-async function requireSession() {
+async function requireSession(): Promise<number> {
   const cookieStore = await cookies();
-  const token = cookieStore.get("scout_auth")?.value;
-  const sitePassword = process.env.SITE_PASSWORD;
-  if (!sitePassword || !verifyToken(token, sitePassword)) {
+  const session = verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
+  if (!session) {
     throw new Error("Unauthorized: Invalid session");
   }
+  return session.uid;
 }
 
 export async function getCategoryTable(category: string, listType?: string) {
@@ -262,4 +263,21 @@ export async function disconnectAmazonAccount(sellingPartnerId: string) {
   const result = await api.deleteAmazonAccount(sellingPartnerId);
   updateTag("amazon-status");
   return result;
+}
+
+export async function syncStorefrontData() {
+  await requireSession();
+  const result = await api.syncStorefront();
+  updateTag("storefront-status");
+  return result;
+}
+
+export async function getStorefrontSalesData() {
+  await requireSession();
+  return api.storefrontSales();
+}
+
+export async function getStorefrontOrdersData() {
+  await requireSession();
+  return api.storefrontOrders();
 }
