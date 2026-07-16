@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { api } from "@/lib/api";
+import { getAmazonStatus, getStorefrontSalesData, getStorefrontOrdersData } from "@/lib/actions";
 import TrendRadarClient from "./trend-radar-client";
 
 // This is personal, password-gated, live data -- never statically
@@ -14,16 +15,23 @@ import Link from "next/link";
 // Header renders immediately; the digest, watchlist, and alert fetches (Render cold-start prone)
 // stream in behind it instead of blocking the whole page.
 async function TrendRadarData() {
-  const [digest, watchlistData, alertsData] = await Promise.all([
+  const [digest, watchlistData, alertsData, status, salesRes, ordersRes] = await Promise.all([
     api.digest(),
     api.watchlist().catch(() => ({ validations: [] })),
     api.alerts().catch(() => ({ alerts: [] })),
+    getAmazonStatus().catch(() => ({ connected: false, accounts: [] })),
+    getStorefrontSalesData().catch(() => ({ metrics: [] })),
+    getStorefrontOrdersData().catch(() => ({ orders: [] })),
   ]);
   return (
     <TrendRadarClient
       digest={digest}
       watchlist={watchlistData.validations}
       alerts={alertsData.alerts}
+      connected={status.connected}
+      accounts={status.accounts || []}
+      initialMetrics={salesRes.metrics || []}
+      initialOrders={ordersRes.orders || []}
     />
   );
 }
@@ -40,7 +48,7 @@ export default function TrendRadarPage() {
         </div>
         <div className="mt-3 sm:mt-0">
           <Link
-            href="/validator"
+            href="/dashboard/validator"
             className="btn-primary w-auto text-xs py-2 px-4 shadow-sm flex items-center gap-1.5"
           >
             <span>+</span> Validate New ASIN

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { 
   Table, 
@@ -13,23 +14,78 @@ import {
   type AlertItem, 
   ProductDetailDrawer 
 } from "@/components/ui";
-import type { Digest, SnapshotRow, Validation, Alert } from "@/lib/api";
+import type { Digest, SnapshotRow, Validation, Alert, StorefrontSalesMetric, StorefrontOrder } from "@/lib/api";
 import { CATEGORIES, LIST_TYPES } from "@/lib/constants";
-import { getCategoryTable, updateWatchlistNotes } from "@/lib/actions";
+import { getCategoryTable, updateWatchlistNotes, syncStorefrontData } from "@/lib/actions";
 
-type TabKey = "watchlist" | "radar" | "bestsellers";
+type TabKey = "watchlist" | "radar" | "bestsellers" | "storefront";
 type MoverRow = Digest["top_movers"][number];
 type CrossRow = Digest["cross_category"][number];
+
+interface ConnectedAccount {
+  selling_partner_id: string;
+  marketplace_id: string;
+  connected_at: string;
+}
 
 interface TrendRadarClientProps {
   digest: Digest;
   watchlist: Validation[];
   alerts: Alert[];
+  connected: boolean;
+  accounts: ConnectedAccount[];
+  initialMetrics: StorefrontSalesMetric[];
+  initialOrders: StorefrontOrder[];
 }
 
-export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }: TrendRadarClientProps) {
-  const [activeDashboardTab, setActiveDashboardTab] = useState<TabKey>("watchlist");
+export default function TrendRadarClient({ 
+  digest, 
+  watchlist = [], 
+  alerts = [],
+  connected,
+  accounts = [],
+  initialMetrics = [],
+  initialOrders = [],
+}: TrendRadarClientProps) {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as TabKey;
+
+  const [activeDashboardTab, setActiveDashboardTab] = useState<TabKey>(
+    (tabParam === "watchlist" || tabParam === "radar" || tabParam === "bestsellers" || tabParam === "storefront")
+      ? tabParam
+      : "watchlist"
+  );
   const [bestsellerTab, setBestsellerTab] = useState<"entrants" | "movers" | "cross">("entrants");
+
+  // Sync states
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
+  const [isSyncPending, startSyncTransition] = useTransition();
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && (tab === "watchlist" || tab === "radar" || tab === "bestsellers" || tab === "storefront")) {
+      setActiveDashboardTab(tab as TabKey);
+    }
+  }, [searchParams]);
+
+  const handleSync = () => {
+    setSyncStatus("🕒 Synchronizing with Amazon Seller Central...");
+    startSyncTransition(async () => {
+      try {
+        const res = await syncStorefrontData();
+        if (res.ok) {
+          setSyncStatus("✅ Sync completed successfully! Reloading metrics...");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          setSyncStatus(`❌ Sync failed: ${res.message || "Unknown error"}`);
+        }
+      } catch (err: any) {
+        setSyncStatus(`❌ Error initiating sync: ${err.message || "Connection error"}`);
+      }
+    });
+  };
   
   // Category browse state (Bestsellers Explorer)
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
@@ -206,7 +262,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
               <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
                 Restock ASIN <strong className="font-mono text-white">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
               </p>
-              <Link href="/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
+              <Link href="/dashboard/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 View Inventory Details →
               </Link>
             </div>
@@ -215,7 +271,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
               <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
                 ✅ Catalog stock levels are healthy. No active restock alerts required.
               </p>
-              <Link href="/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
+              <Link href="/dashboard/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Manage Inventory →
               </Link>
             </div>
@@ -225,7 +281,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
             <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
               Competitor price fell by 12% on matching ASIN. Review your price strategy in the Profit Calculator.
             </p>
-            <Link href="/profit-calculator" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
+            <Link href="/dashboard/profit-calculator" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
               Calculate Margins →
             </Link>
           </div>
@@ -244,7 +300,7 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
               <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
                 ✅ Watchlist opportunity scores are optimal. All items meet the quality threshold.
               </p>
-              <Link href="/listing-health" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
+              <Link href="/dashboard/listing-health" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Audit Listing Health →
               </Link>
             </div>
@@ -284,6 +340,16 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
             }`}
           >
             🔭 Bestsellers Category Explorer
+          </button>
+          <button
+            onClick={() => setActiveDashboardTab("storefront")}
+            className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
+              activeDashboardTab === "storefront"
+                ? "border-[#3b82f6] text-[#3b82f6]"
+                : "border-transparent text-zinc-400 hover:text-white"
+            }`}
+          >
+            🏪 Storefront Performance
           </button>
         </div>
       </div>
@@ -689,6 +755,188 @@ export default function TrendRadarClient({ digest, watchlist = [], alerts = [] }
                 />
               )}
             </Tabs>
+          </div>
+        )}
+
+        {activeDashboardTab === "storefront" && (
+          <div className="space-y-6">
+            {!connected ? (
+              <div className="glass-panel p-8 text-center text-zinc-400 text-sm flex flex-col items-center justify-center space-y-4">
+                <div className="text-3xl">🔌</div>
+                <p>No Amazon account linked. Please link your storefront in Settings first to enable sales and orders tracking.</p>
+                <Link
+                  href="/dashboard/settings"
+                  className="btn-primary inline-block w-auto px-6 py-2.5 text-xs font-bold uppercase tracking-wider mt-2"
+                >
+                  Link Amazon Seller Account
+                </Link>
+              </div>
+            ) : (
+              <>
+                {/* Synchronization Panel */}
+                <div className="glass-panel p-5 bg-[#111625]/60 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-sm">
+                      🔌
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white uppercase tracking-wider">Connected Account</div>
+                      <div className="text-[11px] text-zinc-400 font-semibold mt-0.5">
+                        SP-API: <span className="font-mono text-zinc-300">{accounts[0]?.selling_partner_id}</span> ({(accounts[0]?.marketplace_id === "A21TJRUUN4KGV" ? "Amazon India" : (accounts[0]?.marketplace_id === "ATVPDKIKX0DER" ? "Amazon USA" : "Amazon UK"))})
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                    {syncStatus && (
+                      <div className="text-[10px] font-bold text-zinc-300 bg-[#161a29] border border-white/5 px-3 py-1.5 rounded-lg w-full sm:w-auto text-center font-mono">
+                        {syncStatus}
+                      </div>
+                    )}
+                    <button
+                      onClick={handleSync}
+                      disabled={isSyncPending}
+                      className="btn-primary w-full sm:w-auto px-5 py-2 text-xs font-bold uppercase tracking-wider cursor-pointer disabled:opacity-50"
+                    >
+                      {isSyncPending ? "Syncing..." : "🔄 Sync Storefront Now"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Metrics Stat Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <MetricCard
+                    title="Total Storefront Revenue (14d)"
+                    value={(initialMetrics.length > 0 ? `${initialMetrics[0].currency === "USD" ? "$" : (initialMetrics[0].currency === "GBP" ? "£" : "₹")}${initialMetrics.reduce((sum, m) => sum + m.total_sales_amount, 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}` : "—")}
+                    changeType="neutral"
+                    tooltip="Total sales revenue synced from SP-API over the last 14 days"
+                  />
+                  <MetricCard
+                    title="Total Orders Processed"
+                    value={initialMetrics.reduce((sum, m) => sum + m.order_count, 0).toString()}
+                    changeType="neutral"
+                    tooltip="Aggregate customer order volume"
+                  />
+                  <MetricCard
+                    title="Total Units Ordered"
+                    value={initialMetrics.reduce((sum, m) => sum + m.unit_count, 0).toString()}
+                    changeType="neutral"
+                    tooltip="Sum of units shipped or pending"
+                  />
+                  <MetricCard
+                    title="Average Order Value"
+                    value={(initialMetrics.length > 0 && initialMetrics.reduce((sum, m) => sum + m.order_count, 0) > 0 ? `${initialMetrics[0].currency === "USD" ? "$" : (initialMetrics[0].currency === "GBP" ? "£" : "₹")}${Math.round(initialMetrics.reduce((sum, m) => sum + m.total_sales_amount, 0) / initialMetrics.reduce((sum, m) => sum + m.order_count, 0)).toLocaleString("en-IN")}` : "—")}
+                    changeType="neutral"
+                    tooltip="Average customer shopping basket value"
+                  />
+                </div>
+
+                {/* Charts Grid */}
+                {initialMetrics.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <ChartCard
+                      title={`Sales Revenue Trend (${initialMetrics[0]?.currency || "INR"})`}
+                      data={initialMetrics.map((m) => ({
+                        day: new Date(m.interval_start).toLocaleDateString("en-IN", { month: "short", day: "numeric" }),
+                        "Sales Revenue": m.total_sales_amount,
+                      }))}
+                      xKey="day"
+                      dataKey="Sales Revenue"
+                      barColor="#10b981"
+                    />
+                    <ChartCard
+                      title="Orders Volume Trend"
+                      data={initialMetrics.map((m) => ({
+                        day: new Date(m.interval_start).toLocaleDateString("en-IN", { month: "short", day: "numeric" }),
+                        "Orders Count": m.order_count,
+                      }))}
+                      xKey="day"
+                      dataKey="Orders Count"
+                      barColor="#3b82f6"
+                    />
+                  </div>
+                ) : (
+                  <div className="glass-panel p-8 text-center text-zinc-400 text-xs font-medium border border-white/5 bg-[#111625]/20">
+                    No metrics synchronized yet. Please click the sync button above to fetch sales metrics.
+                  </div>
+                )}
+
+                {/* Recent Orders List */}
+                <div className="space-y-3.5">
+                  <h2 className="text-sm font-bold tracking-wider text-zinc-400 uppercase font-mono">Recent Storefront Transactions</h2>
+                  {initialOrders.length > 0 ? (
+                    <Table
+                      columns={[
+                        {
+                          key: "amazon_order_id",
+                          header: "Amazon Order ID",
+                          render: (o: StorefrontOrder) => (
+                            <span className="font-mono text-xs font-semibold text-zinc-300 select-all">{o.amazon_order_id}</span>
+                          ),
+                        },
+                        {
+                          key: "purchase_date",
+                          header: "Purchase Date",
+                          render: (o: StorefrontOrder) => {
+                            const date = new Date(o.purchase_date);
+                            return (
+                              <span className="text-zinc-400 font-medium text-xs font-mono">
+                                {date.toLocaleDateString("en-IN", { month: "short", day: "numeric" })},{" "}
+                                {date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                              </span>
+                            );
+                          },
+                        },
+                        {
+                          key: "order_status",
+                          header: "Status",
+                          render: (o: StorefrontOrder) => {
+                            const statusColors: Record<string, string> = {
+                              "Shipped": "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+                              "Unshipped": "text-blue-400 bg-blue-500/10 border-blue-500/20",
+                              "Pending": "text-amber-400 bg-amber-500/10 border-amber-500/20",
+                              "Cancelled": "text-zinc-500 bg-zinc-500/10 border-zinc-500/20",
+                            };
+                            const colorClass = statusColors[o.order_status] || "text-zinc-300 bg-zinc-500/10";
+                            return (
+                              <span className={`text-[10px] font-bold border px-2 py-0.5 rounded uppercase tracking-wider ${colorClass}`}>
+                                {o.order_status}
+                              </span>
+                            );
+                          },
+                        },
+                        {
+                          key: "items_count",
+                          header: "Items",
+                          render: (o: StorefrontOrder) => (
+                            <span className="text-zinc-300 font-semibold text-xs font-mono">{o.items_count} unit(s)</span>
+                          ),
+                        },
+                        {
+                          key: "amount",
+                          header: "Order Total",
+                          render: (o: StorefrontOrder) => {
+                            const ordCurrency = o.currency || "INR";
+                            const ordSymbol = ordCurrency === "USD" ? "$" : (ordCurrency === "GBP" ? "£" : "₹");
+                            return (
+                              <span className="font-semibold text-white font-mono">
+                                {o.amount ? `${ordSymbol}${o.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "—"}
+                              </span>
+                            );
+                          },
+                        },
+                      ]}
+                      rows={initialOrders}
+                      rowKey={(o) => o.id}
+                    />
+                  ) : (
+                    <div className="glass-panel p-8 text-center text-zinc-400 text-xs font-medium border border-white/5 bg-[#111625]/20">
+                      No storefront orders synced yet. Try clicking "Sync Storefront Now" above to load recent customer transactions.
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
