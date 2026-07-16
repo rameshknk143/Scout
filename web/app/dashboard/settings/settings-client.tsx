@@ -33,7 +33,8 @@ export default function SettingsClient() {
       : marketplaceId === "A1F83G8C2ARO7P"
         ? "sellercentral-europe.amazon.com"
         : "sellercentral.amazon.in";
-    return `https://${domain}/apps/authorize/consent?application_id=amzn1.sp.id.mock-scout-app-123&state=secure_state_nonce&version=beta`;
+    const appId = process.env.NEXT_PUBLIC_AMAZON_APP_ID || "amzn1.sp.id.mock-scout-app-123";
+    return `https://${domain}/apps/authorize/consent?application_id=${appId}&state=${marketplaceId}&version=beta`;
   };
 
   const fetchStatus = async () => {
@@ -194,19 +195,15 @@ LWA_CLIENT_SECRET="client_secret_example_value..."`}
               </div>
 
               <p className="text-xs text-zinc-400 font-semibold leading-relaxed mt-1">
-                Clicking authorize will simulate redirecting to the Amazon Seller Central consent page (for testing credentials workflow in this demo application).
+                Clicking authorize will open the Amazon Seller Central consent page to grant access permissions.
               </p>
               <a
                 href={getAuthorizeUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert(`Redirecting to Amazon Developer Consent Page for ${MARKETPLACE_NAMES[marketplaceId]} (OAuth LWA Endpoint Mock)...`);
-                }}
                 className="btn-primary inline-block w-auto px-6 py-2.5 mt-3 text-xs font-bold text-center tracking-wide uppercase cursor-pointer"
               >
-                🔌 Authorize ScoutVeda Integration (Mock)
+                🔌 Authorize ScoutVeda Integration
               </a>
             </div>
           </div>

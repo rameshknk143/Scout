@@ -73,7 +73,18 @@ interface PremiumLandingProps {
 }
 
 export default function PremiumLanding({ from }: PremiumLandingProps) {
-  const [state, formAction, pending] = useActionState(login, undefined);
+  const [state, formAction, pending] = useActionState(
+    async (prevState: any, formData: FormData) => {
+      const password = formData.get("password") as string;
+      const res = await login({ email: "admin@scoutveda.com", password });
+      if (res.ok) {
+        window.location.href = from.startsWith("/") ? from : "/dashboard";
+        return undefined;
+      }
+      return { error: res.error };
+    },
+    undefined
+  );
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
