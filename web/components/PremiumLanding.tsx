@@ -1,98 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useRef, useMemo, useEffect, Suspense, useActionState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Environment } from "@react-three/drei";
-import * as THREE from "three";
+import { useState, useEffect, useActionState } from "react";
 import { login } from "@/lib/auth-actions";
-
-function FloatingASIN() {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.rotation.y += 0.006;
-      ref.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.2 - 0.6;
-    }
-  });
-
-  return (
-    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.3}>
-      <mesh ref={ref} position={[-2.2, -0.6, 0.5]}>
-        <boxGeometry args={[1.0, 0.35, 0.2]} />
-        <meshStandardMaterial color="#f59e0b" metalness={0.95} roughness={0.05} />
-      </mesh>
-    </Float>
-  );
-}
-
-function FloatingData() {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.position.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.4 + 2.2;
-      ref.current.rotation.y = Math.cos(state.clock.getElapsedTime() * 0.15) * 0.15;
-    }
-  });
-
-  return (
-    <mesh ref={ref} position={[2.2, 0.8, 0.5]}>
-      <cylinderGeometry args={[0.18, 0.18, 0.35, 32]} />
-      <meshStandardMaterial color="#3b82f6" metalness={0.8} roughness={0.15} />
-    </mesh>
-  );
-}
-
-function FloatingChart() {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.scale.setScalar(1 + Math.sin(state.clock.getElapsedTime() * 0.6) * 0.03);
-    }
-  });
-
-  return (
-    <mesh ref={ref} position={[-2.0, 1.2, 0.5]}>
-      <coneGeometry args={[0.25, 0.7, 4]} />
-      <meshStandardMaterial color="#ef4444" metalness={0.8} roughness={0.1} />
-    </mesh>
-  );
-}
-
-function BackgroundStars() {
-  const points = useRef<THREE.Points>(null!);
-  const count = 1200;
-
-  useFrame((state) => {
-    if (points.current) {
-      points.current.rotation.y += 0.0002;
-      points.current.rotation.x += 0.0001;
-    }
-  });
-
-  const positions = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const idx = i * 3;
-      pos[idx] = (Math.random() - 0.5) * 80;
-      pos[idx + 1] = (Math.random() - 0.5) * 80;
-      pos[idx + 2] = (Math.random() - 0.5) * 80;
-    }
-    return pos;
-  }, [count]);
-
-  return (
-    <points ref={points}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial size={0.35} color="#71717a" sizeAttenuation opacity={0.22} transparent />
-    </points>
-  );
-}
 
 // Skeuomorphic Circular Dial Gauge Component
 function SkeuomorphicDial() {
@@ -163,20 +73,7 @@ interface PremiumLandingProps {
 }
 
 export default function PremiumLanding({ from }: PremiumLandingProps) {
-  const [mouseX, setMouseX] = useState(0);
-  const [mouseY, setMouseY] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const [state, formAction, pending] = useActionState(login, undefined);
-
-  useEffect(() => {
-    setMounted(true);
-    const handleMouseMove = (e: MouseEvent) => {
-      setMouseX((e.clientX / window.innerWidth) * 2 - 1);
-      setMouseY(-(e.clientY / window.innerHeight) * 2 + 1);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -187,35 +84,42 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
 
   return (
     <div className="min-h-screen bg-[#090d16] text-white font-sans selection:bg-blue-600/30 relative overflow-x-hidden">
-      {/* 3D Scene Background (Fixed in backdrop) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        {mounted && (
-          <Canvas
-            shadows
-            camera={{ position: [0, 0, 5.5], fov: 50 }}
-            style={{ width: "100%", height: "100%" }}
-          >
-            <ambientLight intensity={0.9} />
-            <directionalLight
-              position={[8 + mouseX * 4, 8 + mouseY * 4, 8]}
-              intensity={1.5}
-              castShadow
-            />
-            <Suspense fallback={null}>
-              <Environment files="/studio_small_03_1k.hdr" />
-              <FloatingASIN />
-              <FloatingData />
-              <FloatingChart />
-              <BackgroundStars />
-            </Suspense>
-          </Canvas>
-        )}
-      </div>
+      {/* CSS Keyframe Animations for Fluid Gradients */}
+      <style>{`
+        @keyframes float-slow-1 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(60px, -80px) scale(1.15); }
+        }
+        @keyframes float-slow-2 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(-70px, 70px) scale(0.9); }
+        }
+        @keyframes float-slow-3 {
+          0%, 100% { transform: translate(0px, 0px) scale(1.1); }
+          50% { transform: translate(50px, 40px) scale(0.95); }
+        }
+        .animate-float-1 {
+          animation: float-slow-1 25s ease-in-out infinite;
+        }
+        .animate-float-2 {
+          animation: float-slow-2 30s ease-in-out infinite;
+        }
+        .animate-float-3 {
+          animation: float-slow-3 20s ease-in-out infinite;
+        }
+      `}</style>
 
-      {/* Background Decorative Glowing Spheres (Glassmorphism backdrop layer) */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      {/* Floating Mesh Gradient Backdrop (Replaced basic ThreeJS stars & box shapes) */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Glow Sphere 1 - Cyan/Blue */}
+        <div className="absolute top-[5%] left-[5%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/5 blur-[120px] animate-float-1" />
+        
+        {/* Glow Sphere 2 - Purple/Indigo */}
+        <div className="absolute bottom-[10%] right-[5%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-purple-500/15 to-pink-500/5 blur-[140px] animate-float-2" />
+        
+        {/* Glow Sphere 3 - Amber/Warm Accent */}
+        <div className="absolute top-[40%] right-[15%] w-[35vw] h-[35vw] rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/0 blur-[110px] animate-float-3" />
+      </div>
 
       {/* Foreground Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -338,7 +242,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="w-full bg-slate-950/60 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.9),inset_-4px_-4px_8px_rgba(255,255,255,0.015)] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-605 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all font-mono text-center"
+                    className="w-full bg-slate-950/60 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.9),inset_-4px_-4px_8px_rgba(255,255,255,0.015)] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-650 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all font-mono text-center"
                     required
                     autoFocus
                   />
