@@ -291,7 +291,7 @@ export default function TrendRadarClient({
               <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
                 Listing quality score is low on ASIN <strong className="font-mono text-white">{lowQualityAsin}</strong>. Add high-volume keywords to title.
               </p>
-              <Link href={`/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
+              <Link href={`/dashboard/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Optimize Listing →
               </Link>
             </div>
@@ -637,7 +637,7 @@ export default function TrendRadarClient({
                       header: "Action",
                       render: (p) => (
                         <Link
-                          href={`/validator?asin=${p.asin}`}
+                          href={`/dashboard/validator?asin=${p.asin}`}
                           className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                         >
                           Validate
@@ -692,7 +692,7 @@ export default function TrendRadarClient({
                       header: "Action",
                       render: (p) => (
                         <Link
-                          href={`/validator?asin=${p.asin}`}
+                          href={`/dashboard/validator?asin=${p.asin}`}
                           className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                         >
                           Validate
@@ -741,7 +741,7 @@ export default function TrendRadarClient({
                       header: "Action",
                       render: (p) => (
                         <Link
-                          href={`/validator?asin=${p.asin}`}
+                          href={`/dashboard/validator?asin=${p.asin}`}
                           className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                         >
                           Validate

@@ -174,7 +174,7 @@ export default function ProductDatabaseClient() {
       header: "Actions",
       render: (p: SnapshotRow) => (
         <Link
-          href={`/validator?asin=${p.asin}`}
+          href={`/dashboard/validator?asin=${p.asin}`}
           className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1.5 rounded transition-colors"
         >
           Validate Opportunity

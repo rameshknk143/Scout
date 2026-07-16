@@ -331,7 +331,7 @@ export default function ProductDetailDrawer({
                   </button>
                   <button
                     onClick={() => {
-                      window.location.href = `/validator?asin=${product.asin}`;
+                      window.location.href = `/dashboard/validator?asin=${product.asin}`;
                     }}
                     className="btn-primary flex-1 text-xs"
                   >

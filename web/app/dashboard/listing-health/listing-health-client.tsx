@@ -99,7 +99,7 @@ export default function ListingHealthClient() {
       header: "Action",
       render: (p: AuditedProduct) => (
         <Link
-          href={`/listing?asin=${p.asin}`}
+          href={`/dashboard/listing?asin=${p.asin}`}
           className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
         >
           Optimize Listing

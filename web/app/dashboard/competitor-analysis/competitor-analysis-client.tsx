@@ -230,13 +230,13 @@ export default function CompetitorAnalysisClient() {
                       {r.found ? (
                         <div className="flex flex-col gap-1.5">
                           <Link
-                             href={`/validator?asin=${r.asin}`}
+                             href={`/dashboard/validator?asin=${r.asin}`}
                              className="text-[10px] font-bold text-center text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors"
                           >
                             Re-Validate Cost
                           </Link>
                           <Link
-                            href={`/listing?asin=${r.asin}`}
+                            href={`/dashboard/listing?asin=${r.asin}`}
                             className="text-[10px] font-bold text-center text-zinc-400 bg-transparent hover:text-white px-2 py-1 rounded transition-colors border border-white/10"
                           >
                             Analyze Copy
@@ -244,7 +244,7 @@ export default function CompetitorAnalysisClient() {
                         </div>
                       ) : (
                         <Link
-                          href={`/validator?asin=${r.asin}`}
+                          href={`/dashboard/validator?asin=${r.asin}`}
                           className="btn-primary text-center block text-[10px] py-1"
                         >
                           Scout ASIN
