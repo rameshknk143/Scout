@@ -94,6 +94,70 @@ function BackgroundStars() {
   );
 }
 
+// Skeuomorphic Circular Dial Gauge Component
+function SkeuomorphicDial() {
+  const [score, setScore] = useState(78);
+  
+  const cycleScore = () => {
+    const scores = [45, 62, 78, 89, 95];
+    const currentIndex = scores.indexOf(score);
+    const nextIndex = (currentIndex + 1) % scores.length;
+    setScore(scores[nextIndex]);
+  };
+
+  // Maps score (0-100) to rotation angle (-120deg to 120deg)
+  const angle = ((score / 100) * 240) - 120;
+
+  return (
+    <div className="flex flex-col items-center p-6 rounded-3xl bg-slate-900/30 border-t border-l border-white/10 shadow-[8px_8px_20px_#040609,-8px_-8px_20px_#0e1423] backdrop-blur-xl max-w-xs mx-auto">
+      <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 text-center font-mono">
+        Opportunity Meter
+      </h4>
+      
+      {/* Skeuomorphic Gauge Plate */}
+      <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-[#161a29] to-[#0a0c14] border-4 border-zinc-700/80 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.8),0_10px_20px_rgba(0,0,0,0.6)] flex items-center justify-center overflow-hidden">
+        {/* Chrome Reflection Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/10 pointer-events-none rounded-full" />
+        
+        {/* Scale Markings */}
+        <svg className="absolute inset-0 w-full h-full transform -rotate-[210deg]">
+          <circle cx="80" cy="80" r="65" stroke="rgba(255,255,255,0.05)" strokeWidth="6" fill="none" strokeDasharray="3 6" />
+          <circle cx="80" cy="80" r="65" stroke="#3b82f6" strokeWidth="2" fill="none" strokeDasharray="180 360" strokeDashoffset="90" className="opacity-40" />
+        </svg>
+
+        {/* Center Needle */}
+        <div 
+          className="absolute w-1 h-14 bg-gradient-to-t from-red-600 to-red-400 origin-bottom rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)] transition-transform duration-700 ease-out"
+          style={{ 
+            transform: `rotate(${angle}deg)`, 
+            bottom: "80px", 
+            left: "79px" 
+          }}
+        />
+
+        {/* Center Metal Cap */}
+        <div className="absolute w-7 h-7 rounded-full bg-gradient-to-b from-zinc-400 via-zinc-600 to-zinc-800 border border-zinc-950 shadow-[2px_2px_4px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.4)] flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-zinc-950" />
+        </div>
+
+        {/* Digital Readout */}
+        <div className="absolute bottom-5 flex flex-col items-center">
+          <span className="text-[9px] uppercase font-bold tracking-widest text-zinc-500 font-mono">ASIN SCORE</span>
+          <span className="text-lg font-black font-mono text-blue-400 drop-shadow-[0_0_6px_rgba(59,130,246,0.6)]">{score}</span>
+        </div>
+      </div>
+
+      <button 
+        type="button" 
+        onClick={cycleScore}
+        className="mt-5 w-full bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-t border-white/20 border-b border-black/80 shadow-[0_4px_6px_rgba(0,0,0,0.5)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] active:translate-y-[2px] text-zinc-200 hover:text-white font-bold text-[9px] uppercase tracking-widest py-2 rounded-xl transition-all cursor-pointer font-mono"
+      >
+        ⚡ Cycle Demo ASIN
+      </button>
+    </div>
+  );
+}
+
 interface PremiumLandingProps {
   from: string;
 }
@@ -122,7 +186,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-white font-sans selection:bg-blue-600/30 relative">
+    <div className="min-h-screen bg-[#090d16] text-white font-sans selection:bg-blue-600/30 relative overflow-x-hidden">
       {/* 3D Scene Background (Fixed in backdrop) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {mounted && (
@@ -148,6 +212,11 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
         )}
       </div>
 
+      {/* Background Decorative Glowing Spheres (Glassmorphism backdrop layer) */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
       {/* Foreground Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Sticky Glass Navbar */}
@@ -166,7 +235,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
           <div>
             <button 
               onClick={() => scrollToSection("signin")} 
-              className="bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer"
+              className="bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 border-t border-white/20 border-b border-black/80 shadow-[0_4px_6px_rgba(0,0,0,0.5)] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] active:translate-y-[2px] text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer"
             >
               Access App
             </button>
@@ -204,71 +273,72 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-zinc-400 text-sm leading-relaxed"
             >
-              ScoutVeda is a private, data-driven sourcing intelligence platform built specifically for Amazon resellers. Monitor category bestsellers, analyze competitor health, and project product profits with precision.
+              ScoutVeda blends three dimensions of design: Tactile shadow depth, glassmorphism overlays, and physical hardware dials. An advanced sourcing radar for high-volume Amazon resellers.
             </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="grid grid-cols-2 gap-4 pt-2"
-            >
-              <div className="flex items-start gap-2.5">
-                <span className="text-emerald-400 mt-0.5">✔</span>
-                <div>
-                  <h4 className="text-xs font-bold text-zinc-200">Daily Category Snapshots</h4>
-                  <p className="text-[11px] text-zinc-500 leading-snug">Track bestsellers across 30+ product lines.</p>
+            {/* Interactive Demo Component Grid Row */}
+            <div className="flex flex-col sm:flex-row gap-6 pt-4 items-center">
+              <div className="flex-1">
+                <SkeuomorphicDial />
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 mt-0.5">✔</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-200">Daily Bestseller Radar</h4>
+                    <p className="text-[11px] text-zinc-500 leading-snug">Track category lists across 31 product branches.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 mt-0.5">✔</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-200">FBA Fee & Margin Audit</h4>
+                    <p className="text-[11px] text-zinc-500 leading-snug">Calculate exact referral, logistics, and GST splits.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 mt-0.5">✔</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-200">Keyword Harvester</h4>
+                    <p className="text-[11px] text-zinc-500 leading-snug">Harvest search autocomplete terms in real time.</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start gap-2.5">
-                <span className="text-emerald-400 mt-0.5">✔</span>
-                <div>
-                  <h4 className="text-xs font-bold text-zinc-200">FBA Fee & Margin Audit</h4>
-                  <p className="text-[11px] text-zinc-500 leading-snug">Calculate exact referral, logistics, and GST splits.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <span className="text-emerald-400 mt-0.5">✔</span>
-                <div>
-                  <h4 className="text-xs font-bold text-zinc-200">Keyword Harvester</h4>
-                  <p className="text-[11px] text-zinc-500 leading-snug">Harvest search autocomplete terms in real time.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <span className="text-emerald-400 mt-0.5">✔</span>
-                <div>
-                  <h4 className="text-xs font-bold text-zinc-200">AI Review Mining</h4>
-                  <p className="text-[11px] text-zinc-500 leading-snug">Extract real reviews from mobile pages automatically.</p>
-                </div>
-              </div>
-            </motion.div>
+            </div>
           </div>
 
-          {/* Hero Right - Glass login card */}
+          {/* Hero Right - Glass login card with Neumorphic and Skeuomorphic styling */}
           <div id="signin" className="w-full max-w-md shrink-0 py-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="p-8 bg-slate-950/70 border border-white/10 backdrop-blur-xl shadow-2xl rounded-2xl relative"
+              className="p-8 bg-slate-900/35 border-t border-l border-white/10 backdrop-blur-xl rounded-3xl shadow-[8px_8px_20px_#040609,-8px_-8px_20px_#0e1423] relative"
             >
-              <div className="absolute -top-3 -right-3 bg-blue-600 text-white font-mono text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-md shadow-lg">
+              <div className="absolute -top-3 -right-3 bg-gradient-to-b from-blue-500 to-blue-700 border-t border-blue-300/30 border-b border-black/50 text-white font-mono text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-md shadow-lg">
                 Private Portal
               </div>
-              <h2 className="text-base font-bold mb-5 text-white uppercase tracking-wider text-center font-sans">Sign In</h2>
-              <form action={formAction} className="space-y-4">
+              
+              <h2 className="text-base font-black mb-6 text-white uppercase tracking-widest text-center font-mono drop-shadow-md">
+                🔒 System Sign In
+              </h2>
+              
+              <form action={formAction} className="space-y-6">
                 <input type="hidden" name="from" value={from} />
                 
-                <div className="space-y-1.5">
-                  <label htmlFor="password" className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                    Enter System Password
+                <div className="space-y-2">
+                  <label htmlFor="password" className="block text-[9px] font-black text-zinc-400 uppercase tracking-widest font-mono text-center">
+                    Enter Access Key
                   </label>
+                  
+                  {/* Neumorphic Recessed Input Field */}
                   <input
                     id="password"
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all font-mono text-center"
+                    className="w-full bg-slate-950/60 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.9),inset_-4px_-4px_8px_rgba(255,255,255,0.015)] border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-605 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all font-mono text-center"
                     required
                     autoFocus
                   />
@@ -280,12 +350,13 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
                   </div>
                 )}
 
+                {/* Skeuomorphic Shiny Blue CTA Button */}
                 <button
                   type="submit"
                   disabled={pending}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl uppercase tracking-wider transition-all shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 cursor-pointer mt-2"
+                  className="w-full bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 border-t border-blue-300/40 border-b border-black/80 shadow-[0_6px_12px_-2px_rgba(0,0,0,0.6)] hover:from-blue-450 hover:to-blue-650 active:translate-y-[2px] active:shadow-[inset_0_4px_8px_rgba(0,0,0,0.8)] text-white font-black text-xs py-3.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer mt-2"
                 >
-                  {pending ? "Signing In..." : "Access Dashboard →"}
+                  {pending ? "Unlocking Portal..." : "Authorize Access →"}
                 </button>
               </form>
             </motion.div>
@@ -295,15 +366,15 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
         {/* Features Section */}
         <section id="features" className="max-w-7xl mx-auto w-full px-6 md:px-12 py-20 border-t border-white/5 bg-[#090d16]/30 backdrop-blur-[2px]">
           <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
-            <h2 className="text-3xl font-extrabold tracking-tight text-white">Sourcing & Listing Modules</h2>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <h2 className="text-3xl font-extrabold tracking-tight text-white font-sans">Sourcing & Listing Modules</h2>
+            <p className="text-xs text-zinc-400 leading-relaxed font-mono uppercase tracking-wider">
               An all-in-one execution system built for Amazon resellers to source accurately and optimize listings.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="p-6 rounded-xl bg-slate-950/40 border border-white/5 hover:border-white/10 hover:bg-slate-950/60 transition-all group">
+            <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 hover:bg-slate-900/45 hover:border-white/15 transition-all group shadow-[6px_6px_16px_rgba(0,0,0,0.5),-6px_-6px_16px_rgba(255,255,255,0.01)] backdrop-blur-sm">
               <div className="text-2xl mb-4 group-hover:scale-110 transition-transform w-fit">📈</div>
               <h3 className="text-sm font-bold text-white mb-2">Trend Radar & Database</h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
@@ -312,7 +383,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             </div>
 
             {/* Feature 2 */}
-            <div className="p-6 rounded-xl bg-slate-950/40 border border-white/5 hover:border-white/10 hover:bg-slate-950/60 transition-all group">
+            <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 hover:bg-slate-900/45 hover:border-white/15 transition-all group shadow-[6px_6px_16px_rgba(0,0,0,0.5),-6px_-6px_16px_rgba(255,255,255,0.01)] backdrop-blur-sm">
               <div className="text-2xl mb-4 group-hover:scale-110 transition-transform w-fit">🎯</div>
               <h3 className="text-sm font-bold text-white mb-2">Opportunity Finder</h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
@@ -321,7 +392,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             </div>
 
             {/* Feature 3 */}
-            <div className="p-6 rounded-xl bg-slate-950/40 border border-white/5 hover:border-white/10 hover:bg-slate-950/60 transition-all group">
+            <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 hover:bg-slate-900/45 hover:border-white/15 transition-all group shadow-[6px_6px_16px_rgba(0,0,0,0.5),-6px_-6px_16px_rgba(255,255,255,0.01)] backdrop-blur-sm">
               <div className="text-2xl mb-4 group-hover:scale-110 transition-transform w-fit">🔑</div>
               <h3 className="text-sm font-bold text-white mb-2">Keyword Harvester</h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
@@ -330,7 +401,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             </div>
 
             {/* Feature 4 */}
-            <div className="p-6 rounded-xl bg-slate-950/40 border border-white/5 hover:border-white/10 hover:bg-slate-950/60 transition-all group">
+            <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 hover:bg-slate-900/45 hover:border-white/15 transition-all group shadow-[6px_6px_16px_rgba(0,0,0,0.5),-6px_-6px_16px_rgba(255,255,255,0.01)] backdrop-blur-sm">
               <div className="text-2xl mb-4 group-hover:scale-110 transition-transform w-fit">💬</div>
               <h3 className="text-sm font-bold text-white mb-2">AI Review Miner</h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
@@ -339,7 +410,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             </div>
 
             {/* Feature 5 */}
-            <div className="p-6 rounded-xl bg-slate-950/40 border border-white/5 hover:border-white/10 hover:bg-slate-950/60 transition-all group">
+            <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 hover:bg-slate-900/45 hover:border-white/15 transition-all group shadow-[6px_6px_16px_rgba(0,0,0,0.5),-6px_-6px_16px_rgba(255,255,255,0.01)] backdrop-blur-sm">
               <div className="text-2xl mb-4 group-hover:scale-110 transition-transform w-fit">💰</div>
               <h3 className="text-sm font-bold text-white mb-2">Profit & FBA Fee Audit</h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
@@ -348,7 +419,7 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
             </div>
 
             {/* Feature 6 */}
-            <div className="p-6 rounded-xl bg-slate-950/40 border border-white/5 hover:border-white/10 hover:bg-slate-950/60 transition-all group">
+            <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 hover:bg-slate-900/45 hover:border-white/15 transition-all group shadow-[6px_6px_16px_rgba(0,0,0,0.5),-6px_-6px_16px_rgba(255,255,255,0.01)] backdrop-blur-sm">
               <div className="text-2xl mb-4 group-hover:scale-110 transition-transform w-fit">📦</div>
               <h3 className="text-sm font-bold text-white mb-2">Inventory Planner</h3>
               <p className="text-[11px] text-zinc-400 leading-relaxed">
@@ -363,10 +434,11 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 space-y-4 text-left">
               <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">🔒 Enterprise-Grade Data Security</h2>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-zinc-400 leading-relaxed font-mono uppercase tracking-wider">
                 Your credentials and seller tokens are confidential. ScoutVeda implements robust security policies sitting on top of modern database best practices:
               </p>
-              <ul className="space-y-2 text-xs text-zinc-300">
+              
+              <ul className="space-y-3 text-xs text-zinc-300 pt-2">
                 <li className="flex items-center gap-2">
                   <span className="text-emerald-400 font-bold">✔</span> AES-256 Fernet-encrypted credentials at rest.
                 </li>
@@ -382,14 +454,17 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
               </ul>
             </div>
 
-            <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-5 rounded-lg bg-slate-950/40 border border-white/5">
-                <h4 className="text-xs font-bold text-white mb-1">CORS Protection</h4>
-                <p className="text-[11px] text-zinc-500">Rigid allowlist policies gate Render's endpoint to prevent unauthorized domains from hitting your API.</p>
+            <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Security Card 1 */}
+              <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 shadow-[6px_6px_16px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <h4 className="text-xs font-bold text-white mb-2">CORS Protection</h4>
+                <p className="text-[11px] text-zinc-500 leading-relaxed">Rigid allowlist policies gate Render's endpoint to prevent unauthorized domains from hitting your API.</p>
               </div>
-              <div className="p-5 rounded-lg bg-slate-950/40 border border-white/5">
-                <h4 className="text-xs font-bold text-white mb-1">HMAC Tokens</h4>
-                <p className="text-[11px] text-zinc-500">Expiring session tokens secure web requests, preventing replay or hijacking attacks.</p>
+              
+              {/* Security Card 2 */}
+              <div className="p-6 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 shadow-[6px_6px_16px_rgba(0,0,0,0.5)] backdrop-blur-sm">
+                <h4 className="text-xs font-bold text-white mb-2">HMAC Tokens</h4>
+                <p className="text-[11px] text-zinc-500 leading-relaxed">Expiring session tokens secure web requests, preventing replay or hijacking attacks.</p>
               </div>
             </div>
           </div>
@@ -399,23 +474,23 @@ export default function PremiumLanding({ from }: PremiumLandingProps) {
         <section id="tech-stack" className="max-w-7xl mx-auto w-full px-6 md:px-12 py-16 border-t border-white/5 bg-[#090d16]/20">
           <div className="text-center max-w-xl mx-auto mb-10">
             <h2 className="text-2xl font-bold text-white tracking-tight">System Infrastructure</h2>
-            <p className="text-xs text-zinc-400 mt-2">A robust serverless & microservices architecture that handles high volume operations at near-zero overhead cost.</p>
+            <p className="text-xs text-zinc-400 mt-2 font-mono uppercase tracking-wider">A robust serverless & microservices architecture that handles high volume operations at near-zero overhead cost.</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="p-4 rounded-lg bg-slate-950/20 border border-white/5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="p-5 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 shadow-[6px_6px_16px_rgba(0,0,0,0.5)] backdrop-blur-sm">
               <h4 className="text-xs font-bold text-white font-mono">Next.js 16</h4>
               <p className="text-[10px] text-zinc-500 mt-1">App router, Server Actions</p>
             </div>
-            <div className="p-4 rounded-lg bg-slate-950/20 border border-white/5">
+            <div className="p-5 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 shadow-[6px_6px_16px_rgba(0,0,0,0.5)] backdrop-blur-sm">
               <h4 className="text-xs font-bold text-white font-mono">FastAPI</h4>
               <p className="text-[10px] text-zinc-500 mt-1">Python scraping & math engine</p>
             </div>
-            <div className="p-4 rounded-lg bg-slate-950/20 border border-white/5">
+            <div className="p-5 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 shadow-[6px_6px_16px_rgba(0,0,0,0.5)] backdrop-blur-sm">
               <h4 className="text-xs font-bold text-white font-mono">Supabase</h4>
               <p className="text-[10px] text-zinc-500 mt-1">Relational database</p>
             </div>
-            <div className="p-4 rounded-lg bg-slate-950/20 border border-white/5">
+            <div className="p-5 rounded-2xl bg-slate-900/25 border-t border-l border-white/10 shadow-[6px_6px_16px_rgba(0,0,0,0.5)] backdrop-blur-sm">
               <h4 className="text-xs font-bold text-white font-mono">GitHub Actions</h4>
               <p className="text-[10px] text-zinc-500 mt-1">Nightly scraper runner</p>
             </div>
