@@ -236,14 +236,14 @@ body {
    Palette leans on the app tokens above; teal is the marketing accent.
    ============================================================================ */
 :root {
-  --sv-teal: #2dd4bf;          /* emerald-teal marketing accent */
-  --sv-teal-deep: #14b8a6;
-  --sv-ink: #05070d;           /* deepest base */
-  --sv-surface: rgba(19, 25, 40, 0.7);
-  --sv-surface-solid: #0f1524;
+  --sv-teal: #f59e0b;          /* Luxury gold marketing accent */
+  --sv-teal-deep: #d97706;
+  --sv-ink: #070b15;           /* Deep academic navy */
+  --sv-surface: rgba(15, 23, 42, 0.7);
+  --sv-surface-solid: #0f172a;
   --sv-hair: rgba(255, 255, 255, 0.08);
   --sv-hair-strong: rgba(255, 255, 255, 0.14);
-  --sv-glow-teal: rgba(45, 212, 191, 0.35);
+  --sv-glow-teal: rgba(245, 158, 11, 0.30);
 }
 
 /* Abstract animated background: drifting light + marketplace grid + data motes.
@@ -252,9 +252,9 @@ body {
 .sv-bg::before {
   content: ""; position: absolute; inset: -20%;
   background:
-    radial-gradient(40% 40% at 15% 15%, rgba(45, 212, 191, 0.10), transparent 70%),
-    radial-gradient(45% 45% at 85% 20%, rgba(59, 130, 246, 0.10), transparent 70%),
-    radial-gradient(50% 50% at 70% 90%, rgba(139, 92, 246, 0.08), transparent 70%);
+    radial-gradient(40% 40% at 15% 15%, rgba(245, 158, 11, 0.07), transparent 70%),
+    radial-gradient(45% 45% at 85% 20%, rgba(30, 58, 138, 0.25), transparent 70%),
+    radial-gradient(50% 50% at 70% 90%, rgba(59, 130, 246, 0.08), transparent 70%);
   animation: sv-drift 30s ease-in-out infinite alternate;
 }
 .sv-bg::after {
@@ -474,8 +474,8 @@ body {
   position: absolute;
   inset: -150% -50%;
   background-image: 
-    linear-gradient(rgba(45, 212, 191, 0.05) 1.5px, transparent 1.5px),
-    linear-gradient(90deg, rgba(45, 212, 191, 0.05) 1.5px, transparent 1.5px);
+    linear-gradient(rgba(245, 158, 11, 0.05) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.05) 1.5px, transparent 1.5px);
   background-size: 60px 60px;
   transform: rotateX(60deg) translateY(-20%);
   transform-origin: center top;
