@@ -406,9 +406,14 @@ def get_all_snapshots_df(days: int = 30):
     import pandas as pd
     with get_conn() as conn:
         return pd.read_sql_query(
+            # collected_at is stored as TEXT (ISO-8601), so it must be cast to
+            # timestamptz before comparing against NOW() - interval, otherwise
+            # Postgres raises "operator does not exist: text >= timestamp with
+            # time zone" and the whole digest 500s. make_interval(days => %s)
+            # keeps the window count safely parameterised.
             """
             SELECT * FROM snapshots
-            WHERE collected_at >= NOW() - INTERVAL '%s days'
+            WHERE collected_at::timestamptz >= NOW() - make_interval(days => %s)
             ORDER BY collected_at ASC
             """,
             conn,
