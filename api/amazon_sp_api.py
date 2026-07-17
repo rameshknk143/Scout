@@ -52,7 +52,13 @@ def sync_storefront_data(user_id: int) -> dict:
     selling_partner_id = cred["selling_partner_id"]
     refresh_token = cred["refresh_token"]
     marketplace_id = cred.get("marketplace_id") or "A21TJRUUN4KGV"
-    
+
+    # A None token means db decryption returned nothing — the server's
+    # TOKEN_ENCRYPTION_KEY doesn't match the key the token was saved with.
+    # Surface it clearly instead of crashing on None.startswith below.
+    if not refresh_token:
+        return {"ok": False, "error": "Stored Amazon token could not be decrypted on the server (TOKEN_ENCRYPTION_KEY mismatch). Set TOKEN_ENCRYPTION_KEY on Render to the value it was saved with."}
+
     # Check if credentials are mock/sandbox
     is_mock = refresh_token.startswith("mock") or os.environ.get("ALLOW_MOCK_LWA") == "1"
     
