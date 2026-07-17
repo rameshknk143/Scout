@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { getAmazonStatus, connectAmazonAccount, disconnectAmazonAccount } from "@/lib/actions";
+import { getAmazonStatus, disconnectAmazonAccount } from "@/lib/actions";
 
 interface ConnectedAccount {
   selling_partner_id: string;
@@ -9,33 +9,37 @@ interface ConnectedAccount {
   connected_at: string;
 }
 
+const MARKETPLACE_NAMES: Record<string, string> = {
+  "A21TJRUUN4KGV": "Amazon India",
+  "ATVPDKIKX0DER": "Amazon USA",
+  "A1F83G8C2ARO7P": "Amazon UK",
+};
+
 export default function SettingsClient() {
   const [connected, setConnected] = useState(false);
   const [accounts, setAccounts] = useState<ConnectedAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
-  // Mock settings form state for developer testing
-  const [mockSellingPartnerId, setMockSellingPartnerId] = useState("A28Z9YEXAMPLE");
-  const [mockCode, setMockCode] = useState("amzn1.oa.o2.code.example12345");
   const [marketplaceId, setMarketplaceId] = useState("A21TJRUUN4KGV");
   const [message, setMessage] = useState<string | null>(null);
 
-  const MARKETPLACE_NAMES: Record<string, string> = {
-    "A21TJRUUN4KGV": "Amazon India",
-    "ATVPDKIKX0DER": "Amazon USA",
-    "A1F83G8C2ARO7P": "Amazon UK",
-  };
-
+  // Sends the seller to Amazon Seller Central's consent page. On approval Amazon
+  // redirects back to /auth/amazon/callback with the authorization code, which
+  // the backend exchanges for a refresh token. `version=beta` keeps this working
+  // for a Draft app authorizing its own seller account (drop it once published).
   const getAuthorizeUrl = () => {
-    const domain = marketplaceId === "ATVPDKIKX0DER"
-      ? "sellercentral.amazon.com"
-      : marketplaceId === "A1F83G8C2ARO7P"
-        ? "sellercentral-europe.amazon.com"
-        : "sellercentral.amazon.in";
-    const appId = process.env.NEXT_PUBLIC_AMAZON_APP_ID || "amzn1.sp.id.mock-scout-app-123";
+    const domain =
+      marketplaceId === "ATVPDKIKX0DER"
+        ? "sellercentral.amazon.com"
+        : marketplaceId === "A1F83G8C2ARO7P"
+          ? "sellercentral-europe.amazon.com"
+          : "sellercentral.amazon.in";
+    const appId = process.env.NEXT_PUBLIC_AMAZON_APP_ID || "";
     return `https://${domain}/apps/authorize/consent?application_id=${appId}&state=${marketplaceId}&version=beta`;
   };
+
+  const appConfigured = Boolean(process.env.NEXT_PUBLIC_AMAZON_APP_ID);
 
   const fetchStatus = async () => {
     try {
@@ -60,27 +64,10 @@ export default function SettingsClient() {
         for (const acc of accounts) {
           await disconnectAmazonAccount(acc.selling_partner_id);
         }
-        setMessage("✅ Disconnected successfully! Stored tokens removed from database.");
+        setMessage("Disconnected. Your stored Amazon access token has been removed.");
         fetchStatus();
       } catch (err: any) {
-        setMessage(`❌ Error disconnecting: ${err?.message || "Internal failure"}`);
-      }
-    });
-  };
-
-  const handleConnectMock = () => {
-    setMessage(null);
-    startTransition(async () => {
-      try {
-        await connectAmazonAccount({
-          code: mockCode,
-          selling_partner_id: mockSellingPartnerId,
-          marketplace_id: marketplaceId,
-        });
-        setMessage("✅ Connection established successfully! Token registered.");
-        fetchStatus();
-      } catch (err: any) {
-        setMessage(`❌ Error: ${err?.message || "Failed to exchange LWA tokens. Make sure LWA_CLIENT_ID env is set."}`);
+        setMessage(`Couldn't disconnect: ${err?.message || "please try again."}`);
       }
     });
   };
@@ -88,18 +75,18 @@ export default function SettingsClient() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-3">
-        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        <div className="text-xs text-zinc-500 font-semibold font-mono animate-pulse">Querying credentials status...</div>
+        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        <div className="text-xs text-zinc-500 font-semibold font-mono">Checking your Amazon connection…</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-2xl">
       <div>
-        <h2 className="text-xl font-bold text-white tracking-tight font-sans">Connections & Integrations</h2>
+        <h2 className="text-xl font-bold text-white tracking-tight font-sans">Connections</h2>
         <p className="text-xs text-zinc-400 font-semibold mt-0.5">
-          Link your Amazon Seller account (India, USA, UK) to automatically synchronize real catalog stock, sales, and transaction fees.
+          Link your Amazon Seller account to sync your real sales, orders, and fees into ScoutVeda.
         </p>
       </div>
 
@@ -110,7 +97,7 @@ export default function SettingsClient() {
               <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider">
                 Connected 🟢
               </span>
-              <h3 className="text-sm font-bold text-white mt-2">Amazon SP-API Active</h3>
+              <h3 className="text-sm font-bold text-white mt-2">Amazon Seller account linked</h3>
             </div>
             <div className="text-right">
               <span className="text-[10px] text-zinc-500 font-semibold block uppercase">Marketplace</span>
@@ -133,7 +120,7 @@ export default function SettingsClient() {
                     <span className="font-mono text-xs font-bold text-zinc-300">{MARKETPLACE_NAMES[acc.marketplace_id] || acc.marketplace_id}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Linked Date</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Linked</span>
                     <span className="text-xs font-semibold text-zinc-400 font-mono">
                       {new Date(acc.connected_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
                     </span>
@@ -149,131 +136,62 @@ export default function SettingsClient() {
               disabled={isPending}
               className="text-[10px] font-bold text-red-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer disabled:opacity-50"
             >
-              {isPending ? "Disconnecting..." : "⚠️ Disconnect Seller Account"}
+              {isPending ? "Disconnecting…" : "Disconnect Amazon account"}
             </button>
           </div>
           {message && (
-            <p className="text-[11px] font-bold mt-2 text-zinc-300 leading-normal animate-in fade-in duration-200">
-              {message}
-            </p>
+            <p className="text-[11px] font-bold mt-2 text-zinc-300 leading-normal">{message}</p>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 glass-panel p-6 bg-[#111625] space-y-5">
+        <div className="glass-panel p-6 bg-[#111625] space-y-5">
+          <div className="flex items-start gap-4">
+            <div className="text-3xl leading-none">🔗</div>
             <div>
-              <h3 className="text-sm font-bold text-white">1. Setup developer credentials</h3>
+              <h3 className="text-sm font-bold text-white">Connect your Amazon Seller account</h3>
               <p className="text-xs text-zinc-400 font-semibold leading-relaxed mt-1">
-                Before authorizing your seller account, you must register a developer client on the Amazon Seller Central Console.
-                Retrieve your client credentials and add them to your <code className="font-mono bg-[#181d2c] border border-white/5 text-zinc-300 px-1 py-0.5 rounded text-[11px]">.env</code>:
+                You'll be sent to Amazon Seller Central to approve access. ScoutVeda never sees your Amazon
+                password — Amazon returns a secure access token that we store encrypted and use only to read
+                your sales, orders, and fees.
               </p>
-              <pre className="bg-[#090d16] border border-white/5 text-zinc-300 text-[10px] font-mono p-3 rounded-lg mt-3 select-all leading-normal">
-{`LWA_CLIENT_ID="amzn1.application-oa2-client.example..."
-LWA_CLIENT_SECRET="client_secret_example_value..."`}
-              </pre>
-            </div>
-
-            <div className="border-t border-white/5 pt-4 space-y-4">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                2. Authorize via Seller Central
-                <span className="text-[9px] font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded tracking-wide uppercase">
-                  Demo Mode
-                </span>
-              </h3>
-              
-              <div className="flex flex-col gap-1 w-64">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Target Marketplace</label>
-                <select
-                  value={marketplaceId}
-                  onChange={(e) => setMarketplaceId(e.target.value)}
-                  className="w-full text-xs font-semibold text-zinc-300 bg-[#181d2c] border border-white/10 rounded px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 cursor-pointer"
-                >
-                  <option value="A21TJRUUN4KGV">🇮🇳 Amazon India (A21TJRUUN4KGV)</option>
-                  <option value="ATVPDKIKX0DER">🇺🇸 Amazon USA (ATVPDKIKX0DER)</option>
-                  <option value="A1F83G8C2ARO7P">🇬🇧 Amazon UK (A1F83G8C2ARO7P)</option>
-                </select>
-              </div>
-
-              <p className="text-xs text-zinc-400 font-semibold leading-relaxed mt-1">
-                Clicking authorize will open the Amazon Seller Central consent page to grant access permissions.
-              </p>
-              <a
-                href={getAuthorizeUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary inline-block w-auto px-6 py-2.5 mt-3 text-xs font-bold text-center tracking-wide uppercase cursor-pointer"
-              >
-                🔌 Authorize ScoutVeda Integration
-              </a>
             </div>
           </div>
 
-          <div className="glass-panel p-6 bg-[#111625]/20 border border-white/5 space-y-4">
-            <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                Developer Sideload Portal
-                <span className="text-[9px] font-extrabold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded tracking-wide uppercase">
-                  Sandbox
-                </span>
-              </h3>
-              <p className="text-[11px] text-zinc-400 font-semibold leading-relaxed mt-1">
-                Use this sandbox portal to register simulation credentials in the database for local/Vercel preview testing.
+          <div className="flex flex-col gap-1 w-full max-w-xs">
+            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Marketplace</label>
+            <select
+              value={marketplaceId}
+              onChange={(e) => setMarketplaceId(e.target.value)}
+              className="w-full text-xs font-semibold text-zinc-300 bg-[#181d2c] border border-white/10 rounded px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 cursor-pointer"
+            >
+              <option value="A21TJRUUN4KGV">🇮🇳 Amazon India</option>
+              <option value="ATVPDKIKX0DER">🇺🇸 Amazon USA</option>
+              <option value="A1F83G8C2ARO7P">🇬🇧 Amazon UK</option>
+            </select>
+          </div>
+
+          {appConfigured ? (
+            <a
+              href={getAuthorizeUrl()}
+              className="btn-primary inline-block w-auto px-6 py-2.5 text-xs font-bold text-center tracking-wide uppercase cursor-pointer"
+            >
+              🔌 Connect Amazon Account
+            </a>
+          ) : (
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3">
+              <p className="text-[11px] font-bold text-amber-300 leading-relaxed">
+                Amazon connection isn't switched on yet. The app's SP-API credentials still need to be
+                configured on the server before this button can link a live account.
               </p>
             </div>
+          )}
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                  Target Marketplace
-                </label>
-                <select
-                  value={marketplaceId}
-                  onChange={(e) => setMarketplaceId(e.target.value)}
-                  className="w-full text-xs font-semibold text-zinc-300 bg-[#181d2c] border border-white/10 rounded px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 cursor-pointer mb-2"
-                >
-                  <option value="A21TJRUUN4KGV">🇮🇳 Amazon India (A21TJRUUN4KGV)</option>
-                  <option value="ATVPDKIKX0DER">🇺🇸 Amazon USA (ATVPDKIKX0DER)</option>
-                  <option value="A1F83G8C2ARO7P">🇬🇧 Amazon UK (A1F83G8C2ARO7P)</option>
-                </select>
-
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                  Selling Partner ID
-                </label>
-                <input
-                  type="text"
-                  value={mockSellingPartnerId}
-                  onChange={(e) => setMockSellingPartnerId(e.target.value)}
-                  className="input text-white bg-[#181d2c]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                  Auth Callback Code (LWA Code)
-                </label>
-                <input
-                  type="text"
-                  value={mockCode}
-                  onChange={(e) => setMockCode(e.target.value)}
-                  className="input text-white bg-[#181d2c]"
-                />
-              </div>
-
-              <button
-                onClick={handleConnectMock}
-                disabled={isPending}
-                className="btn-primary w-full text-center py-2 text-xs font-bold uppercase tracking-wider cursor-pointer"
-              >
-                {isPending ? "Exchanging Tokens..." : "⚡ Sideload credentials"}
-              </button>
-
-              {message && (
-                <p className="text-[11px] font-bold mt-2 text-zinc-300 leading-normal animate-in fade-in duration-200">
-                  {message}
-                </p>
-              )}
-            </div>
-          </div>
+          <p className="text-[11px] text-zinc-500 font-semibold">
+            Secure OAuth through Amazon Seller Central. You can disconnect anytime.
+          </p>
+          {message && (
+            <p className="text-[11px] font-bold mt-1 text-zinc-300 leading-normal">{message}</p>
+          )}
         </div>
       )}
     </div>
