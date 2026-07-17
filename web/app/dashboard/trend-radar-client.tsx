@@ -38,15 +38,29 @@ interface TrendRadarClientProps {
   initialOrders: StorefrontOrder[];
 }
 
-export default function TrendRadarClient({ 
-  digest, 
-  watchlist = [], 
+export default function TrendRadarClient({
+  digest,
+  watchlist: watchlistRaw = [],
   alerts = [],
   connected,
   accounts = [],
   initialMetrics = [],
   initialOrders = [],
 }: TrendRadarClientProps) {
+  // The watchlist API returns EVERY validation row — a product validated N times
+  // comes back N times. Collapse to the latest validation per ASIN so the table,
+  // KPIs, and counts reflect unique products instead of repeats.
+  const watchlist = Array.from(
+    watchlistRaw
+      .reduce((map, v) => {
+        const prev = map.get(v.asin);
+        if (!prev || new Date(v.validated_at) > new Date(prev.validated_at)) {
+          map.set(v.asin, v);
+        }
+        return map;
+      }, new Map<string, Validation>())
+      .values()
+  );
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab") as TabKey;
 
@@ -133,7 +147,7 @@ export default function TrendRadarClient({
     {
       id: "price-alert",
       type: "price_drop",
-      count: alerts.filter((a) => a.alert_type === "price_change").length || 1,
+      count: alerts.filter((a) => a.alert_type === "price_change").length,
       label: "Watchlist price drops detected in the last 24h",
       severity: "warning",
       actionLabel: "Review Prices",
@@ -142,7 +156,7 @@ export default function TrendRadarClient({
     {
       id: "opp-alert",
       type: "opportunity",
-      count: watchlist.filter((w) => w.score >= 70).length || 2,
+      count: watchlist.filter((w) => w.score >= 70).length,
       label: "High-scoring product opportunities ready for supplier validation",
       severity: "success",
       actionLabel: "Analyze Sourcing",
@@ -150,23 +164,15 @@ export default function TrendRadarClient({
     },
   ];
 
-  // Compute average metrics for KPIs
+  // ---- Real metrics only — no fabricated sales/revenue ----
   const activeASINsCount = watchlist.length;
+  const pursueCount = watchlist.filter((w) => w.verdict === "PURSUE").length;
   const avgOpportunityScore = activeASINsCount > 0
     ? Math.round(watchlist.reduce((sum, item) => sum + item.score, 0) / activeASINsCount)
     : 0;
 
-  const totalMonthlySales = watchlist.reduce((sum, item) => {
-    const estSales = item.review_count ? Math.ceil(item.review_count * 1.5) : 30;
-    return sum + estSales;
-  }, 0);
-
-  const totalRevenue = watchlist.reduce((sum, item) => {
-    const estSales = item.review_count ? Math.ceil(item.review_count * 1.5) : 30;
-    const sellPrice = item.price || (item.buy_price * 1.5);
-    return sum + Math.round(estSales * sellPrice);
-  }, 0);
-
+  // Rough margin estimate from validated buy/sell prices — surfaced ONLY as a
+  // clearly-labelled research estimate, never as booked profit.
   const margins = watchlist.map((w) => {
     const sell = w.price || (w.buy_price * 1.5);
     const profit = sell - w.buy_price - (sell * 0.15 + 100);
@@ -174,14 +180,21 @@ export default function TrendRadarClient({
   });
   const avgNetMargin = margins.length ? Math.round(margins.reduce((s, m) => s + m, 0) / margins.length) : 0;
 
-  // Mock revenue chart data for B2B performance analytics (scales with actual watchlist sizing)
-  const revenueChartData = [
-    { name: "Week 1", Revenue: Math.round(totalRevenue * 0.6) || 145000, Margin: Math.max(15, avgNetMargin - 2) || 31 },
-    { name: "Week 2", Revenue: Math.round(totalRevenue * 0.75) || 189000, Margin: Math.max(15, avgNetMargin - 1) || 33 },
-    { name: "Week 3", Revenue: Math.round(totalRevenue * 0.85) || 210000, Margin: Math.max(15, avgNetMargin) || 32 },
-    { name: "Week 4", Revenue: Math.round(totalRevenue * 0.95) || 285000, Margin: Math.max(15, avgNetMargin + 1) || 34 },
-    { name: "Week 5", Revenue: totalRevenue || 340000, Margin: avgNetMargin || 32.5 },
-  ];
+  // Real Amazon storefront figures — present ONLY after SP-API is connected and a
+  // sync has run. No fallbacks: empty stays empty.
+  const hasStorefront = initialMetrics.length > 0;
+  const storefrontCurrency = initialMetrics[0]?.currency === "USD" ? "$" : initialMetrics[0]?.currency === "GBP" ? "£" : "₹";
+  const realRevenue = initialMetrics.reduce((s, m) => s + m.total_sales_amount, 0);
+  const realUnits = initialMetrics.reduce((s, m) => s + m.unit_count, 0);
+
+  // Real sales-over-time series for the performance chart (empty until synced).
+  const salesChartData = [...initialMetrics]
+    .sort((a, b) => a.interval_start.localeCompare(b.interval_start))
+    .map((m) => ({
+      name: new Date(m.interval_start).toLocaleDateString("en-IN", { month: "short", day: "numeric" }),
+      Revenue: Math.round(m.total_sales_amount),
+      Units: m.unit_count,
+    }));
 
   // Filter watchlist validations
   const filteredWatchlist = watchlist.filter((item) => {
@@ -205,49 +218,44 @@ export default function TrendRadarClient({
 
   return (
     <div className="space-y-6">
-      {/* 1. Action Required Strip */}
-      <AlertStrip alerts={computedAlerts} />
+      {/* 1. Action Required Strip — only show rows that actually have items */}
+      <AlertStrip alerts={computedAlerts.filter((a) => a.count > 0)} />
 
       {/* 2. KPI Grid Row */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <MetricCard
-          title="Estimated Monthly Sales"
-          value={activeASINsCount > 0 ? `${totalMonthlySales.toLocaleString("en-IN")} Units` : "—"}
-          change={activeASINsCount > 0 ? "Dynamic" : "No data"}
+          title="Sales Revenue (14d)"
+          value={hasStorefront ? `${storefrontCurrency}${realRevenue.toLocaleString("en-IN", { maximumFractionDigits: 0 })}` : "—"}
+          change={hasStorefront ? "Live · SP-API" : "Connect Amazon"}
           changeType="neutral"
-          tooltip="Calculated based on BSR performance across validated listings"
-          sparklineData={activeASINsCount > 0 ? [Math.round(totalMonthlySales * 0.7), Math.round(totalMonthlySales * 0.85), totalMonthlySales] : [0, 0, 0]}
+          tooltip="Real sales revenue synced from your Amazon Seller account over the last 14 days. Connect your account in Settings to populate this."
         />
         <MetricCard
-          title="Estimated Revenue"
-          value={activeASINsCount > 0 ? `₹${totalRevenue.toLocaleString("en-IN")}` : "—"}
-          change={activeASINsCount > 0 ? "Dynamic" : "No data"}
+          title="Units Sold (14d)"
+          value={hasStorefront ? realUnits.toLocaleString("en-IN") : "—"}
+          change={hasStorefront ? "Live · SP-API" : "Connect Amazon"}
           changeType="neutral"
-          tooltip="Gross monthly sales projections for tracked ASINs"
-          sparklineData={activeASINsCount > 0 ? [Math.round(totalRevenue * 0.7), Math.round(totalRevenue * 0.85), totalRevenue] : [0, 0, 0]}
+          tooltip="Real units sold, synced from Amazon SP-API over the last 14 days."
         />
         <MetricCard
-          title="Active Tracked ASINs"
+          title="Tracked ASINs"
           value={activeASINsCount}
-          change="+1 this week"
+          change={activeASINsCount > 0 ? `${pursueCount} marked pursue` : "None yet"}
           changeType="neutral"
-          tooltip="Count of unique validations logged in your catalog watchlist"
-          sparklineData={[3, 4, 4, 5, 5, 6, activeASINsCount]}
+          tooltip="Unique products you've validated (deduplicated to the latest run per ASIN)."
         />
         <MetricCard
-          title="Avg Net Margin"
+          title="Avg Net Margin (est.)"
           value={activeASINsCount > 0 ? `${avgNetMargin}%` : "—"}
-          change={activeASINsCount > 0 ? "Dynamic" : "No data"}
+          change={activeASINsCount > 0 ? "Research estimate" : "No data"}
           changeType="neutral"
-          tooltip="Average estimated profit margin after Amazon referral, closing, and shipping fees"
-          sparklineData={activeASINsCount > 0 ? [avgNetMargin - 1, avgNetMargin, avgNetMargin] : [0, 0, 0]}
+          tooltip="ESTIMATED margin from validated buy/sell prices after typical Amazon fees — a research estimate, NOT booked profit."
         />
         <MetricCard
           title="Avg Opportunity Score"
-          value={avgOpportunityScore}
+          value={activeASINsCount > 0 ? avgOpportunityScore : "—"}
           changeType="neutral"
-          tooltip="Consolidated opportunity metric across active validations"
-          sparklineData={[68, 70, 72, 73, avgOpportunityScore]}
+          tooltip="Average ScoutVeda opportunity score across your validated ASINs."
         />
       </div>
 
@@ -277,12 +285,12 @@ export default function TrendRadarClient({
             </div>
           )}
 
-          <div className="p-3 bg-zinc-50 border border-zinc-200/60 rounded-lg flex flex-col justify-between">
-            <p className="text-xs font-semibold text-zinc-800 leading-relaxed">
-              Competitor price fell by 12% on matching ASIN. Review your price strategy in the Profit Calculator.
+          <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
+            <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
+              Check margins before you source: run any validated ASIN through the Profit Calculator to confirm it clears your target after Amazon fees.
             </p>
             <Link href="/dashboard/profit-calculator" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
-              Calculate Margins →
+              Open Profit Calculator →
             </Link>
           </div>
 
@@ -505,22 +513,31 @@ export default function TrendRadarClient({
             <div className="md:col-span-2 glass-panel p-5 bg-[#111625]">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-white">Reseller Performance Trend</h3>
-                  <p className="text-[11px] text-zinc-400 font-semibold mt-0.5">Estimated Weekly Sourcing Margin Metrics</p>
+                  <h3 className="text-sm font-bold text-white">Sales Performance</h3>
+                  <p className="text-[11px] text-zinc-400 font-semibold mt-0.5">Real daily sales synced from Amazon SP-API (last 14 days)</p>
                 </div>
               </div>
               <div className="h-64 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={revenueChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                    <YAxis yAxisId="left" stroke="#64748b" fontSize={11} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#64748b" fontSize={11} />
-                    <Tooltip contentStyle={{ fontSize: 11, background: "#111625", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#f8fafc" }} />
-                    <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
-                    <Line yAxisId="right" type="monotone" dataKey="Margin" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+                {salesChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={salesChartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                      <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                      <YAxis yAxisId="left" stroke="#64748b" fontSize={11} />
+                      <YAxis yAxisId="right" orientation="right" stroke="#64748b" fontSize={11} />
+                      <Tooltip contentStyle={{ fontSize: 11, background: "#111625", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#f8fafc" }} />
+                      <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
+                      <Line yAxisId="right" type="monotone" dataKey="Units" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center gap-2 border border-dashed border-white/10 rounded-xl">
+                    <span className="text-2xl opacity-60">🏪</span>
+                    <p className="text-xs font-semibold text-zinc-300">No sales data yet</p>
+                    <p className="text-[11px] text-zinc-500 max-w-xs">Connect your Amazon Seller account in Settings and run a sync to see your real sales performance here.</p>
+                    <Link href="/dashboard/settings" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-1">Connect Amazon →</Link>
+                  </div>
+                )}
               </div>
             </div>
 
