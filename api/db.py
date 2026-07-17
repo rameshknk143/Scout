@@ -8,12 +8,39 @@ DATABASE_URL environment variable (Supabase gives you this directly).
 """
 
 import html
+import logging
 import os
+import threading
 from contextlib import contextmanager
 
 import psycopg2
 import psycopg2.extras
+import psycopg2.pool
 from cryptography.fernet import Fernet, InvalidToken
+
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Connection pool — reuse connections across requests instead of opening a
+# fresh TCP socket on every call. min=2 keeps two warm connections alive;
+# max=10 is plenty for this single-user tool. Initialised lazily on first use
+# so a missing DATABASE_URL at import time doesn't crash the whole process.
+# ---------------------------------------------------------------------------
+_pool: psycopg2.pool.ThreadedConnectionPool | None = None
+_pool_lock = threading.Lock()
+
+def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
+    global _pool
+    if _pool is None:
+        with _pool_lock:
+            if _pool is None:  # double-checked locking
+                _pool = psycopg2.pool.ThreadedConnectionPool(
+                    minconn=2,
+                    maxconn=10,
+                    dsn=DATABASE_URL,
+                )
+                logger.info("DB connection pool initialised (min=2, max=10)")
+    return _pool
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
@@ -188,12 +215,19 @@ def get_conn():
     # expects plain tuple rows from cursor.fetchall(). A RealDictCursor default at the
     # connection level silently corrupts pandas' column/row mapping. Functions that want
     # dict-like rows ask for RealDictCursor explicitly on their own cursor instead.
-    conn = psycopg2.connect(DATABASE_URL)
+    #
+    # Connections are now drawn from the pool and returned after each use,
+    # eliminating the 200-500ms TCP handshake cost on every API call.
+    pool = _get_pool()
+    conn = pool.getconn()
     try:
         yield conn
         conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
     finally:
-        conn.close()
+        pool.putconn(conn)
 
 
 def init_db():
@@ -361,10 +395,25 @@ def get_history(asin):
             return [_clean_title(dict(r)) for r in cur.fetchall()]
 
 
-def get_all_snapshots_df():
+def get_all_snapshots_df(days: int = 30):
+    """Load snapshots for the last `days` calendar days.
+
+    Previously this was an unbounded SELECT * which grows linearly with data.
+    Capping at 30 days is more than enough for trend detection (new entrants
+    need only the last run; movers need at least 2; cross-category just needs
+    the latest snapshot per ASIN) while keeping the result set small.
+    """
     import pandas as pd
     with get_conn() as conn:
-        return pd.read_sql_query("SELECT * FROM snapshots", conn)
+        return pd.read_sql_query(
+            """
+            SELECT * FROM snapshots
+            WHERE collected_at >= NOW() - INTERVAL '%s days'
+            ORDER BY collected_at ASC
+            """,
+            conn,
+            params=(days,),
+        )
 
 
 def log_validation(asin, title, category, score, verdict, buy_price, notes, validated_at):

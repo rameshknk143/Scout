@@ -9,9 +9,23 @@ data collected, every ASIN is technically a "new entrant" and there is no
 day-over-day rank history for "movers" — that's expected, not a bug.
 """
 
+import threading
+import time
+
 import pandas as pd
 
 import db
+
+# ---------------------------------------------------------------------------
+# Simple TTL cache for the expensive weekly_digest() computation. Data only
+# changes once per nightly collection run, so a 60-second cache avoids
+# hammering the DB when multiple users (or the same user refreshing) hit the
+# dashboard within a short window.
+# ---------------------------------------------------------------------------
+_digest_cache: dict | None = None
+_digest_cache_ts: float = 0.0
+_digest_lock = threading.Lock()
+DIGEST_TTL_SECONDS = 60
 
 
 def _snapshots_df():
@@ -147,14 +161,31 @@ def weekly_digest():
     Fetches the snapshots table exactly once and shares it across all four
     sub-queries — previously each one called _snapshots_df() independently,
     meaning a single digest request pulled the entire table 4x over.
+
+    Results are cached in-memory for DIGEST_TTL_SECONDS (60s) so rapid
+    page refreshes don't re-run the full query each time.
     """
-    df = _snapshots_df()
-    return {
-        "new_entrants": new_entrants(df=df),
-        "top_movers": top_movers(df=df),
-        "cross_category": cross_category_hits(df=df),
-        "collection_dates": distinct_collection_dates(df=df),
-    }
+    global _digest_cache, _digest_cache_ts
+
+    now = time.monotonic()
+    if _digest_cache is not None and (now - _digest_cache_ts) < DIGEST_TTL_SECONDS:
+        return _digest_cache
+
+    with _digest_lock:
+        # Double-check after acquiring the lock
+        if _digest_cache is not None and (time.monotonic() - _digest_cache_ts) < DIGEST_TTL_SECONDS:
+            return _digest_cache
+
+        df = _snapshots_df()
+        result = {
+            "new_entrants": new_entrants(df=df),
+            "top_movers": top_movers(df=df),
+            "cross_category": cross_category_hits(df=df),
+            "collection_dates": distinct_collection_dates(df=df),
+        }
+        _digest_cache = result
+        _digest_cache_ts = time.monotonic()
+        return result
 
 
 def category_table(category, list_type="bestsellers"):
