@@ -3,11 +3,15 @@ import requests
 from datetime import datetime, timedelta, timezone
 import db
 
+# India (A21TJRUUN4KGV) is served by Amazon's EU region endpoint, NOT FE.
+# Getting this wrong returns 403 "marketplaces not valid for region" on every call.
 MARKETPLACE_ENDPOINTS = {
-    "A21TJRUUN4KGV": "https://sellingpartnerapi-fe.amazon.com",  # India
-    "ATVPDKIKX0DER": "https://sellingpartnerapi-na.amazon.com",  # USA
-    "A1F83G8C2ARO7P": "https://sellingpartnerapi-eu.amazon.com",  # UK
+    "A21TJRUUN4KGV": "https://sellingpartnerapi-eu.amazon.com",  # India (EU region)
+    "ATVPDKIKX0DER": "https://sellingpartnerapi-na.amazon.com",  # USA (NA region)
+    "A1F83G8C2ARO7P": "https://sellingpartnerapi-eu.amazon.com",  # UK (EU region)
 }
+# India defaults to the EU endpoint if an unknown marketplace slips through.
+DEFAULT_ENDPOINT = "https://sellingpartnerapi-eu.amazon.com"
 
 def get_sp_api_access_token(refresh_token: str) -> str:
     """Exchanges a Selling Partner refresh token for a temporary access token via LWA."""
@@ -57,20 +61,21 @@ def sync_storefront_data(user_id: int) -> dict:
         
     try:
         access_token = get_sp_api_access_token(refresh_token)
-        endpoint = MARKETPLACE_ENDPOINTS.get(marketplace_id, "https://sellingpartnerapi-fe.amazon.com")
-        
+        endpoint = MARKETPLACE_ENDPOINTS.get(marketplace_id, DEFAULT_ENDPOINT)
+
         # 1. Sync Sales Metrics (Last 14 days)
         sync_sales_metrics(user_id, selling_partner_id, marketplace_id, endpoint, access_token)
-        
+
         # 2. Sync Recent Orders
         sync_recent_orders(user_id, selling_partner_id, marketplace_id, endpoint, access_token)
-        
+
         return {"ok": True, "message": "Storefront data synchronized successfully."}
     except Exception as e:
-        # Fallback to simulation/sandbox generation if real SP-API queries fail due to sandbox/pending status
-        # This keeps the UI working beautifully and provides a graceful degraded state
-        print(f"SP-API Live sync failed ({e}). Falling back to sandbox simulation.")
-        return _run_simulation_sync(user_id, selling_partner_id, marketplace_id, warning="Live API call failed. Displaying simulated sandbox data.")
+        # Do NOT fabricate data on failure. A real sync error must surface as an
+        # honest error so the dashboard shows real/empty state, never simulated
+        # numbers dressed up as the seller's actual sales.
+        print(f"SP-API live sync failed: {e}")
+        return {"ok": False, "error": f"Amazon sync failed: {e}"}
 
 
 def sync_sales_metrics(user_id: int, selling_partner_id: str, marketplace_id: str, endpoint: str, access_token: str):
@@ -124,7 +129,9 @@ def sync_recent_orders(user_id: int, selling_partner_id: str, marketplace_id: st
         "Content-Type": "application/json"
     }
     
-    created_after = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+    # SP-API Orders rejects fractional seconds / offset form; it needs plain
+    # ISO-8601 with a trailing Z (e.g. 2026-07-17T00:00:00Z), or it 400s.
+    created_after = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
     url = f"{endpoint}/orders/v0/orders"
     params = {
         "MarketplaceIds": marketplace_id,
