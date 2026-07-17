@@ -37,10 +37,8 @@ def sync_storefront_data(user_id: int) -> dict:
     Main orchestration function to sync sales metrics and orders for a user.
     If using mock credentials or ALLOW_MOCK_LWA is enabled, it generates high-fidelity simulated statistics.
     """
-    credentials = db.get_seller_credentials()
-    # Filter credentials for the specific user (multi-tenancy)
-    user_creds = [c for c in credentials if c.get("user_id") == user_id]
-    
+    user_creds = db.get_seller_credentials(user_id)
+
     if not user_creds:
         return {"ok": False, "error": "No connected Amazon Seller account found. Please link your account in Settings first."}
         

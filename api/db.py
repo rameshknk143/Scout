@@ -416,31 +416,33 @@ def get_all_snapshots_df(days: int = 30):
         )
 
 
-def log_validation(asin, title, category, score, verdict, buy_price, notes, validated_at):
+def log_validation(asin, title, category, score, verdict, buy_price, notes, validated_at, user_id):
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """INSERT INTO validations
-                   (asin, title, category, score, verdict, buy_price, notes, validated_at)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
-                (asin, title, category, score, verdict, buy_price, notes, validated_at),
+                   (asin, title, category, score, verdict, buy_price, notes, validated_at, user_id)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (asin, title, category, score, verdict, buy_price, notes, validated_at, user_id),
             )
 
 
-def get_all_validations_df():
+def get_all_validations_df(user_id):
+    """Validations for one account only. snapshots (market data) stay global."""
     import pandas as pd
     with get_conn() as conn:
         return pd.read_sql_query(
-            "SELECT * FROM validations ORDER BY validated_at DESC", conn
+            "SELECT * FROM validations WHERE user_id = %s ORDER BY validated_at DESC",
+            conn, params=(user_id,),
         )
 
 
-def update_validation_notes(asin, notes):
+def update_validation_notes(asin, notes, user_id):
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "UPDATE validations SET notes = %s WHERE asin = %s",
-                (notes, asin),
+                "UPDATE validations SET notes = %s WHERE asin = %s AND user_id = %s",
+                (notes, asin, user_id),
             )
 
 
@@ -503,22 +505,22 @@ def count_snapshots(query_text=None, category=None, min_price=None, max_price=No
             return cur.fetchone()[0]
 
 
-def get_my_products():
+def get_my_products(user_id):
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT * FROM my_products ORDER BY created_at DESC")
+            cur.execute("SELECT * FROM my_products WHERE user_id = %s ORDER BY created_at DESC", (user_id,))
             return [dict(r) for r in cur.fetchall()]
 
 
-def save_my_product(asin, title=None, sku=None, supplier_cost=0.0, shipping_fee=0.0, target_margin=30.0, supplier_details="", current_stock=100, lead_time_days=14):
+def save_my_product(asin, user_id, title=None, sku=None, supplier_cost=0.0, shipping_fee=0.0, target_margin=30.0, supplier_details="", current_stock=100, lead_time_days=14):
     from datetime import datetime, timezone
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """INSERT INTO my_products
-                   (asin, title, sku, supplier_cost, shipping_fee, target_margin, supplier_details, current_stock, lead_time_days, created_at)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                   ON CONFLICT (asin) DO UPDATE SET
+                   (asin, user_id, title, sku, supplier_cost, shipping_fee, target_margin, supplier_details, current_stock, lead_time_days, created_at)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ON CONFLICT (user_id, asin) DO UPDATE SET
                        title = EXCLUDED.title,
                        sku = EXCLUDED.sku,
                        supplier_cost = EXCLUDED.supplier_cost,
@@ -527,52 +529,52 @@ def save_my_product(asin, title=None, sku=None, supplier_cost=0.0, shipping_fee=
                        supplier_details = EXCLUDED.supplier_details,
                        current_stock = EXCLUDED.current_stock,
                        lead_time_days = EXCLUDED.lead_time_days""",
-                (asin, title, sku, supplier_cost, shipping_fee, target_margin, supplier_details, current_stock, lead_time_days, datetime.now(timezone.utc).isoformat()),
+                (asin, user_id, title, sku, supplier_cost, shipping_fee, target_margin, supplier_details, current_stock, lead_time_days, datetime.now(timezone.utc).isoformat()),
             )
 
 
-def delete_my_product(asin):
+def delete_my_product(asin, user_id):
     with get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute("DELETE FROM my_products WHERE asin = %s", (asin,))
+            cur.execute("DELETE FROM my_products WHERE asin = %s AND user_id = %s", (asin, user_id))
 
 
-def save_seller_credentials(selling_partner_id, refresh_token, marketplace_id='A21TJRUUN4KGV'):
+def save_seller_credentials(selling_partner_id, refresh_token, user_id, marketplace_id='A21TJRUUN4KGV'):
     from datetime import datetime, timezone
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """INSERT INTO seller_credentials
-                   (selling_partner_id, refresh_token, marketplace_id, connected_at)
-                   VALUES (%s, %s, %s, %s)
-                   ON CONFLICT (selling_partner_id) DO UPDATE SET
+                   (selling_partner_id, refresh_token, marketplace_id, connected_at, user_id)
+                   VALUES (%s, %s, %s, %s, %s)
+                   ON CONFLICT (user_id, selling_partner_id) DO UPDATE SET
                        refresh_token = EXCLUDED.refresh_token,
                        marketplace_id = EXCLUDED.marketplace_id,
                        connected_at = EXCLUDED.connected_at""",
-                (selling_partner_id, _encrypt_token(refresh_token), marketplace_id, datetime.now(timezone.utc).isoformat()),
+                (selling_partner_id, _encrypt_token(refresh_token), marketplace_id, datetime.now(timezone.utc).isoformat(), user_id),
             )
 
 
-def get_seller_credentials():
+def get_seller_credentials(user_id):
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT * FROM seller_credentials ORDER BY connected_at DESC")
+            cur.execute("SELECT * FROM seller_credentials WHERE user_id = %s ORDER BY connected_at DESC", (user_id,))
             rows = [dict(r) for r in cur.fetchall()]
             for r in rows:
                 r["refresh_token"] = _decrypt_token(r.get("refresh_token"))
             return rows
 
 
-def delete_seller_credentials(selling_partner_id):
+def delete_seller_credentials(selling_partner_id, user_id):
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "DELETE FROM seller_credentials WHERE selling_partner_id = %s",
-                (selling_partner_id,),
+                "DELETE FROM seller_credentials WHERE selling_partner_id = %s AND user_id = %s",
+                (selling_partner_id, user_id),
             )
 
 
-def get_watchlist_with_latest_snapshots():
+def get_watchlist_with_latest_snapshots(user_id):
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
@@ -583,7 +585,9 @@ def get_watchlist_with_latest_snapshots():
                        FROM snapshots
                        ORDER BY asin, collected_at DESC
                    ) s ON v.asin = s.asin
-                   ORDER BY v.validated_at DESC"""
+                   WHERE v.user_id = %s
+                   ORDER BY v.validated_at DESC""",
+                (user_id,),
             )
             return [dict(r) for r in cur.fetchall()]
 
@@ -609,10 +613,10 @@ def get_latest_runs_by_category_list_type():
             return {(row[0], row[1]): row[2] for row in cur.fetchall()}
 
 
-def get_drawer_data(asin):
+def get_drawer_data(asin, user_id):
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            # 1. Latest snapshot
+            # 1. Latest snapshot (global market data — not user-scoped)
             cur.execute("SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at DESC LIMIT 1", (asin,))
             snap = cur.fetchone()
             if snap:
@@ -620,24 +624,38 @@ def get_drawer_data(asin):
                 if snap.get("title"):
                     snap["title"] = html.unescape(snap["title"])
 
-            # 2. History (last 7)
+            # 2. History (last 7, global)
             cur.execute("SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at DESC LIMIT 7", (asin,))
             history = [dict(r) for r in cur.fetchall()]
             history.reverse()
 
-            # 3. Validation matching this ASIN
-            cur.execute("SELECT * FROM validations WHERE asin = %s LIMIT 1", (asin,))
+            # 3. This account's validation for the ASIN
+            cur.execute("SELECT * FROM validations WHERE asin = %s AND user_id = %s LIMIT 1", (asin, user_id))
             val = cur.fetchone()
             if val:
                 val = dict(val)
 
-            # 4. My Product matching this ASIN
-            cur.execute("SELECT * FROM my_products WHERE asin = %s LIMIT 1", (asin,))
+            # 4. This account's saved product for the ASIN
+            cur.execute("SELECT * FROM my_products WHERE asin = %s AND user_id = %s LIMIT 1", (asin, user_id))
             my_prod = cur.fetchone()
             if my_prod:
                 my_prod = dict(my_prod)
 
             return snap, history, val, my_prod
+
+
+def claim_legacy_data(user_id):
+    """Assign all un-owned rows (user_id IS NULL — created before multi-tenancy)
+    to `user_id`. Run once for the original owner after they create an account so
+    their historical research, saved products, and seller credentials are visible
+    to them again. Returns a count per table."""
+    counts = {}
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            for table in ("validations", "my_products", "seller_credentials"):
+                cur.execute(f"UPDATE {table} SET user_id = %s WHERE user_id IS NULL", (user_id,))
+                counts[table] = cur.rowcount
+    return counts
 
 
 # --- Storefront Sync ----------------------------------------------------------

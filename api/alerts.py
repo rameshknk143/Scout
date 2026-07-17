@@ -42,8 +42,8 @@ REVIEW_SURGE_MIN_ABS = 10
 _SEVERITY_ORDER = {"high": 0, "medium": 1, "low": 2}
 
 
-def _watched_asins():
-    df = db.get_all_validations_df()
+def _watched_asins(user_id):
+    df = db.get_all_validations_df(user_id)
     if df.empty:
         return []
     latest = df.sort_values("validated_at").groupby("asin").last().reset_index()
@@ -145,8 +145,8 @@ def _check_dropout(asin, title, category, list_type, points, latest_run_by_list)
     return []
 
 
-def compute_alerts():
-    watched = _watched_asins()
+def compute_alerts(user_id):
+    watched = _watched_asins(user_id)
     if not watched:
         return []
 
