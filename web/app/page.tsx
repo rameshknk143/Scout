@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Tilt from "@/components/3d/Tilt";
-import PhoneShowcase from "@/components/PhoneShowcase";
+import BrowserShowcase from "@/components/BrowserShowcase";
 
 /* ScoutVeda public landing page. All copy/data here is marketing-only sample
    content — it deliberately does NOT touch the real product-research logic. */
@@ -272,8 +272,8 @@ export default function Landing() {
 /* ---------- Hero dashboard preview (pure visual) ---------- */
 function HeroPreview() {
   return (
-    <Tilt className="relative w-full max-w-[480px] mx-auto py-10">
-      <PhoneShowcase />
+    <Tilt className="relative w-full max-w-[620px] mx-auto py-10">
+      <BrowserShowcase />
     </Tilt>
   );
 }
