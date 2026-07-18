@@ -2,9 +2,9 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #090d16; /* Deep dark slate */
-  --bg-elevated: #111625; /* Glass panels */
-  --panel: #111625;
+  --bg: #000000; /* Pure Black Background */
+  --bg-elevated: #0d0d0d; /* Dark Charcoal panels */
+  --panel: #0d0d0d;
   --panel-border: rgba(255, 255, 255, 0.06);
   --panel-border-hover: rgba(59, 130, 246, 0.25); /* Glowing blue hover border */
   --text: #f8fafc; /* Slate 50 */
@@ -238,9 +238,9 @@ body {
 :root {
   --sv-teal: #f59e0b;          /* Luxury gold marketing accent */
   --sv-teal-deep: #d97706;
-  --sv-ink: #070b15;           /* Deep academic navy */
-  --sv-surface: rgba(15, 23, 42, 0.7);
-  --sv-surface-solid: #0f172a;
+  --sv-ink: #000000;           /* Pure Black Background */
+  --sv-surface: rgba(13, 13, 13, 0.7);
+  --sv-surface-solid: #0d0d0d;
   --sv-hair: rgba(255, 255, 255, 0.08);
   --sv-hair-strong: rgba(255, 255, 255, 0.14);
   --sv-glow-teal: rgba(245, 158, 11, 0.30);
@@ -253,8 +253,8 @@ body {
   content: ""; position: absolute; inset: -20%;
   background:
     radial-gradient(40% 40% at 15% 15%, rgba(245, 158, 11, 0.07), transparent 70%),
-    radial-gradient(45% 45% at 85% 20%, rgba(30, 58, 138, 0.25), transparent 70%),
-    radial-gradient(50% 50% at 70% 90%, rgba(59, 130, 246, 0.08), transparent 70%);
+    radial-gradient(45% 45% at 85% 20%, rgba(30, 58, 138, 0.15), transparent 70%),
+    radial-gradient(50% 50% at 70% 90%, rgba(59, 130, 246, 0.04), transparent 70%);
   animation: sv-drift 30s ease-in-out infinite alternate;
 }
 .sv-bg::after {

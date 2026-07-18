@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Tilt from "@/components/3d/Tilt";
+import PhoneShowcase from "@/components/PhoneShowcase";
 
 /* ScoutVeda public landing page. All copy/data here is marketing-only sample
    content — it deliberately does NOT touch the real product-research logic. */
@@ -270,80 +271,9 @@ export default function Landing() {
 
 /* ---------- Hero dashboard preview (pure visual) ---------- */
 function HeroPreview() {
-  const spark = [38, 44, 41, 52, 49, 63, 60, 72, 78, 74, 86, 92];
-  const max = Math.max(...spark);
-  const pts = spark.map((v, i) => `${(i / (spark.length - 1)) * 100},${40 - (v / max) * 34}`).join(" ");
-
   return (
     <Tilt className="relative w-full max-w-[480px] mx-auto py-10">
-      <div className="isometric-view relative w-full h-[380px] transform-style-3d select-none">
-        {/* Layer 1: Base Shadow Plate */}
-        <div className="absolute inset-0 bg-blue-500/5 rounded-2xl filter blur-xl layer-base" />
-
-        {/* Layer 2: Main Console Board (Layer Base) */}
-        <div className="absolute inset-0 sv-glass p-5 flex flex-col justify-between layer-base border border-white/10 bg-[#0f1524]/90 backdrop-blur-md">
-          <div className="flex items-center justify-between border-b border-white/5 pb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-red-500/60" />
-              <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
-              <div className="w-2 h-2 rounded-full bg-green-500/60" />
-            </div>
-            <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest font-mono">SCOUTVEDA CONSOLE</span>
-          </div>
-
-          <div className="sv-preview-search bg-[#060a13] border border-white/5 p-2.5 rounded-lg flex items-center gap-2 text-xs text-zinc-400 font-medium font-mono mt-3">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-            <span>Wireless earbuds</span>
-            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded ml-auto">ACTIVE</span>
-          </div>
-
-          {/* List items representing products */}
-          <div className="space-y-2 mt-4 flex-1">
-            {[
-              { n: "Noise-cancel earbuds", c: "Low", t: "g", s: "88" },
-              { n: "Sport wireless buds", c: "Medium", t: "a", s: "64" },
-              { n: "Budget TWS clone", c: "High", t: "r", s: "41" },
-            ].map((r, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2 rounded bg-white/[0.01] border border-white/5 text-xs">
-                <span className="text-zinc-300 font-medium font-sans truncate max-w-[150px]">{r.n}</span>
-                <div className="flex items-center gap-3">
-                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${r.t === "g" ? "text-emerald-400 bg-emerald-500/10" : (r.t === "a" ? "text-amber-400 bg-amber-500/10" : "text-red-400 bg-red-500/10")}`}>{r.c}</span>
-                  <span className="font-bold text-white font-mono">{r.s}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Layer 3: Floating Opportunity Score (Layer Middle) */}
-        <div className="absolute top-4 right-[-20px] w-[145px] bg-[#141b2c] border border-white/10 rounded-xl p-4 shadow-2xl layer-middle flex flex-col items-center justify-center">
-          <div className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest font-mono">OPPORTUNITY SCORE</div>
-          <div className="sv-score-ring mt-2.5" style={{ "--v": 82 } as React.CSSProperties}><span>82</span></div>
-          <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider mt-3">PURSUE</span>
-        </div>
-
-        {/* Layer 4: Floating Stats Widget (Layer High) */}
-        <div className="absolute bottom-[40px] left-[-30px] w-[165px] bg-[#141b2c] border border-white/10 rounded-xl p-3.5 shadow-2xl layer-high space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest font-mono">EST. MONTHLY SALES</span>
-            <span className="text-emerald-400 text-[10px] font-bold">▲ 24%</span>
-          </div>
-          <div className="text-lg font-bold text-white font-mono">2,140 <span className="text-[10px] text-zinc-400 font-sans font-medium">units</span></div>
-          <div className="w-full bg-white/[0.04] h-1.5 rounded-full overflow-hidden">
-            <div className="bg-emerald-500 h-full w-[72%]" />
-          </div>
-        </div>
-
-        {/* Layer 5: Floating Trend Sparkline (Layer Top) */}
-        <div className="absolute bottom-[20px] right-[-10px] w-[190px] bg-[#141b2c] border border-white/10 rounded-xl p-3.5 shadow-2xl layer-top">
-          <div className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest font-mono mb-2">12-WEEK DEMAND RADAR</div>
-          <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: "100%", height: 36 }}>
-            <defs><linearGradient id="glow-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--sv-teal)" stopOpacity="0.4" /><stop offset="1" stopColor="var(--sv-teal)" stopOpacity="0" /></linearGradient></defs>
-            <polygon points={`0,40 ${pts} 100,40`} fill="url(#glow-grad)" />
-            <polyline points={pts} fill="none" stroke="var(--sv-teal)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-          </svg>
-        </div>
-      </div>
+      <PhoneShowcase />
     </Tilt>
   );
 }
