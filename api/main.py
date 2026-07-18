@@ -767,6 +767,24 @@ def sync_storefront(user_id: int = Depends(require_user)):
     return result
 
 
+@app.post("/storefront/sync-all", dependencies=[Depends(require_key)])
+def sync_all_storefronts():
+    """Refresh every connected seller's storefront data. Authenticated by the
+    shared X-Scout-Key only (no per-user header), so a scheduled job can run it
+    daily. Per-seller results carry the real ok/error from the live SP-API call
+    — a failure for one seller never fabricates data or blocks the others."""
+    user_ids = db.get_user_ids_with_credentials()
+    results = []
+    for uid in user_ids:
+        r = amazon_sp_api.sync_storefront_data(uid)
+        results.append({"user_id": uid, "ok": bool(r.get("ok")), "error": r.get("error")})
+    return {
+        "sellers": len(user_ids),
+        "succeeded": sum(1 for r in results if r["ok"]),
+        "results": results,
+    }
+
+
 @app.get("/storefront/sales", dependencies=[Depends(require_key)])
 def get_storefront_sales(user_id: int = Depends(require_user)):
     metrics = db.get_storefront_sales_metrics(user_id)

@@ -577,6 +577,15 @@ def delete_seller_credentials(selling_partner_id):
             )
 
 
+def get_user_ids_with_credentials():
+    """Distinct user_ids that have at least one connected Amazon seller account.
+    Used by the daily /storefront/sync-all job to refresh every seller."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT DISTINCT user_id FROM seller_credentials WHERE user_id IS NOT NULL")
+            return [r[0] for r in cur.fetchall()]
+
+
 def get_watchlist_with_latest_snapshots():
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:

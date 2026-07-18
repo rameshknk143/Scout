@@ -1,0 +1,25 @@
+name: Scout Daily Storefront Sync
+
+# Refreshes every connected seller's Amazon storefront data (sales + orders)
+# once a day by pinging the backend's /storefront/sync-all endpoint. The backend
+# already holds the LWA credentials and encryption key, so this job only needs
+# the shared API key — no Amazon secrets live in GitHub.
+
+on:
+  schedule:
+    # 21:15 UTC = 02:45 IST — just after the nightly collector (20:45 UTC),
+    # so market snapshots and storefront data refresh in the same window.
+    - cron: "15 21 * * *"
+  workflow_dispatch: {}  # lets us trigger it manually from the GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync all connected Amazon seller storefronts
+        run: |
+          curl -sS -X POST "https://scout-api-3yvy.onrender.com/storefront/sync-all" \
+            -H "X-Scout-Key: ${{ secrets.API_KEY }}" \
+            -H "Content-Type: application/json" \
+            --max-time 300 --retry 3 --retry-delay 30 --retry-all-errors \
+            -w "\nHTTP %{http_code}\n"
