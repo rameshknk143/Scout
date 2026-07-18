@@ -2,26 +2,26 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #000000; /* Pure Black Background */
-  --bg-elevated: #0d0d0d; /* Dark Charcoal panels */
-  --panel: #0d0d0d;
-  --panel-border: rgba(255, 255, 255, 0.06);
-  --panel-border-hover: rgba(59, 130, 246, 0.25); /* Glowing blue hover border */
-  --text: #f8fafc; /* Slate 50 */
-  --muted: #94a3b8; /* Slate 400 */
-  --amber: #f59e0b; /* Amber */
-  --amber-soft: rgba(245, 158, 11, 0.08);
-  --amber-glow: rgba(245, 158, 11, 0.15);
+  --bg: #f8fafc; /* Slate 50 - Widescreen light background */
+  --bg-elevated: #ffffff; /* White panels */
+  --panel: #ffffff;
+  --panel-border: rgba(0, 0, 0, 0.08); /* Darker border for light mode */
+  --panel-border-hover: rgba(59, 130, 246, 0.4); /* Glowing blue hover border */
+  --text: #0f172a; /* Slate 900 */
+  --muted: #475569; /* Slate 600 */
+  --amber: #d97706; /* Amber 600 */
+  --amber-soft: rgba(217, 119, 6, 0.06);
+  --amber-glow: rgba(217, 119, 6, 0.12);
   --green: #10b981; /* Success green */
-  --green-soft: rgba(16, 185, 129, 0.08);
+  --green-soft: rgba(16, 185, 129, 0.06);
   --red: #ef4444; /* Alert red */
-  --red-soft: rgba(239, 68, 68, 0.08);
+  --red-soft: rgba(239, 68, 68, 0.06);
   
-  /* Bento Grids shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.4), 0 4px 8px -2px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 32px -8px rgba(0, 0, 0, 0.5), 0 8px 16px -4px rgba(0, 0, 0, 0.4);
+  /* Bento Grids shadows (lowered opacity for light backgrounds) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 32px -8px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
 
   /* Spacing Tokens */
   --space-xs: 2px;
@@ -236,14 +236,14 @@ body {
    Palette leans on the app tokens above; teal is the marketing accent.
    ============================================================================ */
 :root {
-  --sv-teal: #f59e0b;          /* Luxury gold marketing accent */
-  --sv-teal-deep: #d97706;
-  --sv-ink: #000000;           /* Pure Black Background */
-  --sv-surface: rgba(13, 13, 13, 0.7);
-  --sv-surface-solid: #0d0d0d;
-  --sv-hair: rgba(255, 255, 255, 0.08);
-  --sv-hair-strong: rgba(255, 255, 255, 0.14);
-  --sv-glow-teal: rgba(245, 158, 11, 0.30);
+  --sv-teal: #d97706;          /* Gold marketing accent for light mode */
+  --sv-teal-deep: #b45309;
+  --sv-ink: #f8fafc;           /* Light Theme Background */
+  --sv-surface: rgba(255, 255, 255, 0.85);
+  --sv-surface-solid: #ffffff;
+  --sv-hair: rgba(0, 0, 0, 0.06);
+  --sv-hair-strong: rgba(0, 0, 0, 0.12);
+  --sv-glow-teal: rgba(217, 119, 6, 0.15);
 }
 
 /* Abstract animated background: drifting light + marketplace grid + data motes.
@@ -252,16 +252,16 @@ body {
 .sv-bg::before {
   content: ""; position: absolute; inset: -20%;
   background:
-    radial-gradient(40% 40% at 15% 15%, rgba(245, 158, 11, 0.07), transparent 70%),
-    radial-gradient(45% 45% at 85% 20%, rgba(30, 58, 138, 0.15), transparent 70%),
-    radial-gradient(50% 50% at 70% 90%, rgba(59, 130, 246, 0.04), transparent 70%);
+    radial-gradient(40% 40% at 15% 15%, rgba(217, 119, 6, 0.04), transparent 70%),
+    radial-gradient(45% 45% at 85% 20%, rgba(59, 130, 246, 0.05), transparent 70%),
+    radial-gradient(50% 50% at 70% 90%, rgba(219, 234, 254, 0.4), transparent 70%);
   animation: sv-drift 30s ease-in-out infinite alternate;
 }
 .sv-bg::after {
   content: ""; position: absolute; inset: 0; opacity: 0.4;
   background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 80%);
 }
@@ -276,7 +276,7 @@ body {
 
 /* Header */
 .sv-header { position: sticky; top: 0; z-index: 40;
-  backdrop-filter: blur(14px); background: rgba(5, 7, 13, 0.6);
+  backdrop-filter: blur(14px); background: rgba(248, 250, 252, 0.7);
   border-bottom: 1px solid var(--sv-hair); }
 .sv-header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 20px; }
 .sv-nav { display: flex; align-items: center; gap: 28px; }
@@ -289,25 +289,25 @@ body {
 .sv-mark-dot { width: 22px; height: 22px; border-radius: 7px;
   background: linear-gradient(135deg, var(--sv-teal), var(--sv-teal-deep));
   box-shadow: 0 0 16px var(--sv-glow-teal); position: relative; }
-.sv-mark-dot::after { content: ""; position: absolute; inset: 6px 6px auto auto; width: 6px; height: 6px; border-radius: 50%; background: #05201c; }
+.sv-mark-dot::after { content: ""; position: absolute; inset: 6px 6px auto auto; width: 6px; height: 6px; border-radius: 50%; background: #ffffff; }
 .sv-mark b { color: var(--sv-teal); }
 
 /* Buttons */
 .sv-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   height: 40px; padding: 0 18px; border-radius: 10px; font-size: 0.875rem; font-weight: 600;
   text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: all .2s; white-space: nowrap; }
-.sv-btn-primary { color: #04120f;
+.sv-btn-primary { color: #ffffff;
   background: linear-gradient(135deg, var(--sv-teal), var(--sv-teal-deep));
   box-shadow: 0 6px 20px -6px var(--sv-glow-teal), inset 0 1px 0 rgba(255,255,255,.25); }
 .sv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px -6px var(--sv-glow-teal), inset 0 1px 0 rgba(255,255,255,.25); }
-.sv-btn-ghost { color: var(--text); background: rgba(255,255,255,0.03); border-color: var(--sv-hair); }
-.sv-btn-ghost:hover { border-color: var(--sv-hair-strong); background: rgba(255,255,255,0.06); }
+.sv-btn-ghost { color: var(--text); background: rgba(0,0,0,0.02); border-color: var(--sv-hair); }
+.sv-btn-ghost:hover { border-color: var(--sv-hair-strong); background: rgba(0,0,0,0.04); }
 .sv-btn-lg { height: 48px; padding: 0 24px; font-size: 0.95rem; border-radius: 12px; }
 
 /* Eyebrow / pill */
 .sv-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono);
   font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sv-teal);
-  padding: 6px 12px; border: 1px solid rgba(45,212,191,0.25); border-radius: 999px; background: rgba(45,212,191,0.06); }
+  padding: 6px 12px; border: 1px solid rgba(217,119,6,0.2); border-radius: 999px; background: rgba(217,119,6,0.05); }
 
 /* Hero */
 .sv-hero { padding: 72px 0 40px; }
@@ -320,12 +320,12 @@ body {
 /* Glass surface used across public pages */
 .sv-glass { background: var(--sv-surface); backdrop-filter: blur(18px);
   border: 1px solid var(--sv-hair); border-radius: 18px;
-  box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05); }
+  box-shadow: 0 24px 50px -24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8); }
 
 /* Neomorphic soft control (widgets, toggles) */
-.sv-soft { background: linear-gradient(145deg, #141b2c, #0d1320);
-  border: 1px solid rgba(255,255,255,0.04); border-radius: 12px;
-  box-shadow: 6px 6px 14px rgba(0,0,0,0.5), -4px -4px 12px rgba(255,255,255,0.02); }
+.sv-soft { background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  border: 1px solid rgba(0,0,0,0.03); border-radius: 12px;
+  box-shadow: 6px 6px 14px rgba(0,0,0,0.03), -4px -4px 12px rgba(255,255,255,0.9); }
 
 /* Hero dashboard preview */
 .sv-preview { padding: 18px; position: relative; }
