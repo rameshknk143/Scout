@@ -147,6 +147,7 @@ def _verdict(total):
 def score_asin(
     asin,
     buy_price,
+    user_id,
     category=None,
     weight_grams=DEFAULT_WEIGHT_GRAMS,
     fulfillment=DEFAULT_FULFILLMENT,
@@ -222,6 +223,7 @@ def score_asin(
         buy_price=buy_price,
         notes=notes,
         validated_at=datetime.now(timezone.utc).isoformat(),
+        user_id=user_id,
     )
 
     return result

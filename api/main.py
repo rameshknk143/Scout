@@ -332,10 +332,11 @@ class ScoreRequest(BaseModel):
 
 
 @app.post("/validator/score", dependencies=[Depends(require_key)])
-def score_asin(req: ScoreRequest):
+def score_asin(req: ScoreRequest, user_id: int = Depends(require_user)):
     return scorer.score_asin(
         asin=clean_asin(req.asin),
         buy_price=req.buy_price,
+        user_id=user_id,
         category=req.category,
         weight_grams=req.weight_grams,
         fulfillment=req.fulfillment,
@@ -348,8 +349,8 @@ def score_asin(req: ScoreRequest):
 
 
 @app.get("/watchlist", dependencies=[Depends(require_key)])
-def get_watchlist():
-    records = db.get_watchlist_with_latest_snapshots()
+def get_watchlist(user_id: int = Depends(require_user)):
+    records = db.get_watchlist_with_latest_snapshots(user_id)
     for r in records:
         if r.get("title") and isinstance(r["title"], str):
             r["title"] = html.unescape(r["title"])
@@ -362,8 +363,8 @@ class WatchlistNotesRequest(BaseModel):
 
 
 @app.post("/watchlist/notes", dependencies=[Depends(require_key)])
-def update_watchlist_notes(req: WatchlistNotesRequest):
-    db.update_validation_notes(req.asin, req.notes)
+def update_watchlist_notes(req: WatchlistNotesRequest, user_id: int = Depends(require_user)):
+    db.update_validation_notes(req.asin, req.notes, user_id)
     return {"ok": True}
 
 
@@ -374,7 +375,7 @@ class AmazonCallbackRequest(BaseModel):
 
 
 @app.post("/auth/amazon/callback", dependencies=[Depends(require_key)])
-def amazon_callback(req: AmazonCallbackRequest):
+def amazon_callback(req: AmazonCallbackRequest, user_id: int = Depends(require_user)):
     import requests
     lwa_url = "https://api.amazon.com/auth/o2/token"
     client_id = os.environ.get("LWA_CLIENT_ID")
@@ -416,14 +417,15 @@ def amazon_callback(req: AmazonCallbackRequest):
     db.save_seller_credentials(
         selling_partner_id=req.selling_partner_id,
         refresh_token=refresh_token,
+        user_id=user_id,
         marketplace_id=req.marketplace_id
     )
     return {"ok": True, "selling_partner_id": req.selling_partner_id}
 
 
 @app.get("/auth/amazon/status", dependencies=[Depends(require_key)])
-def amazon_status():
-    credentials = db.get_seller_credentials()
+def amazon_status(user_id: int = Depends(require_user)):
+    credentials = db.get_seller_credentials(user_id)
     connected = len(credentials) > 0
     return {
         "connected": connected,
@@ -436,13 +438,13 @@ def amazon_status():
         ]
     }
 @app.delete("/auth/amazon/{selling_partner_id}", dependencies=[Depends(require_key)])
-def delete_amazon_account(selling_partner_id: str):
-    db.delete_seller_credentials(selling_partner_id)
+def delete_amazon_account(selling_partner_id: str, user_id: int = Depends(require_user)):
+    db.delete_seller_credentials(selling_partner_id, user_id)
     return {"ok": True}
 
 @app.get("/alerts", dependencies=[Depends(require_key)])
-def get_alerts():
-    return {"alerts": alerts.compute_alerts()}
+def get_alerts(user_id: int = Depends(require_user)):
+    return {"alerts": alerts.compute_alerts(user_id)}
 
 
 class ListingAnalyzeRequest(BaseModel):
@@ -575,15 +577,16 @@ class MyProductRequest(BaseModel):
 
 
 @app.get("/my-products", dependencies=[Depends(require_key)])
-def get_my_products():
-    products = db.get_my_products()
+def get_my_products(user_id: int = Depends(require_user)):
+    products = db.get_my_products(user_id)
     return {"products": products}
 
 
 @app.post("/my-products", dependencies=[Depends(require_key)])
-def save_my_product(req: MyProductRequest):
+def save_my_product(req: MyProductRequest, user_id: int = Depends(require_user)):
     db.save_my_product(
         asin=clean_asin(req.asin),
+        user_id=user_id,
         title=req.title,
         sku=req.sku,
         supplier_cost=req.supplier_cost,
@@ -597,8 +600,8 @@ def save_my_product(req: MyProductRequest):
 
 
 @app.delete("/my-products/{asin}", dependencies=[Depends(require_key)])
-def delete_my_product(asin: str):
-    db.delete_my_product(clean_asin(asin))
+def delete_my_product(asin: str, user_id: int = Depends(require_user)):
+    db.delete_my_product(clean_asin(asin), user_id)
     return {"ok": True}
 
 
@@ -615,9 +618,9 @@ class CompetitorCompareRequest(BaseModel):
 
 
 @app.post("/competitor-analysis", dependencies=[Depends(require_key)])
-def compare_competitors(req: CompetitorCompareRequest):
+def compare_competitors(req: CompetitorCompareRequest, user_id: int = Depends(require_user)):
     results = []
-    df = db.get_all_validations_df()
+    df = db.get_all_validations_df(user_id)
     for asin in req.asins:
         asin = asin.strip().upper()
         # list input: skip malformed entries rather than failing the whole compare
@@ -645,8 +648,8 @@ def compare_competitors(req: CompetitorCompareRequest):
 
 
 @app.get("/listing-health", dependencies=[Depends(require_key)])
-def get_listing_health():
-    df = db.get_all_validations_df()
+def get_listing_health(user_id: int = Depends(require_user)):
+    df = db.get_all_validations_df(user_id)
     results = []
     if df.empty:
         return {"products": []}
@@ -687,12 +690,12 @@ def get_listing_health():
 
 
 @app.get("/products/{asin}/drawer-details", dependencies=[Depends(require_key)])
-def get_drawer_details(asin: str):
+def get_drawer_details(asin: str, user_id: int = Depends(require_user)):
     import profit_calculator
     from scorer import CATEGORY_TO_FEE_KEY
 
     asin = clean_asin(asin)
-    snap, history, val, my_prod = db.get_drawer_data(asin)
+    snap, history, val, my_prod = db.get_drawer_data(asin, user_id)
 
     title = (snap["title"] if snap else None) or (val["title"] if val else None) or (my_prod["title"] if my_prod else None) or "Unknown Product"
     category = (snap["category"] if snap else None) or (val["category"] if val else None) or "General"
