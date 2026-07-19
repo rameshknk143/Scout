@@ -25,19 +25,37 @@ def run_all_syncs() -> dict:
     results = []
     for wave_number, wave in enumerate(waves, start=1):
         for uid in wave:
-            job_id = db.start_sync_job(uid, wave_number)
+            try:
+                job_id = db.start_sync_job(uid, wave_number)
+            except Exception as e:
+                # A DB failure recording the job must not abort the rest of
+                # the batch — record the failure directly and move on.
+                results.append({"user_id": uid, "ok": False, "error": f"Failed to record sync job: {e}"})
+                continue
+
             try:
                 r = amazon_sp_api.sync_storefront_data(uid)
                 status = "ok" if r.get("ok") else "error"
-                db.finish_sync_job(job_id, status, r.get("attempts", 1), r.get("error"))
-                results.append({"user_id": uid, "ok": bool(r.get("ok")), "error": r.get("error")})
+                attempts = r.get("attempts", 1)
+                error = r.get("error")
             except Exception as e:
                 # sync_storefront_data already catches its own exceptions and
                 # returns {"ok": False, ...} — this is a last-resort guard so
                 # a genuinely unexpected crash still closes out the job row
                 # instead of leaving it stuck at status='running' forever.
-                db.finish_sync_job(job_id, "error", 1, str(e))
-                results.append({"user_id": uid, "ok": False, "error": str(e)})
+                status, attempts, error = "error", 1, str(e)
+                r = {"ok": False, "error": error}
+
+            try:
+                db.finish_sync_job(job_id, status, attempts, error)
+            except Exception as e:
+                # The job write itself failed — log it rather than let it
+                # crash the batch. The row may stay at 'running' only if the
+                # database is genuinely unreachable, which is not something
+                # retrying in-process can fix.
+                print(f"sync_engine: failed to record job outcome for user {uid}: {e}")
+
+            results.append({"user_id": uid, "ok": bool(r.get("ok")), "error": r.get("error")})
 
         if wave_number < len(waves):
             time.sleep(WAVE_PAUSE_SECONDS)
