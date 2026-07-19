@@ -197,7 +197,7 @@ export default function ProductDatabaseClient() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="e.g. kick scooter, B0D4DZ7WL2..."
-              className="input text-xs text-white bg-[#181d2c]"
+              className="input text-xs"
             />
           </div>
           <div>
@@ -207,7 +207,7 @@ export default function ProductDatabaseClient() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="input text-xs cursor-pointer text-white bg-[#181d2c] border-white/10"
+              className="input text-xs cursor-pointer"
             >
               <option value="">All Categories</option>
               {CATEGORIES.map((c) => (

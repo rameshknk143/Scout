@@ -12,7 +12,7 @@ export default function DashboardLayout({
       
       <main className="flex-1 min-w-0 flex flex-col relative z-10">
         {/* Global Top Bar */}
-        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-3 bg-[#090d16]/80 backdrop-blur-md border-b border-white/5">
+        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-3 bg-white/85 backdrop-blur-md border-b border-black/5">
           {/* Left: Global Search */}
           <div className="flex items-center gap-4 flex-1 max-w-md">
             <div className="relative w-full">
@@ -22,7 +22,7 @@ export default function DashboardLayout({
               <input
                 type="text"
                 placeholder="Search ASIN, SKU, title, brand, or keyword..."
-                className="w-full text-xs bg-[#111625] border border-white/5 rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-700 transition-all text-white"
+                className="w-full text-xs bg-zinc-100/60 border border-black/5 rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-300 transition-all text-zinc-900"
               />
             </div>
           </div>
@@ -33,7 +33,7 @@ export default function DashboardLayout({
             <MarketplaceIndicator />
 
             {/* Date Range Selector */}
-            <select className="text-xs font-semibold text-zinc-300 bg-[#111625] border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 cursor-pointer">
+            <select className="text-xs font-semibold text-zinc-700 bg-white border border-black/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-300 cursor-pointer shadow-sm">
               <option>Last 30 Days</option>
               <option>Last 7 Days</option>
               <option>Today</option>
@@ -41,7 +41,7 @@ export default function DashboardLayout({
             </select>
 
             {/* Notifications Bell */}
-            <button className="p-1.5 text-zinc-400 hover:text-white bg-[#111625] border border-white/10 rounded-lg relative cursor-pointer">
+            <button className="p-1.5 text-zinc-600 hover:text-zinc-900 bg-white border border-black/10 rounded-lg relative cursor-pointer shadow-sm">
               🔔
               <span className="absolute top-0.5 right-0.5 block h-1.5 w-1.5 rounded-full bg-red-500" />
             </button>

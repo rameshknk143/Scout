@@ -58,7 +58,7 @@ export default function ProfitCalculatorClient() {
               min={0}
               value={sellPrice}
               onChange={(e) => setSellPrice(e.target.value)}
-              className="input text-white"
+              className="input"
               required
             />
           </Field>
@@ -68,7 +68,7 @@ export default function ProfitCalculatorClient() {
               min={0}
               value={buyPrice}
               onChange={(e) => setBuyPrice(e.target.value)}
-              className="input text-white"
+              className="input"
               required
             />
           </Field>
@@ -78,7 +78,7 @@ export default function ProfitCalculatorClient() {
               min={1}
               value={weightGrams}
               onChange={(e) => setWeightGrams(e.target.value)}
-              className="input text-white"
+              className="input"
             />
           </Field>
           <Field label="Category (fee table)">

@@ -87,7 +87,7 @@ export default function WatchlistClient({
             placeholder="Search validated products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input py-1.5 text-xs text-white"
+            className="input py-1.5 text-xs"
           />
         </div>
 

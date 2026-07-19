@@ -39,10 +39,10 @@ async function TrendRadarData() {
 export default function TrendRadarPage() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-white/5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-black/5">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Good evening, Ram</h1>
-          <p className="text-xs text-zinc-400 font-medium mt-1">
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Good evening, Ram</h1>
+          <p className="text-xs text-zinc-500 font-medium mt-1">
             Your Amazon India reseller business at a glance.
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function TrendRadarPage() {
           </Link>
         </div>
       </div>
-      <Suspense fallback={<div className="text-zinc-400 text-xs font-semibold py-8 text-center bg-[#111625] rounded-xl border border-white/5 shadow-sm">Loading business dashboard intelligence...</div>}>
+      <Suspense fallback={<div className="text-zinc-500 text-xs font-semibold py-8 text-center bg-white rounded-xl border border-black/5 shadow-sm">Loading business dashboard intelligence...</div>}>
         <TrendRadarData />
       </Suspense>
     </div>

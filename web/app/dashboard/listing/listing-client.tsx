@@ -158,11 +158,11 @@ export default function ListingClient() {
                 onChange={(e) => setAsin(e.target.value)}
                 placeholder="B0D4DZ7WL2"
                 required
-                className="input font-mono text-sm text-white"
+                className="input font-mono text-sm"
               />
             </div>
             <Field label="Category (optional — helps benchmark against peers)">
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="input cursor-pointer text-white bg-[#181d2c]">
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className="input cursor-pointer">
                 <option value="">(auto-detect from ScoutVeda's own data)</option>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -407,12 +407,12 @@ export default function ListingClient() {
                   {titleDraft.length} / 200 characters
                 </span>
               </div>
-              <input
+               <input
                 type="text"
                 value={titleDraft}
                 onChange={(e) => setTitleDraft(e.target.value)}
                 placeholder="Draft your optimized product title..."
-                className="input text-white font-medium bg-[#181d2c]"
+                className="input font-medium"
               />
             </div>
 
@@ -435,12 +435,12 @@ export default function ListingClient() {
                       {b.val.length} / 500 characters
                     </span>
                   </div>
-                  <input
+                   <input
                     type="text"
                     value={b.val}
                     onChange={(e) => b.set(e.target.value)}
                     placeholder={`Key feature copy block ${idx + 1}...`}
-                    className="input text-white py-2 text-xs bg-[#181d2c]"
+                    className="input py-2 text-xs"
                   />
                 </div>
               ))}
@@ -454,11 +454,11 @@ export default function ListingClient() {
                   {descriptionDraft.length} / 2000 characters
                 </span>
               </div>
-              <textarea
+               <textarea
                 value={descriptionDraft}
                 onChange={(e) => setDescriptionDraft(e.target.value)}
                 placeholder="Draft product specifications description copy..."
-                className="w-full h-36 border border-white/10 rounded-lg p-3 text-xs outline-none focus:border-zinc-500 text-white bg-[#181d2c] leading-relaxed resize-none shadow-inner"
+                className="w-full h-36 border border-black/15 rounded-lg p-3 text-xs outline-none focus:border-zinc-400 text-zinc-800 bg-white leading-relaxed resize-none shadow-sm"
               />
             </div>
           </div>
