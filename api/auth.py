@@ -19,6 +19,9 @@ import hmac
 import os
 import re
 import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 import requests
 from argon2 import PasswordHasher
@@ -34,7 +37,14 @@ MIN_PASSWORD_LEN = 12
 
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 EMAIL_FROM = os.environ.get("EMAIL_FROM", "ScoutVeda <noreply@scoutveda.com>")
-IS_PRODUCTION = os.environ.get("ENV", "development") == "production" or os.environ.get("RENDER") == "true"
+IS_PRODUCTION = os.environ.get("ENV", "production") == "production" or os.environ.get("RENDER") == "true"
+
+# SMTP Configuration
+SMTP_HOST = os.environ.get("SMTP_HOST")
+SMTP_PORT = os.environ.get("SMTP_PORT")
+SMTP_USER = os.environ.get("SMTP_USER")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
+SMTP_SECURE = os.environ.get("SMTP_SECURE", "tls").strip().lower()
 
 _ph = PasswordHasher()
 
@@ -140,35 +150,66 @@ def _email_html(code: str, purpose: str) -> str:
 def send_otp_email(to_email: str, code: str, purpose: str) -> dict:
     """Send an OTP email. Returns {"sent": bool, "mock": bool}.
 
-    Mock mode (no RESEND_API_KEY): we never claim a real send. The code is
-    printed to server logs ONLY in development so a developer can complete the
-    flow; in production with no key configured, the code is neither logged nor
-    sent (the caller surfaces a configuration error instead)."""
+    Supports Resend API and Standard SMTP. Falls back to mock mode if neither is configured."""
     subject = (
         "Your ScoutVeda verification code" if purpose == "signup"
         else "Reset your ScoutVeda password"
     )
 
-    if not RESEND_API_KEY:
+    # 1. Try Resend if API key is set
+    if RESEND_API_KEY:
+        try:
+            resp = requests.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "from": EMAIL_FROM,
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": _email_html(code, purpose),
+                },
+                timeout=15,
+            )
+            return {"sent": 200 <= resp.status_code < 300, "mock": False}
+        except requests.RequestException as e:
+            print(f"[OTP] Resend delivery failed: {e}")
+            return {"sent": False, "mock": False}
+
+    # 2. Try SMTP if host is configured
+    elif SMTP_HOST:
+        try:
+            port = int(SMTP_PORT) if SMTP_PORT else (465 if SMTP_SECURE == "ssl" else 587)
+
+            # Construct MIME message
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = EMAIL_FROM
+            msg["To"] = to_email
+            msg.attach(MIMEText(_email_html(code, purpose), "html"))
+
+            # Parse clean envelope sender from "Name <email@domain.com>"
+            sender_match = re.search(r"<([^>]+)>", EMAIL_FROM)
+            envelope_sender = sender_match.group(1) if sender_match else EMAIL_FROM
+
+            # `with` guarantees the connection is closed even if login/send raises,
+            # instead of leaking a dangling socket until the OS times it out.
+            smtp_cls = smtplib.SMTP_SSL if SMTP_SECURE == "ssl" else smtplib.SMTP
+            with smtp_cls(SMTP_HOST, port, timeout=15) as server:
+                if SMTP_SECURE == "tls":
+                    server.starttls()
+                if SMTP_USER and SMTP_PASSWORD:
+                    server.login(SMTP_USER, SMTP_PASSWORD)
+                server.sendmail(envelope_sender, [to_email], msg.as_string())
+            return {"sent": True, "mock": False}
+        except Exception as e:
+            print(f"[OTP] SMTP delivery failed: {e}")
+            return {"sent": False, "mock": False}
+
+    # 3. Fallback to mock mode
+    else:
         if not IS_PRODUCTION:
             print(f"[OTP:MOCK] ({purpose}) code for {to_email}: {code}")
         return {"sent": False, "mock": True}
-
-    try:
-        resp = requests.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {RESEND_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "from": EMAIL_FROM,
-                "to": [to_email],
-                "subject": subject,
-                "html": _email_html(code, purpose),
-            },
-            timeout=15,
-        )
-        return {"sent": 200 <= resp.status_code < 300, "mock": False}
-    except requests.RequestException:
-        return {"sent": False, "mock": False}
