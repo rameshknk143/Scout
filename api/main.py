@@ -33,6 +33,7 @@ import listing_analyzer
 import password_breach
 import profit_calculator
 import scorer
+import sync_engine
 import trend_radar
 
 API_KEY = os.environ["API_KEY"]
@@ -805,20 +806,18 @@ def sync_storefront(user_id: int = Depends(require_user)):
 
 @app.post("/storefront/sync-all", dependencies=[Depends(require_key)])
 def sync_all_storefronts():
-    """Refresh every connected seller's storefront data. Authenticated by the
-    shared X-Scout-Key only (no per-user header), so a scheduled job can run it
-    daily. Per-seller results carry the real ok/error from the live SP-API call
-    — a failure for one seller never fabricates data or blocks the others."""
-    user_ids = db.get_user_ids_with_credentials()
-    results = []
-    for uid in user_ids:
-        r = amazon_sp_api.sync_storefront_data(uid)
-        results.append({"user_id": uid, "ok": bool(r.get("ok")), "error": r.get("error")})
-    return {
-        "sellers": len(user_ids),
-        "succeeded": sum(1 for r in results if r["ok"]),
-        "results": results,
-    }
+    """Refresh every connected seller's storefront data, in waves, with
+    retry-with-backoff on transient SP-API failures and a persisted
+    sync_jobs row per attempt. Authenticated by the shared X-Scout-Key only
+    (no per-user header), so a scheduled job can run it daily."""
+    return sync_engine.run_all_syncs()
+
+
+@app.get("/storefront/sync-jobs", dependencies=[Depends(require_key)])
+def sync_jobs(user_id: int = Depends(require_user), limit: int = 20):
+    """Recent sync history for the authenticated account — lets you confirm
+    a night's sync actually ran (and how) without reading Render's logs."""
+    return {"jobs": db.get_recent_sync_jobs(user_id=user_id, limit=limit)}
 
 
 @app.get("/storefront/sales", dependencies=[Depends(require_key)])
