@@ -181,8 +181,17 @@ to confirm a night's sync actually ran, until a real dashboard page exists.
   called from a `finally`-equivalent path so a row is never left stuck at
   `status='running'` if something unexpected happens.
 - Non-retryable errors (bad credentials, malformed request) fail on the first
-  attempt rather than wasting 14 seconds (2+4+8) retrying something that will
-  never succeed.
+  attempt rather than wasting up to 6 seconds (2+4, the two backoff sleeps
+  before the 3rd and final attempt) retrying something that will never
+  succeed.
+- A `sync_jobs` row can be left stuck at `status='running'` only in the
+  irreducible case where the database itself is unreachable at both the
+  success/failure write AND the guard's own write attempt (`sync_engine.py`'s
+  job-write calls are individually guarded so a single DB hiccup can't do
+  this — see the implementation plan's Task 3 fix). No reaper/timeout sweep
+  exists for this edge case yet; deferred until the deferred progress UI
+  (a non-goal of this stage) needs to distinguish a truly-stuck row from a
+  slow one.
 
 ## Testing / verification
 
