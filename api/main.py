@@ -30,6 +30,7 @@ import auth
 import db
 import google_auth
 import listing_analyzer
+import password_breach
 import profit_calculator
 import scorer
 import trend_radar
@@ -169,6 +170,8 @@ def register_start(req: RegisterStartRequest):
     pw_error = auth.validate_password_strength(req.password)
     if pw_error:
         raise HTTPException(status_code=400, detail=pw_error)
+    if password_breach.is_password_breached(req.password):
+        raise HTTPException(status_code=400, detail="That password has appeared in a known data breach. Please choose a different one.")
 
     # Hold the pending account (name + password hash) in the OTP payload; the
     # user row is created only after the code is verified. If the email is
@@ -279,6 +282,8 @@ def password_reset(req: ResetRequest):
     pw_error = auth.validate_password_strength(req.new_password)
     if pw_error:
         raise HTTPException(status_code=400, detail=pw_error)
+    if password_breach.is_password_breached(req.new_password):
+        raise HTTPException(status_code=400, detail="That password has appeared in a known data breach. Please choose a different one.")
     _consume_otp(email, "reset", req.code)
     if not db.update_user_password(email, auth.hash_password(req.new_password)):
         raise HTTPException(status_code=400, detail="Could not reset password. Start over.")

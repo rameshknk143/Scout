@@ -6,3 +6,4 @@ __pycache__/
 .env.local
 venv/
 web/dev.log
+.vercel
