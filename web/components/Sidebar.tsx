@@ -353,7 +353,7 @@ export default function Sidebar() {
               href="https://wa.me/919900000000?text=Hi%20Ram,%20I%20have%20some%20feedback/suggestions%20for%20ScoutVeda..."
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-zinc-900 flex items-center gap-2 transition-colors"
+              className="hover:text-emerald-700 text-emerald-600 font-semibold flex items-center gap-2 transition-colors"
             >
               <span className="text-[12px] leading-none shrink-0" style={{ transform: "translateY(-1px)", display: "inline-block" }}>💬</span>
               WhatsApp Feedback

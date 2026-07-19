@@ -247,11 +247,11 @@ export default function Landing() {
 
       {/* FEEDBACK & SUGGESTIONS */}
       <section id="feedback" className="sv-wrap sv-section" style={{ paddingTop: 0, paddingBottom: "40px" }}>
-        <div className="sv-glass p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 border border-black/5 bg-white/70 backdrop-blur-md shadow-sm">
+        <div className="sv-glass p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 border-l-4 border-l-amber-500 border-t border-r border-b border-black/5 bg-gradient-to-br from-amber-500/5 to-white/70 backdrop-blur-md shadow-sm">
           <div className="max-w-lg text-left">
-            <span className="sv-eyebrow" style={{ color: "var(--sv-teal)" }}>Feedback & Suggestions</span>
+            <span className="sv-eyebrow" style={{ color: "#d97706" }}>Feedback & Suggestions</span>
             <h2 className="text-lg font-bold text-zinc-900 mt-1" style={{ fontSize: "1.25rem" }}>Help us shape the future of ScoutVeda</h2>
-            <p className="text-xs text-zinc-600 leading-relaxed mt-2 font-medium">
+            <p className="text-xs text-zinc-650 leading-relaxed mt-2 font-semibold">
               Have suggestions, feature requests, or encountered a bug? We iterate fast based on seller input. Reach out directly via Email or WhatsApp.
             </p>
           </div>
