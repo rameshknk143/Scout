@@ -381,7 +381,12 @@ def create_user(email, password_hash, full_name, email_verified=True, auth_provi
                    VALUES (lower(%s), %s, %s, %s, %s, %s) RETURNING id, email, full_name, email_verified""",
                 (email, password_hash, full_name, email_verified, datetime.now(timezone.utc).isoformat(), auth_provider),
             )
-            return dict(cur.fetchone())
+            user = dict(cur.fetchone())
+    # Outside the `with` block on purpose: releases this connection back to
+    # the pool before ensure_workspace_for_user() draws its own, instead of
+    # holding two pooled connections open at once for one signup.
+    ensure_workspace_for_user(user["id"], full_name)
+    return user
 
 
 def update_user_password(email, password_hash):
