@@ -46,12 +46,11 @@ export default function DashboardLayout({
               <span className="absolute top-0.5 right-0.5 block h-1.5 w-1.5 rounded-full bg-red-500" />
             </button>
 
-            {/* User Profile */}
-            <div className="flex items-center gap-2 border-l border-white/5 pl-3">
-              <div className="w-7 h-7 rounded-full bg-[#111625] flex items-center justify-center text-xs font-bold text-white border border-white/10">
+            <div className="flex items-center gap-2 border-l border-black/5 pl-3">
+              <div className="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-900 border border-black/10">
                 RK
               </div>
-              <span className="text-xs font-semibold text-zinc-300 hidden sm:inline">
+              <span className="text-xs font-semibold text-zinc-700 hidden sm:inline">
                 Ram
               </span>
             </div>
