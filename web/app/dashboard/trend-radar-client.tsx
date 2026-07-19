@@ -260,23 +260,23 @@ export default function TrendRadarClient({
       </div>
 
       {/* Recommended Next Actions */}
-      <div className="glass-panel p-4 bg-[#111625] border border-white/5 shadow-sm rounded-xl">
+      <div className="glass-panel p-4 bg-white border border-black/5 shadow-sm rounded-xl">
         <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-3">
           ⚡ Recommended Next Actions
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {lowStockAsin ? (
-            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
-                Restock ASIN <strong className="font-mono text-white">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
+            <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
+                Restock ASIN <strong className="font-mono text-zinc-900">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
               </p>
               <Link href="/dashboard/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 View Inventory Details →
               </Link>
             </div>
           ) : (
-            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
+            <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
                 ✅ Catalog stock levels are healthy. No active restock alerts required.
               </p>
               <Link href="/dashboard/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
@@ -285,8 +285,8 @@ export default function TrendRadarClient({
             </div>
           )}
 
-          <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
-            <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
+          <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
+            <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
               Check margins before you source: run any validated ASIN through the Profit Calculator to confirm it clears your target after Amazon fees.
             </p>
             <Link href="/dashboard/profit-calculator" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
@@ -295,17 +295,17 @@ export default function TrendRadarClient({
           </div>
 
           {lowQualityAsin ? (
-            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
-                Listing quality score is low on ASIN <strong className="font-mono text-white">{lowQualityAsin}</strong>. Add high-volume keywords to title.
+            <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
+                Listing quality score is low on ASIN <strong className="font-mono text-zinc-900">{lowQualityAsin}</strong>. Add high-volume keywords to title.
               </p>
               <Link href={`/dashboard/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Optimize Listing →
               </Link>
             </div>
           ) : (
-            <div className="p-3 bg-[#181d2c]/20 border border-white/5 rounded-lg flex flex-col justify-between">
-              <p className="text-xs font-semibold text-zinc-300 leading-relaxed">
+            <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
                 ✅ Watchlist opportunity scores are optimal. All items meet the quality threshold.
               </p>
               <Link href="/dashboard/listing-health" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
@@ -510,31 +510,31 @@ export default function TrendRadarClient({
         {activeDashboardTab === "radar" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Sales & Revenue Chart */}
-            <div className="md:col-span-2 glass-panel p-5 bg-[#111625]">
+            <div className="md:col-span-2 glass-panel p-5 bg-white border border-black/5">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-white">Sales Performance</h3>
-                  <p className="text-[11px] text-zinc-400 font-semibold mt-0.5">Real daily sales synced from Amazon SP-API (last 14 days)</p>
+                  <h3 className="text-sm font-bold text-zinc-900">Sales Performance</h3>
+                  <p className="text-[11px] text-zinc-500 font-semibold mt-0.5">Real daily sales synced from Amazon SP-API (last 14 days)</p>
                 </div>
               </div>
               <div className="h-64 w-full">
                 {salesChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={salesChartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
                       <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
                       <YAxis yAxisId="left" stroke="#64748b" fontSize={11} />
                       <YAxis yAxisId="right" orientation="right" stroke="#64748b" fontSize={11} />
-                      <Tooltip contentStyle={{ fontSize: 11, background: "#111625", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#f8fafc" }} />
+                      <Tooltip contentStyle={{ fontSize: 11, background: "#ffffff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 8, color: "#0f172a" }} />
                       <Line yAxisId="left" type="monotone" dataKey="Revenue" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
                       <Line yAxisId="right" type="monotone" dataKey="Units" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center gap-2 border border-dashed border-white/10 rounded-xl">
+                  <div className="h-full flex flex-col items-center justify-center text-center gap-2 border border-dashed border-black/10 rounded-xl">
                     <span className="text-2xl opacity-60">🏪</span>
-                    <p className="text-xs font-semibold text-zinc-300">No sales data yet</p>
-                    <p className="text-[11px] text-zinc-500 max-w-xs">Connect your Amazon Seller account in Settings and run a sync to see your real sales performance here.</p>
+                    <p className="text-xs font-semibold text-zinc-600">No sales data yet</p>
+                    <p className="text-[11px] text-zinc-400 max-w-xs">Connect your Amazon Seller account in Settings and run a sync to see your real sales performance here.</p>
                     <Link href="/dashboard/settings" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-1">Connect Amazon →</Link>
                   </div>
                 )}
@@ -542,38 +542,38 @@ export default function TrendRadarClient({
             </div>
 
             {/* Sourcing Opportunity Radar */}
-            <div className="glass-panel p-5 bg-[#111625] space-y-4">
+            <div className="glass-panel p-5 bg-white border border-black/5 space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-white">Opportunity Radar</h3>
-                <p className="text-[11px] text-zinc-400 font-semibold mt-0.5">Top-scoring opportunities to launch</p>
+                <h3 className="text-sm font-bold text-zinc-900">Opportunity Radar</h3>
+                <p className="text-[11px] text-zinc-500 font-semibold mt-0.5">Top-scoring opportunities to launch</p>
               </div>
               <div className="space-y-3">
                 {watchlist.slice(0, 4).map((item) => (
                   <div
                     key={item.id}
                     onClick={() => handleRowClick(item)}
-                    className="p-3 border border-white/5 rounded-xl hover:border-[#3b82f6]/40 transition-all cursor-pointer bg-[#181d2c]/20 hover:bg-[#181d2c]/40 flex items-center justify-between"
+                    className="p-3 border border-black/5 rounded-xl hover:border-[#3b82f6]/40 transition-all cursor-pointer bg-zinc-50 hover:bg-zinc-100 flex items-center justify-between"
                   >
                     <div className="flex-1 min-w-0 pr-3">
                       <span className="text-[10px] font-bold text-zinc-500 tracking-wider block uppercase">
                         {item.category || "General"}
                       </span>
-                      <span className="text-xs font-bold text-white truncate block mt-0.5">
+                      <span className="text-xs font-bold text-zinc-900 truncate block mt-0.5">
                         {item.title || "Validated Product"}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-bold text-emerald-400 block font-mono">
+                      <span className="text-xs font-bold text-emerald-600 block font-mono">
                         Score: {item.score}
                       </span>
-                      <span className="text-[9px] font-bold text-zinc-400 block uppercase tracking-wider mt-0.5">
+                      <span className="text-[9px] font-bold text-zinc-500 block uppercase tracking-wider mt-0.5">
                         {item.verdict}
                       </span>
                     </div>
                   </div>
                 ))}
                 {watchlist.length === 0 && (
-                  <div className="text-center text-xs text-zinc-400 py-12">
+                  <div className="text-center text-xs text-zinc-500 py-12">
                     No validated items tracked yet.
                   </div>
                 )}
@@ -585,8 +585,8 @@ export default function TrendRadarClient({
         {activeDashboardTab === "bestsellers" && (
           <div className="space-y-6">
             {/* Category selection bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-[#111625] p-4 rounded-xl border border-white/5 shadow-sm">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-white">Bestseller List Analysis</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-black/5 shadow-sm">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-900">Bestseller List Analysis</h2>
               <div className="flex flex-wrap gap-2">
                 <Select
                   value={listType}
@@ -778,7 +778,7 @@ export default function TrendRadarClient({
         {activeDashboardTab === "storefront" && (
           <div className="space-y-6">
             {!connected ? (
-              <div className="glass-panel p-8 text-center text-zinc-400 text-sm flex flex-col items-center justify-center space-y-4">
+              <div className="glass-panel p-8 text-center text-zinc-500 text-sm flex flex-col items-center justify-center space-y-4 bg-white border border-black/5">
                 <div className="text-3xl">🔌</div>
                 <p>No Amazon account linked. Please link your storefront in Settings first to enable sales and orders tracking.</p>
                 <Link
@@ -791,22 +791,22 @@ export default function TrendRadarClient({
             ) : (
               <>
                 {/* Synchronization Panel */}
-                <div className="glass-panel p-5 bg-[#111625]/60 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="glass-panel p-5 bg-white border border-black/5 flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-sm">
                       🔌
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white uppercase tracking-wider">Connected Account</div>
-                      <div className="text-[11px] text-zinc-400 font-semibold mt-0.5">
-                        SP-API: <span className="font-mono text-zinc-300">{accounts[0]?.selling_partner_id}</span> ({(accounts[0]?.marketplace_id === "A21TJRUUN4KGV" ? "Amazon India" : (accounts[0]?.marketplace_id === "ATVPDKIKX0DER" ? "Amazon USA" : "Amazon UK"))})
+                      <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider">Connected Account</div>
+                      <div className="text-[11px] text-zinc-500 font-semibold mt-0.5">
+                        SP-API: <span className="font-mono text-zinc-600">{accounts[0]?.selling_partner_id}</span> ({(accounts[0]?.marketplace_id === "A21TJRUUN4KGV" ? "Amazon India" : (accounts[0]?.marketplace_id === "ATVPDKIKX0DER" ? "Amazon USA" : "Amazon UK"))})
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                     {syncStatus && (
-                      <div className="text-[10px] font-bold text-zinc-300 bg-[#161a29] border border-white/5 px-3 py-1.5 rounded-lg w-full sm:w-auto text-center font-mono">
+                      <div className="text-[10px] font-bold text-zinc-700 bg-zinc-50 border border-black/10 px-3 py-1.5 rounded-lg w-full sm:w-auto text-center font-mono">
                         {syncStatus}
                       </div>
                     )}
@@ -873,14 +873,14 @@ export default function TrendRadarClient({
                     />
                   </div>
                 ) : (
-                  <div className="glass-panel p-8 text-center text-zinc-400 text-xs font-medium border border-white/5 bg-[#111625]/20">
+                  <div className="glass-panel p-8 text-center text-zinc-500 text-xs font-medium border border-black/5 bg-zinc-50">
                     No metrics synchronized yet. Please click the sync button above to fetch sales metrics.
                   </div>
                 )}
 
                 {/* Recent Orders List */}
                 <div className="space-y-3.5">
-                  <h2 className="text-sm font-bold tracking-wider text-zinc-400 uppercase font-mono">Recent Storefront Transactions</h2>
+                  <h2 className="text-sm font-bold tracking-wider text-zinc-500 uppercase font-mono">Recent Storefront Transactions</h2>
                   {initialOrders.length > 0 ? (
                     <Table
                       columns={[
@@ -888,7 +888,7 @@ export default function TrendRadarClient({
                           key: "amazon_order_id",
                           header: "Amazon Order ID",
                           render: (o: StorefrontOrder) => (
-                            <span className="font-mono text-xs font-semibold text-zinc-300 select-all">{o.amazon_order_id}</span>
+                            <span className="font-mono text-xs font-semibold text-zinc-700 select-all">{o.amazon_order_id}</span>
                           ),
                         },
                         {
@@ -897,7 +897,7 @@ export default function TrendRadarClient({
                           render: (o: StorefrontOrder) => {
                             const date = new Date(o.purchase_date);
                             return (
-                              <span className="text-zinc-400 font-medium text-xs font-mono">
+                              <span className="text-zinc-600 font-medium text-xs font-mono">
                                 {date.toLocaleDateString("en-IN", { month: "short", day: "numeric" })},{" "}
                                 {date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                               </span>
@@ -909,12 +909,12 @@ export default function TrendRadarClient({
                           header: "Status",
                           render: (o: StorefrontOrder) => {
                             const statusColors: Record<string, string> = {
-                              "Shipped": "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-                              "Unshipped": "text-blue-400 bg-blue-500/10 border-blue-500/20",
-                              "Pending": "text-amber-400 bg-amber-500/10 border-amber-500/20",
-                              "Cancelled": "text-zinc-500 bg-zinc-500/10 border-zinc-500/20",
+                              "Shipped": "text-emerald-700 bg-emerald-50/80 border-emerald-200/60",
+                              "Unshipped": "text-blue-700 bg-blue-50/80 border-blue-200/60",
+                              "Pending": "text-amber-700 bg-amber-50/80 border-amber-200/60",
+                              "Cancelled": "text-zinc-600 bg-zinc-50 border-zinc-200/60",
                             };
-                            const colorClass = statusColors[o.order_status] || "text-zinc-300 bg-zinc-500/10";
+                            const colorClass = statusColors[o.order_status] || "text-zinc-600 bg-zinc-50 border-zinc-200/60";
                             return (
                               <span className={`text-[10px] font-bold border px-2 py-0.5 rounded uppercase tracking-wider ${colorClass}`}>
                                 {o.order_status}
@@ -926,7 +926,7 @@ export default function TrendRadarClient({
                           key: "items_count",
                           header: "Items",
                           render: (o: StorefrontOrder) => (
-                            <span className="text-zinc-300 font-semibold text-xs font-mono">{o.items_count} unit(s)</span>
+                            <span className="text-zinc-700 font-semibold text-xs font-mono">{o.items_count} unit(s)</span>
                           ),
                         },
                         {
@@ -936,7 +936,7 @@ export default function TrendRadarClient({
                             const ordCurrency = o.currency || "INR";
                             const ordSymbol = ordCurrency === "USD" ? "$" : (ordCurrency === "GBP" ? "£" : "₹");
                             return (
-                              <span className="font-semibold text-white font-mono">
+                              <span className="font-semibold text-zinc-900 font-mono">
                                 {o.amount ? `${ordSymbol}${o.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "—"}
                               </span>
                             );
@@ -947,7 +947,7 @@ export default function TrendRadarClient({
                       rowKey={(o) => o.id}
                     />
                   ) : (
-                    <div className="glass-panel p-8 text-center text-zinc-400 text-xs font-medium border border-white/5 bg-[#111625]/20">
+                    <div className="glass-panel p-8 text-center text-zinc-500 text-xs font-medium border border-black/5 bg-zinc-50">
                       No storefront orders synced yet. Try clicking "Sync Storefront Now" above to load recent customer transactions.
                     </div>
                   )}

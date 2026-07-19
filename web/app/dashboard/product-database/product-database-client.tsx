@@ -186,7 +186,7 @@ export default function ProductDatabaseClient() {
   return (
     <div className="space-y-6">
       {/* Search and Filters panel */}
-      <form onSubmit={handleApplyFilters} className="glass-panel p-5 bg-[#111625] space-y-4">
+      <form onSubmit={handleApplyFilters} className="glass-panel p-5 bg-white border border-black/5 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
@@ -285,9 +285,9 @@ export default function ProductDatabaseClient() {
       </form>
 
       {/* Database Listing Card */}
-      <div className="glass-panel p-5 shadow-sm space-y-4 bg-[#111625]/20 border border-white/5">
+      <div className="glass-panel p-5 shadow-sm space-y-4 bg-white border border-black/5">
         <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold text-white">
+          <div className="text-sm font-semibold text-zinc-900">
             Search Results ({total.toLocaleString("en-IN")} products found)
           </div>
           
@@ -299,7 +299,7 @@ export default function ProductDatabaseClient() {
 
         {isPending ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-6 h-6 border-2 border-zinc-700 border-t-transparent rounded-full animate-spin"></div>
             <div className="text-xs text-zinc-500 font-semibold">Querying database snapshots...</div>
           </div>
         ) : (

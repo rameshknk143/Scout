@@ -123,12 +123,11 @@ export default function ListingHealthClient() {
         />
       </div>
 
-      {/* Main Audit Grid */}
-      <div className="glass-panel p-5 bg-[#111625]/20 border border-white/5 rounded-xl shadow-sm space-y-4">
-        <div className="text-sm font-semibold text-white">Active Audit Logs</div>
+      <div className="glass-panel p-5 bg-white border border-black/5 rounded-xl shadow-sm space-y-4">
+        <div className="text-sm font-semibold text-zinc-900">Active Audit Logs</div>
         {isPending ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-6 h-6 border-2 border-zinc-700 border-t-transparent rounded-full animate-spin"></div>
             <div className="text-xs text-zinc-500 font-semibold font-mono">Running listing diagnostics...</div>
           </div>
         ) : (

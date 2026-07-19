@@ -50,7 +50,7 @@ export default function ProfitCalculatorClient() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="glass-panel p-6 bg-[#111625] space-y-5">
+      <form onSubmit={handleSubmit} className="glass-panel p-6 bg-white border border-black/5 space-y-5">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <Field label="Sell price (₹)">
             <input

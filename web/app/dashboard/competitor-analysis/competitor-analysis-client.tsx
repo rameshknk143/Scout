@@ -66,9 +66,8 @@ export default function CompetitorAnalysisClient() {
 
   return (
     <div className="space-y-6">
-      {/* Input panel */}
-      <form onSubmit={handleCompare} className="glass-panel p-5 bg-[#111625] space-y-4">
-        <div className="text-sm font-semibold text-white mb-1">Enter Competitor ASINs</div>
+      <form onSubmit={handleCompare} className="glass-panel p-5 bg-white border border-black/5 space-y-4">
+        <div className="text-sm font-semibold text-zinc-900 mb-1">Enter Competitor ASINs</div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {asinInputs.map((input, idx) => (
             <div key={idx} className="relative space-y-1">

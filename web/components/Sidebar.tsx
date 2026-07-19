@@ -206,15 +206,15 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#090d16]">
+      <div className="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 border-b border-black/5 bg-white">
         <div className="flex items-center gap-2">
           <span className="text-xl">🔭</span>
-          <span className="font-bold tracking-tight text-white">ScoutVeda</span>
+          <span className="font-bold tracking-tight text-zinc-900">ScoutVeda</span>
         </div>
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
-          className="text-xl leading-none px-1 text-white"
+          className="text-xl leading-none px-1 text-zinc-700"
         >
           ☰
         </button>
@@ -235,21 +235,21 @@ export default function Sidebar() {
 
       <aside
         className={`
-          w-64 shrink-0 flex flex-col border-r border-white/5 px-4 py-6
-          fixed inset-y-0 left-0 z-50 bg-[#111625]/95 backdrop-blur-md
+          w-64 shrink-0 flex flex-col border-r border-black/5 px-4 py-6
+          fixed inset-y-0 left-0 z-50 bg-white
           transition-transform duration-200 ease-out
           ${open ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:sticky md:top-0 md:h-screen md:bg-[#111625]/40 md:z-10
+          md:translate-x-0 md:sticky md:top-0 md:h-screen md:bg-white md:z-10
         `}
       >
         {/* Brand Area */}
         <div className="mb-6 px-2">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-white">
+            <span className="text-xl font-bold tracking-tight text-zinc-900">
               🔭 ScoutVeda
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500 mt-2 leading-relaxed font-semibold uppercase tracking-wider">
+          <p className="text-[10px] text-zinc-400 mt-2 leading-relaxed font-semibold uppercase tracking-wider">
             KNK ENTERPRISES
           </p>
         </div>
@@ -280,18 +280,18 @@ export default function Sidebar() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="relative block py-1.5 px-2.5 rounded-lg hover:bg-white/5 transition-colors group"
+                      className="relative block py-1.5 px-2.5 rounded-lg hover:bg-zinc-100 transition-colors group"
                     >
                       {active && (
                         <motion.div
                           layoutId="nav-active-pill"
-                          className="absolute inset-0 rounded-lg bg-[#1e293b]/70 border border-white/5"
+                          className="absolute inset-0 rounded-lg bg-zinc-100 border border-black/5"
                           transition={{ type: "spring", stiffness: 450, damping: 38 }}
                         />
                       )}
                       <span
                         className={`relative z-10 flex items-center gap-2.5 text-xs font-semibold transition-colors ${
-                          active ? "text-white" : "text-zinc-400 hover:text-white"
+                          active ? "text-zinc-900 font-bold" : "text-zinc-500 hover:text-zinc-900"
                         }`}
                       >
                         <span className={`shrink-0 transition-opacity ${active ? "opacity-100" : "opacity-60 group-hover:opacity-100"}`}>
@@ -308,16 +308,16 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer / Account / Marketplace selector */}
-        <div className="mt-auto pt-4 border-t border-white/5 flex flex-col gap-3">
+        <div className="mt-auto pt-4 border-t border-black/5 flex flex-col gap-3">
           {/* Marketplace Selector */}
           <div className="px-2">
-            <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+            <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
               Active Marketplace
             </label>
             <select
               value={selectedMarketplace}
               onChange={(e) => handleMarketplaceChange(e.target.value)}
-              className="w-full text-xs font-semibold text-zinc-300 bg-[#181d2c] border border-white/10 rounded px-2 py-1 focus:outline-none focus:border-zinc-700 cursor-pointer"
+              className="w-full text-xs font-semibold text-zinc-700 bg-zinc-50 border border-black/10 rounded px-2 py-1.5 focus:outline-none focus:border-zinc-300 cursor-pointer"
             >
               <option value="amazon.in">🇮🇳 Amazon.in</option>
               <option value="amazon.com">🇺🇸 Amazon.com</option>
@@ -326,15 +326,15 @@ export default function Sidebar() {
           </div>
 
           {/* Settings & Help */}
-          <div className="flex flex-col gap-1 px-2 text-xs font-medium text-zinc-400">
-            <Link href="/dashboard/settings" className="hover:text-white flex items-center gap-2">
+          <div className="flex flex-col gap-1 px-2 text-xs font-medium text-zinc-500">
+            <Link href="/dashboard/settings" className="hover:text-zinc-900 flex items-center gap-2 transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="3" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
               </svg>
               Settings
             </Link>
-            <Link href="#" className="hover:text-white flex items-center gap-2">
+            <Link href="#" className="hover:text-zinc-900 flex items-center gap-2 transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
@@ -342,7 +342,7 @@ export default function Sidebar() {
             </Link>
             <button
               onClick={() => logout()}
-              className="hover:text-red-500 flex items-center gap-2 text-left w-full cursor-pointer mt-1 text-zinc-400 hover:bg-white/5 py-1 rounded transition-colors"
+              className="hover:text-red-600 flex items-center gap-2 text-left w-full cursor-pointer mt-1 text-zinc-500 hover:bg-zinc-50 py-1.5 px-2 rounded transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

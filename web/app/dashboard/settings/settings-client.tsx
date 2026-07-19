@@ -91,37 +91,37 @@ export default function SettingsClient() {
       </div>
 
       {connected ? (
-        <div className="glass-panel p-6 bg-[#111625] border-l-4 border-l-emerald-500 space-y-4">
+        <div className="glass-panel p-6 bg-white border border-black/5 border-l-4 border-l-emerald-500 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded uppercase tracking-wider">
                 Connected 🟢
               </span>
-              <h3 className="text-sm font-bold text-white mt-2">Amazon Seller account linked</h3>
+              <h3 className="text-sm font-bold text-zinc-900 mt-2">Amazon Seller account linked</h3>
             </div>
             <div className="text-right">
               <span className="text-[10px] text-zinc-500 font-semibold block uppercase">Marketplace</span>
-              <span className="text-xs font-bold text-zinc-300">
+              <span className="text-xs font-bold text-zinc-700">
                 {MARKETPLACE_NAMES[accounts[0]?.marketplace_id] || accounts[0]?.marketplace_id || "Amazon India"}
               </span>
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-4 space-y-3">
+          <div className="border-t border-black/5 pt-4 space-y-3">
             {accounts.map((acc, index) => (
-              <div key={index} className="flex justify-between items-center bg-[#181d2c]/50 p-3 rounded-lg border border-white/5">
+              <div key={index} className="flex justify-between items-center bg-zinc-50 p-3 rounded-lg border border-black/5">
                 <div>
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Selling Partner ID</span>
-                  <span className="font-mono text-xs font-bold text-zinc-300">{acc.selling_partner_id}</span>
+                  <span className="font-mono text-xs font-bold text-zinc-700">{acc.selling_partner_id}</span>
                 </div>
                 <div className="text-right flex items-center gap-6">
                   <div>
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Region</span>
-                    <span className="font-mono text-xs font-bold text-zinc-300">{MARKETPLACE_NAMES[acc.marketplace_id] || acc.marketplace_id}</span>
+                    <span className="font-mono text-xs font-bold text-zinc-700">{MARKETPLACE_NAMES[acc.marketplace_id] || acc.marketplace_id}</span>
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Linked</span>
-                    <span className="text-xs font-semibold text-zinc-400 font-mono">
+                    <span className="text-xs font-semibold text-zinc-500 font-mono">
                       {new Date(acc.connected_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
                     </span>
                   </div>
@@ -134,22 +134,22 @@ export default function SettingsClient() {
             <button
               onClick={handleDisconnect}
               disabled={isPending}
-              className="text-[10px] font-bold text-red-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer disabled:opacity-50"
+              className="text-[10px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-wider cursor-pointer disabled:opacity-50"
             >
               {isPending ? "Disconnecting…" : "Disconnect Amazon account"}
             </button>
           </div>
           {message && (
-            <p className="text-[11px] font-bold mt-2 text-zinc-300 leading-normal">{message}</p>
+            <p className="text-[11px] font-bold mt-2 text-zinc-650 leading-normal">{message}</p>
           )}
         </div>
       ) : (
-        <div className="glass-panel p-6 bg-[#111625] space-y-5">
+        <div className="glass-panel p-6 bg-white border border-black/5 shadow-sm space-y-5">
           <div className="flex items-start gap-4">
             <div className="text-3xl leading-none">🔗</div>
             <div>
-              <h3 className="text-sm font-bold text-white">Connect your Amazon Seller account</h3>
-              <p className="text-xs text-zinc-400 font-semibold leading-relaxed mt-1">
+              <h3 className="text-sm font-bold text-zinc-900">Connect your Amazon Seller account</h3>
+              <p className="text-xs text-zinc-500 font-semibold leading-relaxed mt-1">
                 You'll be sent to Amazon Seller Central to approve access. ScoutVeda never sees your Amazon
                 password — Amazon returns a secure access token that we store encrypted and use only to read
                 your sales, orders, and fees.

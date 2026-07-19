@@ -47,7 +47,7 @@ export default function KeywordsClient() {
   return (
     <div className="space-y-6">
       {/* Search Harvester Card Form */}
-      <form onSubmit={handleHarvest} className="glass-panel p-6 bg-[#111625] space-y-4">
+      <form onSubmit={handleHarvest} className="glass-panel p-6 bg-white border border-black/5 space-y-4">
         <div>
           <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">
             Seed Keyword

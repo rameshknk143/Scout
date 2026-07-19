@@ -150,7 +150,7 @@ export default function ListingClient() {
 
       {activeMode === "analyze" && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-5 bg-[#111625]">
+          <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-5 bg-white border border-black/5">
             <div>
               <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Amazon ASIN</label>
               <input

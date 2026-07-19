@@ -73,7 +73,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
 
   if (!alerts.length) {
     return (
-      <div className="bg-[#111625] p-8 rounded-xl border border-white/5 shadow-sm">
+      <div className="bg-white p-8 rounded-xl border border-black/5 shadow-sm">
         <EmptyState text="No alerts yet — alerts need at least two nightly collection runs for a watched ASIN before there's anything to compare. Run the Validator on a few ASINs, then check back tomorrow." />
       </div>
     );
@@ -82,19 +82,19 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
   return (
     <div className="space-y-4">
       {/* Disclaimer Caveat Box */}
-      <div className="caveat-box bg-[#181d2c]/20 border border-white/5 rounded-xl p-4 text-xs text-zinc-400 leading-relaxed">
+      <div className="caveat-box bg-zinc-50 border border-black/5 rounded-xl p-4 text-xs text-zinc-500 leading-relaxed">
         <strong>⚠️ Information Note:</strong> &quot;Dropped from list&quot; means the ASIN fell out of that category&apos;s top-30 ranked page. ScoutVeda reads the public bestseller/new-releases list, not live inventory, so it can&apos;t tell a real stock-out apart from just losing rank. Treat it as a sourcing indicator to review, not confirmed stock exhaustion.
       </div>
 
       {/* Search and Filters Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#111625] p-4 rounded-xl border border-white/5 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-black/5 shadow-sm">
         <div className="flex items-center gap-3 flex-1 max-w-sm">
           <input
             type="text"
             placeholder="Search alerts by ASIN or title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input py-1.5 text-xs text-white"
+            className="input py-1.5 text-xs"
           />
         </div>
 
@@ -127,10 +127,10 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
               render: (a) => (
                 <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md border uppercase ${
                   a.severity === "high"
-                    ? "bg-red-500/10 text-red-400 border-red-500/20"
+                    ? "bg-red-50 text-red-700 border-red-200/60"
                     : a.severity === "medium"
-                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                    : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                    ? "bg-amber-55/80 text-amber-700 border-amber-200/60"
+                    : "bg-blue-50 text-blue-700 border-blue-200/60"
                 }`}>
                   {a.severity}
                 </span>
@@ -139,13 +139,13 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
             {
               key: "alert_type",
               header: "Alert Type",
-              cellClassName: "text-zinc-400 font-semibold text-xs",
+              cellClassName: "text-zinc-500 font-semibold text-xs",
               render: (a) => ALERT_TYPE_LABELS[a.alert_type],
             },
             {
               key: "title",
               header: "Product Title",
-              cellClassName: "max-w-md truncate text-white font-medium",
+              cellClassName: "max-w-md truncate text-zinc-900 font-semibold",
               render: (a) => a.title || a.asin,
             },
             {
@@ -157,7 +157,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
             {
               key: "message",
               header: "Details",
-              cellClassName: "text-zinc-300 font-semibold text-xs",
+              cellClassName: "text-zinc-700 font-semibold text-xs",
               render: (a) => a.message,
             },
             {
@@ -179,7 +179,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
                     e.stopPropagation();
                     handleRowClick(row);
                   }}
-                  className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors cursor-pointer"
+                  className="text-[10px] font-bold text-zinc-700 bg-zinc-50 border border-black/10 hover:bg-zinc-100 px-2 py-1 rounded transition-colors cursor-pointer"
                 >
                   Analyze
                 </button>
@@ -191,7 +191,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
         />
       </div>
 
-      <div className="text-xs font-semibold text-zinc-400 pl-1">
+      <div className="text-xs font-semibold text-zinc-500 pl-1">
         {filtered.length} of {alerts.length} activity alerts shown.
       </div>
 

@@ -80,7 +80,7 @@ export default function WatchlistClient({
   return (
     <div className="space-y-4">
       {/* Search and Filters Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#111625] p-4 rounded-xl border border-white/5 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-black/5 shadow-sm">
         <div className="flex items-center gap-3 flex-1 max-w-sm">
           <input
             type="text"
@@ -121,7 +121,7 @@ export default function WatchlistClient({
               link.click();
               document.body.removeChild(link);
             }}
-            className="text-xs font-bold text-zinc-300 bg-[#181d2c] border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/5 cursor-pointer transition-colors shadow-sm"
+            className="text-xs font-bold text-zinc-700 bg-zinc-50 border border-black/10 px-3 py-1.5 rounded-lg hover:bg-zinc-100 cursor-pointer transition-colors shadow-sm"
           >
             Export CSV
           </button>
@@ -135,19 +135,19 @@ export default function WatchlistClient({
             {
               key: "asin",
               header: "ASIN",
-              cellClassName: "font-mono text-zinc-400 font-bold",
+              cellClassName: "font-mono text-zinc-500 font-bold",
               render: (v) => v.asin,
             },
             {
               key: "title",
               header: "Product Title",
-              cellClassName: "max-w-md truncate text-white font-medium",
+              cellClassName: "max-w-md truncate text-zinc-900 font-semibold",
               render: (v) => v.title || "Unresolved Product Title",
             },
             {
               key: "category",
               header: "Category",
-              cellClassName: "text-zinc-400 font-semibold",
+              cellClassName: "text-zinc-600 font-semibold",
               render: (v) => v.category ?? "General",
             },
             {
@@ -156,10 +156,10 @@ export default function WatchlistClient({
               render: (v) => (
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   v.score >= 70
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
                     : v.score >= 50
-                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                    : "bg-red-500/10 text-red-400 border border-red-500/20"
+                    ? "bg-amber-55/80 text-amber-700 border border-amber-200/60"
+                    : "bg-red-50 text-red-700 border border-red-200/60"
                 }`}>
                   {v.score} / 100
                 </span>
@@ -168,7 +168,7 @@ export default function WatchlistClient({
             {
               key: "buy_price",
               header: "Buy Price",
-              cellClassName: "text-white font-bold font-mono",
+              cellClassName: "text-zinc-900 font-bold font-mono",
               render: (v) => `₹${v.buy_price.toLocaleString("en-IN")}`,
             },
             {
@@ -177,10 +177,10 @@ export default function WatchlistClient({
               render: (v) => (
                 <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md border ${
                   v.verdict === "PURSUE"
-                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/25"
+                    ? "bg-emerald-55/80 text-emerald-700 border-emerald-200/60"
                     : v.verdict === "WATCH"
-                    ? "bg-amber-500/10 text-amber-400 border-amber-500/25"
-                    : "bg-red-500/10 text-red-400 border-red-500/25"
+                    ? "bg-amber-55/80 text-amber-700 border-amber-200/60"
+                    : "bg-red-55/80 text-red-700 border-red-200/60"
                 }`}>
                   {v.verdict}
                 </span>
@@ -195,7 +195,7 @@ export default function WatchlistClient({
                     e.stopPropagation();
                     handleRowClick(row);
                   }}
-                  className="text-[10px] font-bold text-zinc-300 bg-[#181d2c] border border-white/10 hover:bg-white/5 px-2 py-1 rounded transition-colors cursor-pointer"
+                  className="text-[10px] font-bold text-zinc-700 bg-zinc-50 border border-black/10 hover:bg-zinc-100 px-2 py-1 rounded transition-colors cursor-pointer"
                 >
                   Inspect
                 </button>
@@ -207,7 +207,7 @@ export default function WatchlistClient({
         />
       </div>
 
-      <div className="text-xs font-semibold text-zinc-400 pl-1">
+      <div className="text-xs font-semibold text-zinc-500 pl-1">
         {filtered.length} of {validations.length} opportunity validations shown.
       </div>
 
