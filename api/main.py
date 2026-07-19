@@ -817,7 +817,7 @@ def sync_all_storefronts():
 def sync_jobs(user_id: int = Depends(require_user), limit: int = 20):
     """Recent sync history for the authenticated account — lets you confirm
     a night's sync actually ran (and how) without reading Render's logs."""
-    return {"jobs": db.get_recent_sync_jobs(user_id=user_id, limit=limit)}
+    return {"jobs": db.get_recent_sync_jobs(user_id=user_id, limit=min(limit, 200))}
 
 
 @app.get("/storefront/sales", dependencies=[Depends(require_key)])
