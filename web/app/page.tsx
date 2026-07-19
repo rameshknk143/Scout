@@ -245,6 +245,37 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* FEEDBACK & SUGGESTIONS */}
+      <section id="feedback" className="sv-wrap sv-section" style={{ paddingTop: 0, paddingBottom: "40px" }}>
+        <div className="sv-glass p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 border border-black/5 bg-white/70 backdrop-blur-md shadow-sm">
+          <div className="max-w-lg text-left">
+            <span className="sv-eyebrow" style={{ color: "var(--sv-teal)" }}>Feedback & Suggestions</span>
+            <h2 className="text-lg font-bold text-zinc-900 mt-1" style={{ fontSize: "1.25rem" }}>Help us shape the future of ScoutVeda</h2>
+            <p className="text-xs text-zinc-600 leading-relaxed mt-2 font-medium">
+              Have suggestions, feature requests, or encountered a bug? We iterate fast based on seller input. Reach out directly via Email or WhatsApp.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 shrink-0">
+            <a
+              href="mailto:rameshknk143@gmail.com?subject=ScoutVeda Feedback & Suggestions"
+              className="sv-btn sv-btn-ghost flex items-center gap-2 text-xs py-2.5 px-4 border border-black/10 hover:bg-zinc-50 cursor-pointer shadow-sm rounded-lg"
+              style={{ padding: "10px 16px", fontSize: "11px", fontWeight: "bold" }}
+            >
+              ✉️ Email Suggestions
+            </a>
+            <a
+              href="https://wa.me/919900000000?text=Hi%20Ram,%20I%20have%20some%20feedback/suggestions%20for%20ScoutVeda..."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sv-btn sv-btn-primary flex items-center gap-2 text-xs py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer shadow-sm rounded-lg border border-emerald-700/10"
+              style={{ padding: "10px 16px", fontSize: "11px", fontWeight: "bold", background: "#10b981" }}
+            >
+              💬 WhatsApp Chat
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer className="sv-footer">
         <div className="sv-wrap">
@@ -253,10 +284,11 @@ export default function Landing() {
             <nav className="sv-footer-links" aria-label="Footer">
               <a href="#features">Product</a>
               <a href="#pricing">Pricing</a>
-              <a href="mailto:ramesh@scoutveda.com">Support</a>
+              <a href="#feedback">Feedback</a>
+              <a href="mailto:rameshknk143@gmail.com">Support</a>
               <a href="#">Privacy</a>
               <a href="#">Terms</a>
-              <a href="mailto:ramesh@scoutveda.com">Contact</a>
+              <a href="mailto:rameshknk143@gmail.com">Contact</a>
             </nav>
           </div>
           <p className="sv-footer-fine">

@@ -340,6 +340,24 @@ export default function Sidebar() {
               </svg>
               Documentation
             </Link>
+            <a
+              href="mailto:rameshknk143@gmail.com?subject=ScoutVeda Dashboard Feedback"
+              className="hover:text-zinc-900 flex items-center gap-2 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Email Feedback
+            </a>
+            <a
+              href="https://wa.me/919900000000?text=Hi%20Ram,%20I%20have%20some%20feedback/suggestions%20for%20ScoutVeda..."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-zinc-900 flex items-center gap-2 transition-colors"
+            >
+              <span className="text-[12px] leading-none shrink-0" style={{ transform: "translateY(-1px)", display: "inline-block" }}>💬</span>
+              WhatsApp Feedback
+            </a>
             <button
               onClick={() => logout()}
               className="hover:text-red-600 flex items-center gap-2 text-left w-full cursor-pointer mt-1 text-zinc-500 hover:bg-zinc-50 py-1.5 px-2 rounded transition-colors"
