@@ -144,21 +144,21 @@ body {
 .input {
   width: 100%;
   border-radius: 8px;
-  background: #181d2c;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   padding: 0.6rem 0.9rem;
   font-size: 0.875rem;
   color: var(--text);
   outline: none;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1) inset;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) inset;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
   border-color: #3b82f6;
   box-shadow: 
-    0 1px 2px 0 rgba(0, 0, 0, 0.1) inset,
-    0 0 0 2px rgba(59, 130, 246, 0.25);
+    0 1px 2px 0 rgba(0, 0, 0, 0.02) inset,
+    0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
 /* High-contrast Apple-style Primary Button */
@@ -407,10 +407,10 @@ body {
 .sv-auth-head p { color: var(--muted); font-size: 0.9rem; margin: 0; }
 .sv-field { margin-bottom: 16px; }
 .sv-field label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 7px; color: var(--text); }
-.sv-inp { width: 100%; height: 44px; border-radius: 10px; background: #0b1120; border: 1px solid var(--sv-hair);
+.sv-inp { width: 100%; height: 44px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.12);
   padding: 0 14px; font-size: 0.9rem; color: var(--text); outline: none; transition: border-color .2s, box-shadow .2s; }
-.sv-inp:focus { border-color: var(--sv-teal); box-shadow: 0 0 0 3px rgba(45,212,191,0.15); }
-.sv-inp::placeholder { color: #4b5568; }
+.sv-inp:focus { border-color: var(--sv-teal); box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); }
+.sv-inp::placeholder { color: #94a3b8; }
 .sv-inp-wrap { position: relative; }
 .sv-inp-btn { position: absolute; right: 6px; top: 6px; height: 32px; padding: 0 10px; border-radius: 8px;
   background: transparent; border: none; color: var(--muted); font-size: 0.75rem; cursor: pointer; }
@@ -421,7 +421,7 @@ body {
 .sv-auth-alt { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--muted); }
 .sv-auth-alt a { color: var(--sv-teal); text-decoration: none; font-weight: 600; }
 .sv-error { display: flex; gap: 8px; align-items: flex-start; padding: 11px 13px; border-radius: 10px;
-  background: var(--red-soft); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; font-size: 0.82rem; margin-bottom: 16px; }
+  background: var(--red-soft); border: 1px solid rgba(239,68,68,0.2); color: #b91c1c; font-size: 0.82rem; margin-bottom: 16px; }
 .sv-note { padding: 10px 12px; border-radius: 9px; background: var(--amber-soft); border: 1px solid rgba(245,158,11,0.2);
   color: var(--amber); font-size: 0.78rem; margin-bottom: 16px; line-height: 1.5; }
 .sv-ok { display: grid; place-items: center; gap: 14px; text-align: center; padding: 20px 0; }
@@ -431,8 +431,8 @@ body {
 /* OTP inputs */
 .sv-otp { display: flex; gap: 8px; justify-content: center; margin: 8px 0 20px; }
 .sv-otp input { width: 46px; height: 54px; text-align: center; font-family: var(--font-mono); font-size: 1.4rem;
-  font-weight: 700; border-radius: 11px; background: #0b1120; border: 1px solid var(--sv-hair); color: var(--text); outline: none; transition: all .15s; }
-.sv-otp input:focus { border-color: var(--sv-teal); box-shadow: 0 0 0 3px rgba(45,212,191,0.15); }
+  font-weight: 700; border-radius: 11px; background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.12); color: var(--text); outline: none; transition: all .15s; }
+.sv-otp input:focus { border-color: var(--sv-teal); box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); }
 
 /* Password requirement checklist */
 .sv-reqs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; margin: -4px 0 16px; }
