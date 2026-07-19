@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { googleLogin } from "@/lib/auth-actions";
+import { GOOGLE_OAUTH_STATE_KEY, GOOGLE_OAUTH_NONCE_KEY } from "@/components/auth-ui";
 
 function CallbackHandler() {
   const router = useRouter();
@@ -12,7 +13,15 @@ function CallbackHandler() {
 
   useEffect(() => {
     const code = searchParams.get("code");
+    const returnedState = searchParams.get("state");
     const deniedReason = searchParams.get("error"); // e.g. "access_denied" if the visitor cancelled
+
+    // Read-then-clear immediately: these are single-use, and clearing them
+    // right away means a replayed/reloaded callback URL can't reuse them.
+    const expectedState = sessionStorage.getItem(GOOGLE_OAUTH_STATE_KEY);
+    const nonce = sessionStorage.getItem(GOOGLE_OAUTH_NONCE_KEY) || undefined;
+    sessionStorage.removeItem(GOOGLE_OAUTH_STATE_KEY);
+    sessionStorage.removeItem(GOOGLE_OAUTH_NONCE_KEY);
 
     if (deniedReason) {
       setStatus("error");
@@ -24,12 +33,20 @@ function CallbackHandler() {
       setErrorMsg("Missing authorization code from Google.");
       return;
     }
+    // CSRF guard: this callback must be the direct continuation of a sign-in
+    // this same browser tab started -- reject anything else before it ever
+    // reaches the network.
+    if (!expectedState || returnedState !== expectedState) {
+      setStatus("error");
+      setErrorMsg("This sign-in link is invalid or expired. Please try again.");
+      return;
+    }
 
     const finish = async () => {
       try {
         // Must be byte-identical to the redirect_uri used to request this code.
         const redirect_uri = `${window.location.origin}/auth/google/callback`;
-        const res = await googleLogin({ code, redirect_uri });
+        const res = await googleLogin({ code, redirect_uri, nonce });
         if (!res.ok) throw new Error(res.error);
         setStatus("success");
         setTimeout(() => router.push("/dashboard"), 1200);

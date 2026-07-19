@@ -71,7 +71,7 @@ export async function login(input: { email: string; password: string }) {
    reaches the browser), verifies the identity token, and get-or-creates the
    account by verified email — no OTP step needed since Google already
    confirmed the address. */
-export async function googleLogin(input: { code: string; redirect_uri: string }) {
+export async function googleLogin(input: { code: string; redirect_uri: string; nonce?: string }) {
   const res = await callAuth<{ user_id: number }>("/auth/google", input);
   if (res.ok) await setSession(res.user_id);
   return res;

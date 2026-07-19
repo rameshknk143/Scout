@@ -14,21 +14,28 @@ visible at a glance.
 """
 
 import os
+import time
 
 import requests
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+GOOGLE_ISSUERS = ("accounts.google.com", "https://accounts.google.com")
 
 
 class GoogleAuthError(Exception):
     pass
 
 
-def exchange_google_code(code: str, redirect_uri: str) -> dict:
+def exchange_google_code(code: str, redirect_uri: str, expected_nonce: str | None = None) -> dict:
     """POST the authorization code to Google's token endpoint. Returns the
     verified {email, name} on success; raises GoogleAuthError with a
-    user-safe message otherwise."""
+    user-safe message otherwise.
+
+    `expected_nonce` should be the same random value the frontend put in the
+    original authorize request -- it's echoed back inside the ID token and
+    checked below, so a stolen/replayed ID token from a different sign-in
+    attempt can't be reused here."""
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise GoogleAuthError("Google sign-in is not configured on the server yet.")
 
@@ -73,6 +80,15 @@ def exchange_google_code(code: str, redirect_uri: str) -> dict:
 
     payload = info_res.json()
     if payload.get("aud") != GOOGLE_CLIENT_ID:
+        raise GoogleAuthError("Google identity verification failed.")
+    if payload.get("iss") not in GOOGLE_ISSUERS:
+        raise GoogleAuthError("Google identity verification failed.")
+    try:
+        if int(payload.get("exp", 0)) <= int(time.time()):
+            raise GoogleAuthError("Your Google sign-in expired. Please try again.")
+    except (TypeError, ValueError):
+        raise GoogleAuthError("Google identity verification failed.")
+    if expected_nonce and payload.get("nonce") != expected_nonce:
         raise GoogleAuthError("Google identity verification failed.")
     if payload.get("email_verified") not in ("true", True):
         raise GoogleAuthError("Your Google email isn't verified. Please verify it with Google first.")

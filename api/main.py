@@ -225,12 +225,13 @@ def login(req: LoginRequest):
 class GoogleAuthRequest(BaseModel):
     code: str
     redirect_uri: str
+    nonce: str | None = None
 
 
 @app.post("/auth/google", dependencies=[Depends(require_key)])
 def google_login(req: GoogleAuthRequest):
     try:
-        identity = google_auth.exchange_google_code(req.code, req.redirect_uri)
+        identity = google_auth.exchange_google_code(req.code, req.redirect_uri, expected_nonce=req.nonce)
     except google_auth.GoogleAuthError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -23,6 +23,19 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+// sessionStorage keys shared with the callback page (below) -- tied to this
+// browser tab's session, which is exactly the right lifetime for a one-shot
+// OAuth CSRF/replay check.
+export const GOOGLE_OAUTH_STATE_KEY = "sv_oauth_state";
+export const GOOGLE_OAUTH_NONCE_KEY = "sv_oauth_nonce";
+
+/** Cryptographically random URL-safe token, for OAuth `state`/`nonce`. */
+export function randomOauthToken(): string {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 /** "Continue with Google" — sends the visitor to Google's own consent screen.
     ScoutVeda never sees a Google password; the backend exchanges the returned
     code for an identity server-side. Renders nothing if Google sign-in isn't
@@ -32,6 +45,14 @@ export function GoogleButton() {
   if (!clientId) return null;
 
   function handleClick() {
+    // state defends the callback against login CSRF (an attacker's own valid
+    // OAuth code being planted on a victim's browser); nonce defends the ID
+    // token itself against replay. Both are single-use, cleared on the way out.
+    const state = randomOauthToken();
+    const nonce = randomOauthToken();
+    sessionStorage.setItem(GOOGLE_OAUTH_STATE_KEY, state);
+    sessionStorage.setItem(GOOGLE_OAUTH_NONCE_KEY, nonce);
+
     const redirectUri = `${window.location.origin}/auth/google/callback`;
     const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
     url.searchParams.set("client_id", clientId!);
@@ -40,6 +61,8 @@ export function GoogleButton() {
     url.searchParams.set("scope", "openid email profile");
     url.searchParams.set("access_type", "online");
     url.searchParams.set("prompt", "select_account");
+    url.searchParams.set("state", state);
+    url.searchParams.set("nonce", nonce);
     window.location.href = url.toString();
   }
 
