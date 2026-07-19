@@ -208,6 +208,16 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_seller_credentials_user_spid
     ON seller_credentials(user_id, selling_partner_id);
 """
 
+# Google sign-in creates accounts with no password at all — Google has already
+# verified the email, so there's nothing to hash. auth_provider is informational
+# only (surfaced later if we ever need "you signed up with Google" messaging);
+# login logic doesn't branch on it — a NULL password_hash already fails closed
+# in auth.verify_password.
+GOOGLE_AUTH_MIGRATION = """
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider TEXT DEFAULT 'password';
+"""
+
 
 @contextmanager
 def get_conn():
@@ -235,6 +245,7 @@ def init_db():
         with conn.cursor() as cur:
             cur.execute(SCHEMA)
             cur.execute(MULTITENANT_MIGRATION)
+            cur.execute(GOOGLE_AUTH_MIGRATION)
 
 
 # --- Accounts -----------------------------------------------------------------
@@ -254,14 +265,14 @@ def get_user_by_id(user_id):
             return dict(row) if row else None
 
 
-def create_user(email, password_hash, full_name, email_verified=True):
+def create_user(email, password_hash, full_name, email_verified=True, auth_provider="password"):
     from datetime import datetime, timezone
     with get_conn() as conn:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
-                """INSERT INTO users (email, password_hash, full_name, email_verified, created_at)
-                   VALUES (lower(%s), %s, %s, %s, %s) RETURNING id, email, full_name, email_verified""",
-                (email, password_hash, full_name, email_verified, datetime.now(timezone.utc).isoformat()),
+                """INSERT INTO users (email, password_hash, full_name, email_verified, created_at, auth_provider)
+                   VALUES (lower(%s), %s, %s, %s, %s, %s) RETURNING id, email, full_name, email_verified""",
+                (email, password_hash, full_name, email_verified, datetime.now(timezone.utc).isoformat(), auth_provider),
             )
             return dict(cur.fetchone())
 

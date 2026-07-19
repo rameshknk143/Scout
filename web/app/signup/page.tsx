@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { signupStart, signupVerify, resendOtp } from "@/lib/auth-actions";
-import { AuthShell, ErrorNote, OtpBoxes, Wordmark } from "@/components/auth-ui";
+import { AuthShell, ErrorNote, GoogleButton, OtpBoxes, Wordmark } from "@/components/auth-ui";
 
 const RULES = [
   { key: "len", label: "12+ characters", test: (p: string) => p.length >= 12 },
@@ -174,6 +174,7 @@ export default function SignupPage() {
           {busy ? "Sending code…" : "Continue"}
         </button>
       </form>
+      <GoogleButton />
       <p className="sv-auth-alt">Already have an account? <Link href="/login">Log in</Link></p>
     </AuthShell>
   );

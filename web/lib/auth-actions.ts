@@ -66,6 +66,17 @@ export async function login(input: { email: string; password: string }) {
   return res;
 }
 
+/* ---- Google sign-in (works for both new and returning accounts) ----
+   The backend exchanges the code with Google server-side (client secret never
+   reaches the browser), verifies the identity token, and get-or-creates the
+   account by verified email — no OTP step needed since Google already
+   confirmed the address. */
+export async function googleLogin(input: { code: string; redirect_uri: string }) {
+  const res = await callAuth<{ user_id: number }>("/auth/google", input);
+  if (res.ok) await setSession(res.user_id);
+  return res;
+}
+
 /* ---- Password reset (OTP, never reveals whether the email exists) ---- */
 export async function forgotStart(email: string) {
   return callAuth("/auth/password/forgot", { email });

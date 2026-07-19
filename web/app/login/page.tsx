@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { login } from "@/lib/auth-actions";
-import { AuthShell, ErrorNote, Wordmark } from "@/components/auth-ui";
+import { AuthShell, ErrorNote, GoogleButton, Wordmark } from "@/components/auth-ui";
 
 function LoginCard() {
   const router = useRouter();
@@ -67,6 +67,8 @@ function LoginCard() {
           {busy ? "Signing in…" : "Log in"}
         </button>
       </form>
+
+      <GoogleButton />
 
       <p className="sv-auth-alt">New to ScoutVeda? <Link href="/signup">Create an account</Link></p>
     </>

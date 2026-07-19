@@ -28,6 +28,7 @@ import alerts
 import amazon_sp_api
 import auth
 import db
+import google_auth
 import listing_analyzer
 import profit_calculator
 import scorer
@@ -218,6 +219,32 @@ def login(req: LoginRequest):
     # password is wrong — so login can't be used to enumerate accounts.
     if not user or not auth.verify_password(user["password_hash"], req.password):
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
+
+
+class GoogleAuthRequest(BaseModel):
+    code: str
+    redirect_uri: str
+
+
+@app.post("/auth/google", dependencies=[Depends(require_key)])
+def google_login(req: GoogleAuthRequest):
+    try:
+        identity = google_auth.exchange_google_code(req.code, req.redirect_uri)
+    except google_auth.GoogleAuthError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    user = db.get_user_by_email(identity["email"])
+    if not user:
+        # Google has already verified this email belongs to the visitor, so
+        # the account is created and immediately usable — no OTP step needed.
+        user = db.create_user(
+            email=identity["email"],
+            password_hash=None,
+            full_name=identity["name"],
+            email_verified=True,
+            auth_provider="google",
+        )
     return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
 
 
