@@ -250,6 +250,24 @@ ALTER TABLE storefront_sales_metrics ADD COLUMN IF NOT EXISTS workspace_id INTEG
 ALTER TABLE storefront_orders        ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL;
 """
 
+# Persists every sync attempt from the nightly/manual storefront sync so
+# failures are queryable instead of vanishing into Render's log stream.
+# See docs/superpowers/specs/2026-07-19-sync-engine-design.md.
+SYNC_JOBS_MIGRATION = """
+CREATE TABLE IF NOT EXISTS sync_jobs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    wave_number INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'running',
+    attempts INTEGER NOT NULL DEFAULT 1,
+    error TEXT,
+    started_at TEXT NOT NULL,
+    finished_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_sync_jobs_user ON sync_jobs(user_id);
+CREATE INDEX IF NOT EXISTS idx_sync_jobs_started ON sync_jobs(started_at);
+"""
+
 
 @contextmanager
 def get_conn():
@@ -279,6 +297,7 @@ def init_db():
             cur.execute(MULTITENANT_MIGRATION)
             cur.execute(GOOGLE_AUTH_MIGRATION)
             cur.execute(WORKSPACE_MIGRATION)
+            cur.execute(SYNC_JOBS_MIGRATION)
 
 
 # --- Workspaces -----------------------------------------------------------
@@ -707,6 +726,56 @@ def get_user_ids_with_credentials():
         with conn.cursor() as cur:
             cur.execute("SELECT DISTINCT user_id FROM seller_credentials WHERE user_id IS NOT NULL")
             return [r[0] for r in cur.fetchall()]
+
+
+def start_sync_job(user_id, wave_number):
+    """Inserts a status='running' sync_jobs row for one account's sync
+    attempt and returns its id. Call finish_sync_job with this id once the
+    attempt completes, whether it succeeds or fails — a job row must never
+    be left stuck at 'running'."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO sync_jobs (user_id, wave_number, status, started_at) "
+                "VALUES (%s, %s, 'running', %s) RETURNING id",
+                (user_id, wave_number, now),
+            )
+            return cur.fetchone()[0]
+
+
+def finish_sync_job(job_id, status, attempts, error):
+    """Updates a sync_jobs row to its final status ('ok' or 'error'), how
+    many attempts the underlying SP-API calls needed, and the error message
+    if any."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE sync_jobs SET status = %s, attempts = %s, error = %s, finished_at = %s "
+                "WHERE id = %s",
+                (status, attempts, error, now, job_id),
+            )
+
+
+def get_recent_sync_jobs(user_id=None, limit=50):
+    """Most recent sync_jobs rows, newest first. Filtered to one account if
+    user_id is given."""
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            if user_id is not None:
+                cur.execute(
+                    "SELECT * FROM sync_jobs WHERE user_id = %s ORDER BY started_at DESC LIMIT %s",
+                    (user_id, limit),
+                )
+            else:
+                cur.execute(
+                    "SELECT * FROM sync_jobs ORDER BY started_at DESC LIMIT %s",
+                    (limit,),
+                )
+            return [dict(r) for r in cur.fetchall()]
 
 
 def get_watchlist_with_latest_snapshots(user_id):
