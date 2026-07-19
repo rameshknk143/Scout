@@ -219,6 +219,38 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider TEXT DEFAULT 'password'
 """
 
 
+# Introduces the workspace/business concept alongside individual user accounts.
+# Every account gets exactly one workspace, auto-provisioned by
+# ensure_workspace_for_user() below -- see docs/superpowers/specs/
+# 2026-07-19-workspace-foundation-design.md for the full rationale. Purely
+# additive: new tables, and a nullable column added to existing tables, so
+# this can never fail against existing data or lose anything.
+WORKSPACE_MIGRATION = """
+CREATE TABLE IF NOT EXISTS workspaces (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    owner_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS workspace_members (
+    id SERIAL PRIMARY KEY,
+    workspace_id INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role TEXT NOT NULL DEFAULT 'owner',
+    joined_at TEXT NOT NULL,
+    UNIQUE (workspace_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_workspace_members_user ON workspace_members(user_id);
+
+ALTER TABLE validations              ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL;
+ALTER TABLE my_products              ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL;
+ALTER TABLE seller_credentials       ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL;
+ALTER TABLE storefront_sales_metrics ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL;
+ALTER TABLE storefront_orders        ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES workspaces(id) ON DELETE SET NULL;
+"""
+
+
 @contextmanager
 def get_conn():
     # NOTE: no connection-wide cursor_factory here on purpose — pandas.read_sql_query
@@ -246,6 +278,81 @@ def init_db():
             cur.execute(SCHEMA)
             cur.execute(MULTITENANT_MIGRATION)
             cur.execute(GOOGLE_AUTH_MIGRATION)
+            cur.execute(WORKSPACE_MIGRATION)
+
+
+# --- Workspaces -----------------------------------------------------------
+# A "workspace" represents one business. Every user belongs to exactly one
+# today, auto-provisioned below; workspace_members is many-to-many so a
+# person could join/own a second workspace later with no schema change.
+# Nothing else in the app queries by workspace_id yet.
+
+def ensure_workspace_for_user(user_id, full_name=None):
+    """Idempotent: if `user_id` already belongs to a workspace, returns its
+    id unchanged and creates nothing. Otherwise creates a new workspace
+    owned by them and returns its id. Called automatically by create_user()
+    for every new signup (email+password and Google both funnel through it)."""
+    from datetime import datetime, timezone
+    existing = get_workspace_id_for_user(user_id)
+    if existing is not None:
+        return existing
+
+    name = f"{full_name}'s Workspace" if full_name else "My Workspace"
+    now = datetime.now(timezone.utc).isoformat()
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO workspaces (name, owner_user_id, created_at) VALUES (%s, %s, %s) RETURNING id",
+                (name, user_id, now),
+            )
+            workspace_id = cur.fetchone()[0]
+            cur.execute(
+                "INSERT INTO workspace_members (workspace_id, user_id, role, joined_at) VALUES (%s, %s, %s, %s)",
+                (workspace_id, user_id, "owner", now),
+            )
+    return workspace_id
+
+
+def get_workspace_id_for_user(user_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT workspace_id FROM workspace_members WHERE user_id = %s LIMIT 1", (user_id,))
+            row = cur.fetchone()
+            return row[0] if row else None
+
+
+def backfill_workspace_for_user(user_id):
+    """One-time: tag this user's existing rows (created before workspaces
+    existed) with their workspace_id. Purely additive -- only fills rows
+    where workspace_id IS NULL; never touches user_id or deletes anything.
+    Idempotent: safe to run more than once (a table with no untagged rows
+    left is simply a no-op). Returns rows-updated count per table."""
+    workspace_id = ensure_workspace_for_user(user_id)
+    counts = {}
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            for table in ("validations", "my_products", "seller_credentials", "storefront_sales_metrics", "storefront_orders"):
+                cur.execute(
+                    f"UPDATE {table} SET workspace_id = %s WHERE user_id = %s AND workspace_id IS NULL",
+                    (workspace_id, user_id),
+                )
+                counts[table] = cur.rowcount
+    return counts
+
+
+def count_workspace_rows():
+    """Row counts per user-owned table: total rows vs. rows already tagged
+    with a workspace_id. Used as the before/after safety check when
+    backfilling -- `total` must be identical before and after; only
+    `tagged` should change."""
+    counts = {}
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            for table in ("validations", "my_products", "seller_credentials", "storefront_sales_metrics", "storefront_orders"):
+                cur.execute(f"SELECT count(*), count(workspace_id) FROM {table}")
+                total, tagged = cur.fetchone()
+                counts[table] = {"total": total, "tagged": tagged}
+    return counts
 
 
 # --- Accounts -----------------------------------------------------------------
