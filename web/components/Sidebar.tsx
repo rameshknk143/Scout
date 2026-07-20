@@ -23,11 +23,34 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [selectedMarketplace, setSelectedMarketplace] = useState("amazon.in");
+  const [sellerTag, setSellerTag] = useState("Private Label");
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedMarketplace") || "amazon.in";
     setSelectedMarketplace(stored);
+
+    const loadConfig = () => {
+      const savedConfig = localStorage.getItem("scoutveda_seller_config");
+      if (savedConfig) {
+        try {
+          const cfg = JSON.parse(savedConfig);
+          const typeLabels: Record<string, string> = {
+            private_label: "Private Label",
+            wholesale: "Wholesale",
+            arbitrage: "Arbitrage",
+            agency: "Agency",
+            brand_owner: "Brand Owner",
+          };
+          setSellerTag(typeLabels[cfg.sellerType] || "Private Label");
+        } catch (e) {}
+      }
+    };
+    loadConfig();
+
+    const handleConfigUpdate = () => loadConfig();
+    window.addEventListener("scoutveda_config_updated", handleConfigUpdate);
+    return () => window.removeEventListener("scoutveda_config_updated", handleConfigUpdate);
   }, []);
 
   const handleMarketplaceChange = (val: string) => {
@@ -249,9 +272,14 @@ export default function Sidebar() {
               🔭 ScoutVeda
             </span>
           </div>
-          <p className="text-[10px] text-zinc-400 mt-2 leading-relaxed font-semibold uppercase tracking-wider">
-            KNK ENTERPRISES
-          </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-[10px] text-zinc-400 leading-relaxed font-semibold uppercase tracking-wider">
+              KNK ENTERPRISES
+            </p>
+            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+              {sellerTag}
+            </span>
+          </div>
         </div>
 
         {/* Navigation Area */}
@@ -326,8 +354,19 @@ export default function Sidebar() {
           </div>
 
           {/* Settings & Help */}
-          <div className="flex flex-col gap-1 px-2 text-xs font-medium text-zinc-500">
-            <Link href="/dashboard/settings" className="hover:text-zinc-900 flex items-center gap-2 transition-colors">
+          <div className="flex flex-col gap-1.5 px-2 text-xs font-medium text-zinc-500">
+            <button
+              onClick={() => window.dispatchEvent(new Event("scoutveda_trigger_setup"))}
+              className="hover:text-emerald-600 flex items-center gap-2 transition-colors cursor-pointer text-left font-medium text-zinc-600 hover:bg-emerald-50/50 py-1 px-1.5 rounded"
+            >
+              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Setup Wizard
+            </button>
+
+            <Link href="/dashboard/settings" className="hover:text-zinc-900 flex items-center gap-2 transition-colors py-1 px-1.5">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="3" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />

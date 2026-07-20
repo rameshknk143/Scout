@@ -142,8 +142,27 @@ export default function TrendRadarClient({
     };
   }, [category, listType]);
 
-  // Compute operational alerts
+  // Real Amazon storefront figures — present ONLY after SP-API is connected and a
+  // sync has run. No fallbacks: empty stays empty.
+  const hasStorefront = initialMetrics.length > 0;
+  const storefrontCurrency = initialMetrics[0]?.currency === "USD" ? "$" : initialMetrics[0]?.currency === "GBP" ? "£" : "₹";
+  const realRevenue = initialMetrics.reduce((s, m) => s + m.total_sales_amount, 0);
+  const realUnits = initialMetrics.reduce((s, m) => s + m.unit_count, 0);
+
+  // Compute operational alerts (Blueprint Section 07 Attention Tier)
+  const avoidCount = watchlist.filter((w) => w.verdict === "AVOID").length;
+  const oppCount = watchlist.filter((w) => w.score >= 70).length;
+  
   const computedAlerts: AlertItem[] = [
+    {
+      id: "opp-alert",
+      type: "opportunity",
+      count: oppCount,
+      label: "High-scoring product opportunities ready for supplier sourcing",
+      severity: "success",
+      actionLabel: "Analyze Sourcing",
+      onClick: () => setActiveDashboardTab("watchlist"),
+    },
     {
       id: "price-alert",
       type: "price_drop",
@@ -154,13 +173,22 @@ export default function TrendRadarClient({
       onClick: () => setActiveDashboardTab("watchlist"),
     },
     {
-      id: "opp-alert",
-      type: "opportunity",
-      count: watchlist.filter((w) => w.score >= 70).length,
-      label: "High-scoring product opportunities ready for supplier validation",
-      severity: "success",
-      actionLabel: "Analyze Sourcing",
+      id: "avoid-alert",
+      type: "low_stock",
+      count: avoidCount,
+      label: "Low-margin ASINs flagged AVOID (negative net margin risk)",
+      severity: "critical",
+      actionLabel: "Review Watchlist",
       onClick: () => setActiveDashboardTab("watchlist"),
+    },
+    {
+      id: "sync-alert",
+      type: "suppressed",
+      count: connected && !hasStorefront ? 1 : 0,
+      label: "Amazon SP-API account connected — click Sync to fetch live order metrics",
+      severity: "warning",
+      actionLabel: "Sync Storefront",
+      onClick: handleSync,
     },
   ];
 
@@ -179,13 +207,6 @@ export default function TrendRadarClient({
     return sell > 0 ? (profit / sell) * 100 : 0;
   });
   const avgNetMargin = margins.length ? Math.round(margins.reduce((s, m) => s + m, 0) / margins.length) : 0;
-
-  // Real Amazon storefront figures — present ONLY after SP-API is connected and a
-  // sync has run. No fallbacks: empty stays empty.
-  const hasStorefront = initialMetrics.length > 0;
-  const storefrontCurrency = initialMetrics[0]?.currency === "USD" ? "$" : initialMetrics[0]?.currency === "GBP" ? "£" : "₹";
-  const realRevenue = initialMetrics.reduce((s, m) => s + m.total_sales_amount, 0);
-  const realUnits = initialMetrics.reduce((s, m) => s + m.unit_count, 0);
 
   // Real sales-over-time series for the performance chart (empty until synced).
   const salesChartData = [...initialMetrics]
@@ -216,8 +237,50 @@ export default function TrendRadarClient({
   const lowStockAsin = watchlist.find((w) => w.score < 60)?.asin || null;
   const lowQualityAsin = watchlist.find((w) => w.score < 75)?.asin || null;
 
+  const [sellerConfig, setSellerConfig] = useState<any>(null);
+
+  useEffect(() => {
+    const loadCfg = () => {
+      const saved = localStorage.getItem("scoutveda_seller_config");
+      if (saved) {
+        try {
+          setSellerConfig(JSON.parse(saved));
+        } catch (e) {}
+      }
+    };
+    loadCfg();
+
+    const handleUpdate = () => loadCfg();
+    window.addEventListener("scoutveda_config_updated", handleUpdate);
+    return () => window.removeEventListener("scoutveda_config_updated", handleUpdate);
+  }, []);
+
   return (
     <div className="space-y-6">
+      {/* 0. Seller Personalization Badge (Phase 04 Blueprint) */}
+      {sellerConfig && (
+        <div className="flex items-center justify-between bg-zinc-50 border border-zinc-200/80 rounded-xl px-4 py-2 text-xs">
+          <div className="flex items-center gap-2 font-medium text-zinc-700">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-bold text-zinc-900">{sellerConfig.brandName || "My Store"} Cockpit</span>
+            <span className="text-zinc-300">•</span>
+            <span className="capitalize font-semibold text-emerald-800 bg-emerald-100/60 px-2 py-0.5 rounded-md text-[11px]">
+              {(sellerConfig.sellerType || "private_label").replace("_", " ")} Mode
+            </span>
+            <span className="text-zinc-300">•</span>
+            <span className="text-zinc-500 text-[11px]">
+              Target Margin: <strong className="text-zinc-900">{sellerConfig.targetMargin || 20}%</strong>
+            </span>
+          </div>
+          <button
+            onClick={() => window.dispatchEvent(new Event("scoutveda_trigger_setup"))}
+            className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 underline"
+          >
+            Edit Preferences
+          </button>
+        </div>
+      )}
+
       {/* 1. Action Required Strip — only show rows that actually have items */}
       <AlertStrip alerts={computedAlerts.filter((a) => a.count > 0)} />
 

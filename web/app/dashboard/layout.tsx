@@ -1,5 +1,6 @@
 import Sidebar from "@/components/Sidebar";
 import MarketplaceIndicator from "@/components/MarketplaceIndicator";
+import { SetupWizard } from "@/components/SetupWizard";
 
 export default function DashboardLayout({
   children,
@@ -56,6 +57,9 @@ export default function DashboardLayout({
             </div>
           </div>
         </header>
+
+        {/* Setup Wizard Modal for Phase 04 Onboarding */}
+        <SetupWizard />
 
         {/* Page Content wrapper */}
         <div className="flex-1 px-4 py-6 md:px-8 md:py-8 max-w-6xl w-full mx-auto">

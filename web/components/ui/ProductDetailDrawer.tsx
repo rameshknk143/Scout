@@ -215,7 +215,7 @@ export default function ProductDetailDrawer({
                           <div className="flex justify-between text-xs font-bold">
                             <span className="text-zinc-300">Estimated Profit per Unit</span>
                             <span className="text-emerald-400 font-mono">
-                              ₹{(product.sell_price - product.buy_price - product.shipping_cost - product.fees).toFixed(1)}
+                              ₹{((product.sell_price || product.price || 0) - (product.buy_price || 0) - (product.shipping_cost || 0) - (product.fees || 0)).toFixed(1)}
                             </span>
                           </div>
                         </div>
@@ -280,7 +280,7 @@ export default function ProductDetailDrawer({
                         Listing Audit Checklist
                       </h3>
                       <div className="space-y-2">
-                        {product.audit_checklist.map((item: any, idx: number) => (
+                        {(product.audit_checklist || []).map((item: any, idx: number) => (
                           <div
                             key={idx}
                             className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-[#181d2c]/20 text-xs font-semibold"
