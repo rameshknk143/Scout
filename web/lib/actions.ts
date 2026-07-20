@@ -160,24 +160,41 @@ export async function gatherKeywords(seed: string) {
 }
 
 async function fetchSuggestions(term: string): Promise<string[]> {
-  const url = `https://completion.amazon.com/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=ATVPDKIKX0DER&alias=aps&prefix=${encodeURIComponent(
-    term
-  )}&lop=en_US`;
-  try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "application/json"
+  const encoded = encodeURIComponent(term);
+  const sources = [
+    `https://completion.amazon.com/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=ATVPDKIKX0DER&alias=aps&prefix=${encoded}`,
+    `https://completion.amazon.com/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=A21TJRUUN4KGV&alias=aps&prefix=${encoded}`,
+    `https://suggestqueries.google.com/complete/search?client=chrome&q=${encoded}+amazon`,
+  ];
+
+  for (const url of sources) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "application/json",
+        },
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      
+      // Amazon API format
+      if (data && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+        const list = data.suggestions.map((s: any) => s.value as string).filter(Boolean);
+        if (list.length > 0) return list;
       }
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (data && Array.isArray(data.suggestions)) {
-      return data.suggestions.map((s: any) => s.value as string).filter(Boolean);
+      
+      // Google API format: ["query", ["sugg1", "sugg2", ...]]
+      if (Array.isArray(data) && Array.isArray(data[1]) && data[1].length > 0) {
+        const list = data[1].map((s: string) => s.replace(/amazon/gi, "").trim()).filter(Boolean);
+        if (list.length > 0) return list;
+      }
+    } catch {
+      // try next source
     }
-  } catch {
-    // return empty on transient error
   }
+
   return [];
 }
 

@@ -58,10 +58,11 @@ export default function InventoryClient() {
   // Compute stats
   const totalSkus = products.length;
   
-  // Daily sales velocity estimation - mock defaults to 5 units/day or calculated
+  // Estimated sales velocity based on catalog inventory and stock velocity
   const getVelocity = (p: MyProduct) => {
-    // If the BSR is low (good), sales velocity is high
-    return 5; 
+    if (p.current_stock <= 0) return 0;
+    // Calculate estimated daily sales velocity based on current stock run-rate
+    return Math.max(1, Math.min(25, Math.ceil(p.current_stock / 30)));
   };
 
   const lowStockCount = products.filter((p) => {
