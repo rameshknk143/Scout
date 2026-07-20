@@ -388,15 +388,6 @@ export default function Sidebar() {
               </svg>
               Email Feedback
             </a>
-            <a
-              href="https://wa.me/919900000000?text=Hi%20Ram,%20I%20have%20some%20feedback/suggestions%20for%20ScoutVeda..."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-emerald-700 text-emerald-600 font-semibold flex items-center gap-2 transition-colors"
-            >
-              <span className="text-[12px] leading-none shrink-0" style={{ transform: "translateY(-1px)", display: "inline-block" }}>💬</span>
-              WhatsApp Feedback
-            </a>
             <button
               onClick={() => logout()}
               className="hover:text-red-600 flex items-center gap-2 text-left w-full cursor-pointer mt-1 text-zinc-500 hover:bg-zinc-50 py-1.5 px-2 rounded transition-colors"
