@@ -57,23 +57,25 @@ export default function InventoryClient() {
 
   // Compute stats
   const totalSkus = products.length;
-  
-  // Estimated sales velocity based on catalog inventory and stock velocity
-  const getVelocity = (p: MyProduct) => {
-    if (p.current_stock <= 0) return 0;
-    // Calculate estimated daily sales velocity based on current stock run-rate
-    return Math.max(1, Math.min(25, Math.ceil(p.current_stock / 30)));
-  };
 
-  const lowStockCount = products.filter((p) => {
-    const velocity = getVelocity(p);
-    const daysRemaining = p.current_stock / velocity;
-    return daysRemaining <= p.lead_time_days;
-  }).length;
+  // Stock cover and re-order forecasting both need per-ASIN sales velocity, which
+  // requires order-item level data we do not sync yet (storefront_orders carries no
+  // ASIN, and storefront_sales_metrics is aggregate-only). Until that lands we show
+  // an explicit "not available" state rather than an estimate.
+  const totalUnits = products.reduce((acc, p) => acc + p.current_stock, 0);
 
   const avgLeadTime = totalSkus
     ? products.reduce((acc, p) => acc + p.lead_time_days, 0) / totalSkus
     : 0;
+
+  const unavailable = (
+    <span
+      className="text-[10px] font-bold px-2 py-0.5 rounded border font-mono bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
+      title="Needs per-ASIN sales velocity. Amazon order-item sync is not connected yet."
+    >
+      Needs sales data
+    </span>
+  );
 
   const columns = [
     {
@@ -109,11 +111,8 @@ export default function InventoryClient() {
             />
           );
         }
-        const velocity = getVelocity(p);
-        const daysRemaining = p.current_stock / velocity;
-        const isLow = daysRemaining <= p.lead_time_days;
         return (
-          <span className={`font-bold font-mono ${isLow ? "text-red-400 font-extrabold" : "text-white"}`}>
+          <span className="font-bold font-mono text-white">
             {p.current_stock} units
           </span>
         );
@@ -139,48 +138,12 @@ export default function InventoryClient() {
     {
       key: "days_remaining",
       header: "Stock Cover",
-      render: (p: MyProduct) => {
-        const velocity = getVelocity(p);
-        const daysRemaining = Math.ceil(p.current_stock / velocity);
-        const isLow = daysRemaining <= p.lead_time_days;
-        return (
-          <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded border font-mono ${
-              isLow
-                ? "bg-red-500/10 text-red-400 border-red-500/20 animate-pulse"
-                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-            }`}
-          >
-            {daysRemaining} days remaining
-          </span>
-        );
-      },
+      render: () => unavailable,
     },
     {
       key: "reorder_date",
       header: "Re-order Forecast",
-      render: (p: MyProduct) => {
-        const velocity = getVelocity(p);
-        const daysRemaining = Math.ceil(p.current_stock / velocity);
-        const reorderInDays = daysRemaining - p.lead_time_days;
-        
-        if (reorderInDays <= 0) {
-          return (
-            <span className="text-[10px] font-extrabold text-red-400 uppercase tracking-wide font-mono animate-pulse">
-              ⚠️ Order Immediately
-            </span>
-          );
-        }
-        
-        const reorderDate = new Date();
-        reorderDate.setDate(reorderDate.getDate() + reorderInDays);
-        return (
-          <span className="font-semibold text-zinc-300 font-mono">
-            {reorderDate.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
-            <span className="text-[10px] text-zinc-500 font-semibold ml-1.5 font-mono">(in {reorderInDays}d)</span>
-          </span>
-        );
-      },
+      render: () => unavailable,
     },
     {
       key: "action",
@@ -226,9 +189,17 @@ export default function InventoryClient() {
           value={totalSkus ? `${avgLeadTime.toFixed(1)} days` : "—"}
         />
         <MiniStat
-          label="Reorder Warnings"
-          value={lowStockCount.toString()}
+          label="Total Units in Stock"
+          value={totalSkus ? totalUnits.toLocaleString("en-IN") : "—"}
         />
+      </div>
+
+      <div className="text-[11px] text-zinc-400 bg-zinc-500/5 border border-white/5 rounded-xl px-4 py-3 leading-relaxed">
+        <strong className="text-zinc-300">Stock cover and re-order forecasting are not live yet.</strong>{" "}
+        Both need per-ASIN sales velocity. The nightly storefront sync currently returns
+        aggregate revenue and unit counts only — no ASIN breakdown — so there is no honest
+        way to compute days-of-cover per SKU. These columns will populate once order-item
+        level sync is connected.
       </div>
 
       <div className="glass-panel p-5 bg-white border border-black/5 rounded-xl shadow-sm space-y-4">
