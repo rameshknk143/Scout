@@ -126,7 +126,7 @@ export default function CompetitorAnalysisClient() {
         <div className="bg-[#111625]/20 border border-white/5 rounded-xl shadow-sm overflow-x-auto">
           {isPending ? (
             <div className="flex flex-col items-center justify-center py-24 space-y-3">
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-6 h-6 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
               <div className="text-xs text-zinc-500 font-semibold">Updating comparison matrix...</div>
             </div>
           ) : (
@@ -135,7 +135,7 @@ export default function CompetitorAnalysisClient() {
                 <tr className="bg-[#181d2c]/50 border-b border-white/5">
                   <th className="p-4 font-bold text-zinc-400 uppercase tracking-wider w-1/5">Niche Metric</th>
                   {results.map((r, i) => (
-                    <th key={i} className="p-4 font-bold text-white border-l border-white/5 w-1/5">
+                    <th key={i} className="p-4 font-bold text-zinc-900 border-l border-black/5 w-1/5">
                       <span className="font-mono text-xs text-zinc-300 bg-[#181d2c] px-1.5 py-0.5 rounded border border-white/5">
                         {r.asin}
                       </span>
@@ -148,7 +148,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Title</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5 align-top text-white text-xs leading-normal font-sans">
+                    <td key={i} className="p-4 border-l border-black/5 align-top text-zinc-900 text-xs leading-normal font-sans">
                       {r.found ? (
                         <span className="line-clamp-3" title={r.title || ""}>
                           {r.title || "(no title found)"}
@@ -164,7 +164,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Buy Box Price</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5 text-white font-bold text-sm font-mono">
+                    <td key={i} className="p-4 border-l border-black/5 text-zinc-900 font-bold text-sm font-mono">
                       {r.found && r.price != null ? `₹${r.price.toLocaleString("en-IN")}` : "—"}
                     </td>
                   ))}
@@ -174,7 +174,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">BSR Rank</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5 font-bold font-mono text-white">
+                    <td key={i} className="p-4 border-l border-black/5 font-bold font-mono text-zinc-900">
                       {r.found && r.rank != null ? `#${r.rank.toLocaleString("en-IN")}` : "—"}
                     </td>
                   ))}
@@ -184,7 +184,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Reviews</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5 font-mono text-white">
+                    <td key={i} className="p-4 border-l border-black/5 font-mono text-zinc-900">
                       {r.found && r.review_count != null ? (
                         <div className="flex items-center gap-1.5">
                           <span>{r.review_count.toLocaleString("en-IN")}</span>
@@ -205,7 +205,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Opportunity Score</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5 font-black text-lg text-white font-mono">
+                    <td key={i} className="p-4 border-l border-black/5 font-black text-lg text-zinc-900 font-mono">
                       {r.found ? `${r.score} / 100` : "—"}
                     </td>
                   ))}
@@ -215,7 +215,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Verdict</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5">
+                    <td key={i} className="p-4 border-l border-black/5">
                       {r.found ? <VerdictBadge verdict={r.verdict} /> : "—"}
                     </td>
                   ))}
@@ -225,7 +225,7 @@ export default function CompetitorAnalysisClient() {
                 <tr>
                   <td className="p-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider bg-transparent">Quick Actions</td>
                   {results.map((r, i) => (
-                    <td key={i} className="p-4 border-l border-white/5">
+                    <td key={i} className="p-4 border-l border-black/5">
                       {r.found ? (
                         <div className="flex flex-col gap-1.5">
                           <Link
@@ -236,7 +236,7 @@ export default function CompetitorAnalysisClient() {
                           </Link>
                           <Link
                             href={`/dashboard/listing?asin=${r.asin}`}
-                            className="text-[10px] font-bold text-center text-zinc-400 bg-transparent hover:text-white px-2 py-1 rounded transition-colors border border-white/10"
+                            className="text-[10px] font-bold text-center text-zinc-400 bg-transparent hover:text-zinc-900 px-2 py-1 rounded transition-colors border border-black/10"
                           >
                             Analyze Copy
                           </Link>

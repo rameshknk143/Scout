@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import MarketplaceIndicator from "@/components/MarketplaceIndicator";
 import { SetupWizard } from "@/components/SetupWizard";
@@ -9,11 +10,20 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex flex-col md:flex-row min-h-screen relative bg-bg text-text">
-      <Sidebar />
-      
+      {/* Sidebar reads ?tab= to highlight the active entry, so it needs a
+          suspense boundary or `next build` fails prerendering this layout. */}
+      <Suspense fallback={<div className="w-64 shrink-0 border-r border-black/5 bg-white" />}>
+        <Sidebar />
+      </Suspense>
+
       <main className="flex-1 min-w-0 flex flex-col relative z-10">
         {/* Global Top Bar */}
-        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-3 bg-white/85 backdrop-blur-md border-b border-black/5">
+        {/* The bar itself spans the full width so its border and blur reach the
+            viewport edges, but its contents sit on the same max-w-6xl column as
+            the page body below -- otherwise the search box and the page's <h1>
+            start at two different left edges on a wide screen. */}
+        <header className="sticky top-0 z-20 bg-white/85 backdrop-blur-md border-b border-black/5">
+          <div className="flex items-center justify-between gap-4 px-4 md:px-8 py-3 max-w-6xl w-full mx-auto">
           {/* Left: Global Search */}
           <div className="flex items-center gap-4 flex-1 max-w-md">
             <div className="relative w-full">
@@ -55,6 +65,7 @@ export default function DashboardLayout({
                 Ram
               </span>
             </div>
+          </div>
           </div>
         </header>
 

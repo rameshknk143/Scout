@@ -59,7 +59,7 @@ export default function KeywordsClient() {
               onChange={(e) => setSeed(e.target.value)}
               placeholder="e.g. phone case, organic tea, wireless charger"
               required
-              className="input text-white"
+              className="input text-zinc-900"
             />
             <button
               type="submit"
@@ -91,7 +91,7 @@ export default function KeywordsClient() {
                 placeholder="Filter suggestions list..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input py-1.5 text-xs text-white"
+                className="input py-1.5 text-xs text-zinc-900"
               />
             </div>
 
@@ -141,7 +141,7 @@ export default function KeywordsClient() {
                 {
                   key: "keyword",
                   header: "Keyword Suggestion",
-                  cellClassName: "text-white font-bold text-xs",
+                  cellClassName: "text-zinc-900 font-bold text-xs",
                   render: (row) => row.keyword,
                 },
                 {

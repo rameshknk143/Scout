@@ -125,12 +125,12 @@ export default function ListingClient() {
   return (
     <div className="space-y-6">
       {/* Tabs Switcher */}
-      <div className="flex border-b border-white/5">
+      <div className="flex border-b border-black/5">
         <button
           onClick={() => setActiveMode("analyze")}
           className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
             activeMode === "analyze"
-              ? "border-white text-white font-extrabold"
+              ? "border-zinc-900 text-zinc-900 font-extrabold"
               : "border-transparent text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -140,7 +140,7 @@ export default function ListingClient() {
           onClick={() => setActiveMode("scribbles")}
           className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
             activeMode === "scribbles"
-              ? "border-white text-white font-extrabold"
+              ? "border-zinc-900 text-zinc-900 font-extrabold"
               : "border-transparent text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -191,7 +191,7 @@ export default function ListingClient() {
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="text-xs text-muted mb-1 font-mono">{result.asin}</div>
-                  <div className="font-semibold leading-snug text-white">{result.title ?? "(title not found)"}</div>
+                  <div className="font-semibold leading-snug text-zinc-900">{result.title ?? "(title not found)"}</div>
                   <div className="text-xs text-muted mt-1 font-mono">
                     {result.category ?? "unknown category"}
                     {result.price != null && ` · ₹${result.price.toLocaleString("en-IN")}`}
@@ -200,7 +200,7 @@ export default function ListingClient() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-4xl font-extrabold text-white tracking-tight font-mono">{result.score}</div>
+                  <div className="text-4xl font-extrabold text-zinc-900 tracking-tight font-mono">{result.score}</div>
                   <div className="text-xs text-zinc-500 mt-1.5 font-mono">/ 100 Score</div>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function ListingClient() {
                 </div>
               )}
 
-              <div className="pt-3 border-t border-white/5 flex flex-wrap gap-2">
+              <div className="pt-3 border-t border-black/5 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={handleSuggest}
@@ -330,7 +330,7 @@ export default function ListingClient() {
 
           {result && result.peers.length > 0 && (
             <Card>
-              <div className="text-sm font-semibold mb-3 text-white">
+              <div className="text-sm font-semibold mb-3 text-zinc-900">
                 Category peers — top {result.peers.length} in {result.category ?? "this category"}
               </div>
               <Table
@@ -473,19 +473,19 @@ const peerColumns: Column<ListingPeer>[] = [
   {
     key: "title",
     header: "Product",
-    cellClassName: "text-white font-semibold",
+    cellClassName: "text-zinc-900 font-semibold",
     render: (p) => (
       <span className="max-w-sm truncate block" title={p.title ?? p.asin}>
         {p.title ?? p.asin}
       </span>
     ),
   },
-  { key: "price", header: "Price", render: (p) => (p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—"), cellClassName: "font-mono text-white" },
-  { key: "rating", header: "Rating", render: (p) => `${p.rating ?? "—"} ⭐`, cellClassName: "font-mono text-white" },
+  { key: "price", header: "Price", render: (p) => (p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—"), cellClassName: "font-mono text-zinc-900" },
+  { key: "rating", header: "Rating", render: (p) => `${p.rating ?? "—"} ⭐`, cellClassName: "font-mono text-zinc-900" },
   {
     key: "review_count",
     header: "Reviews",
-    cellClassName: "font-mono text-white",
+    cellClassName: "font-mono text-zinc-900",
     render: (p) => p.review_count?.toLocaleString("en-IN") ?? "—",
   },
 ];

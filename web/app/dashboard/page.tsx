@@ -19,7 +19,11 @@ async function TrendRadarData() {
     api.digest(),
     api.watchlist().catch(() => ({ validations: [] })),
     api.alerts().catch(() => ({ alerts: [] })),
-    getAmazonStatus().catch(() => ({ connected: false, accounts: [] })),
+    // A failed status check is not the same as "no account linked". Swallowing
+    // the error into connected:false made the dashboard tell the user to go
+    // link a storefront they had already linked, whenever the API was cold or
+    // down. Flag the difference so the UI can say which one happened.
+    getAmazonStatus().catch(() => ({ connected: false, accounts: [], unavailable: true })),
     getStorefrontSalesData().catch(() => ({ metrics: [] })),
     getStorefrontOrdersData().catch(() => ({ orders: [] })),
   ]);
@@ -29,6 +33,7 @@ async function TrendRadarData() {
       watchlist={watchlistData.validations}
       alerts={alertsData.alerts}
       connected={status.connected}
+      statusUnavailable={"unavailable" in status && status.unavailable === true}
       accounts={status.accounts || []}
       initialMetrics={salesRes.metrics || []}
       initialOrders={ordersRes.orders || []}

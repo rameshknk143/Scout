@@ -121,7 +121,7 @@ export default function ProductDatabaseClient() {
       render: (p: SnapshotRow) => (
         <span
           onClick={() => handleRowClick(p)}
-          className="font-medium text-white hover:text-white hover:underline cursor-pointer max-w-md truncate block"
+          className="font-medium text-zinc-900 hover:text-blue-600 hover:underline cursor-pointer max-w-md truncate block"
           title={p.title || p.asin}
         >
           {p.title || "(no title)"}
@@ -139,7 +139,7 @@ export default function ProductDatabaseClient() {
       key: "rank",
       header: "BSR Rank",
       render: (p: SnapshotRow) => (
-        <span className="font-semibold text-white font-mono">
+        <span className="font-semibold text-zinc-900 font-mono">
           {p.rank != null ? `#${p.rank.toLocaleString("en-IN")}` : "—"}
         </span>
       ),
@@ -148,7 +148,7 @@ export default function ProductDatabaseClient() {
       key: "price",
       header: "Price",
       render: (p: SnapshotRow) => (
-        <span className="font-semibold text-white font-mono">
+        <span className="font-semibold text-zinc-900 font-mono">
           {p.price != null ? `₹${p.price.toLocaleString("en-IN")}` : "—"}
         </span>
       ),
@@ -232,7 +232,7 @@ export default function ProductDatabaseClient() {
         </div>
 
         {/* Detailed limits sliders / numeric overrides */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-white/5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-black/5">
           <div>
             <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">
               Min Price (₹)
@@ -313,7 +313,7 @@ export default function ProductDatabaseClient() {
 
         {/* Pagination controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-white/5">
+          <div className="flex items-center justify-between pt-4 border-t border-black/5">
             <button
               onClick={() => setOffset(Math.max(0, offset - limit))}
               disabled={offset === 0 || isPending}

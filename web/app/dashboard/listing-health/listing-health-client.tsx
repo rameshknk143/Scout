@@ -51,7 +51,7 @@ export default function ListingHealthClient() {
       key: "title",
       header: "Product Title",
       render: (p: AuditedProduct) => (
-        <span className="font-medium text-white max-w-sm truncate block" title={p.title}>
+        <span className="font-medium text-zinc-900 max-w-sm truncate block" title={p.title}>
           {p.title}
         </span>
       ),
@@ -69,7 +69,7 @@ export default function ListingHealthClient() {
               style={{ width: `${p.score}%` }}
             />
           </div>
-          <span className="font-bold text-white shrink-0 font-mono">{p.score}%</span>
+          <span className="font-bold text-zinc-900 shrink-0 font-mono">{p.score}%</span>
         </div>
       ),
     },

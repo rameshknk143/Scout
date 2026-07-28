@@ -44,7 +44,7 @@ export default function MetricCard({
       </div>
 
       <div className="mt-2 flex items-baseline justify-between gap-2">
-        <span className="text-xl font-bold tracking-tight text-white font-mono">
+        <span className="text-xl font-bold tracking-tight text-zinc-900 font-mono">
           {value}
         </span>
 

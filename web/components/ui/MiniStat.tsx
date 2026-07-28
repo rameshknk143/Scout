@@ -13,7 +13,7 @@ export default function MiniStat({
   value: ReactNode;
 }) {
   return (
-    <div className="rounded-lg bg-white/5 px-3 py-2.5">
+    <div className="rounded-lg bg-zinc-50 border border-black/5 px-3 py-2.5">
       <div className="text-xs text-muted">{label}</div>
       <div className="text-lg font-semibold">{value}</div>
     </div>

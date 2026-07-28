@@ -26,7 +26,7 @@ export default function Tabs({
 }) {
   return (
     <div>
-      <div className="flex gap-1 mb-4 border-b border-white/5">
+      <div className="flex gap-1 mb-4 border-b border-black/5">
         {tabs.map(({ key, label }) => (
           <button
             key={key}

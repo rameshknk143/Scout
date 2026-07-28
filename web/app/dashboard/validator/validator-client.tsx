@@ -173,7 +173,7 @@ export default function ValidatorClient() {
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
               <div className="text-xs text-muted mb-1 font-mono">{result.asin}</div>
-              <div className="font-semibold leading-snug text-white">{result.title}</div>
+              <div className="font-semibold leading-snug text-zinc-900">{result.title}</div>
               <div className="text-xs text-muted mt-1 font-mono">
                 {result.category ?? "unknown category"} · sell ₹
                 {result.sell_price?.toLocaleString("en-IN")} · buy ₹
@@ -182,7 +182,7 @@ export default function ValidatorClient() {
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-4xl font-extrabold text-white tracking-tight font-mono">
+              <div className="text-4xl font-extrabold text-zinc-900 tracking-tight font-mono">
                 {result.score}
               </div>
               <div className="mt-1.5">
@@ -234,7 +234,7 @@ function Slider({
     <div>
       <div className="flex items-baseline justify-between mb-1">
         <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{label}</span>
-        <span className="text-white font-extrabold font-mono">{value}/5</span>
+        <span className="text-zinc-900 font-extrabold font-mono">{value}/5</span>
       </div>
       <input
         type="range"

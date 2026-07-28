@@ -50,23 +50,22 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
   };
 
   const handleRowClick = (row: Alert) => {
-    // Extract numerical price if present in message or detail
-    const priceMatch = row.message.match(/₹\s?(\d+)/);
-    const estimatedPrice = priceMatch ? Number(priceMatch[1]) : 299;
+    // An alert row carries only the ASIN, title, category and a message. It
+    // has no score, margin, rating or review count -- this used to invent all
+    // of them (score 75, buy price = 60% of a price scraped out of the alert
+    // text, rating 4.2, 95 reviews) and present them as this product's real
+    // figures. Pass through only what the alert actually knows; the drawer
+    // renders "—" for the rest.
+    const priceMatch = row.message.match(/₹\s?([\d,]+)/);
+    const price = priceMatch ? Number(priceMatch[1].replace(/,/g, "")) : undefined;
 
     setSelectedProduct({
       asin: row.asin,
-      title: row.title || "Unknown Product",
-      price: estimatedPrice,
-      score: 75, // default/fallback score
-      verdict: "WATCH" as const,
+      title: row.title || row.asin,
       category: row.category,
+      price,
+      sell_price: price,
       notes: "",
-      buy_price: estimatedPrice * 0.6,
-      sell_price: estimatedPrice,
-      net_margin: 30.0,
-      rating: 4.2,
-      reviews: 95,
     });
     setIsDrawerOpen(true);
   };

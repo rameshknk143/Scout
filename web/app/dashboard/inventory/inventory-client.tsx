@@ -92,7 +92,7 @@ export default function InventoryClient() {
       key: "title",
       header: "Product / Niche",
       render: (p: MyProduct) => (
-        <span className="font-medium text-white max-w-xs truncate block" title={p.title || p.asin}>
+        <span className="font-medium text-zinc-900 max-w-xs truncate block" title={p.title || p.asin}>
           {p.title || "—"}
         </span>
       ),
@@ -112,7 +112,7 @@ export default function InventoryClient() {
           );
         }
         return (
-          <span className="font-bold font-mono text-white">
+          <span className="font-bold font-mono text-zinc-900">
             {p.current_stock} units
           </span>
         );
@@ -194,7 +194,7 @@ export default function InventoryClient() {
         />
       </div>
 
-      <div className="text-[11px] text-zinc-400 bg-zinc-500/5 border border-white/5 rounded-xl px-4 py-3 leading-relaxed">
+      <div className="text-[11px] text-zinc-400 bg-zinc-500/5 border border-black/5 rounded-xl px-4 py-3 leading-relaxed">
         <strong className="text-zinc-300">Stock cover and re-order forecasting are not live yet.</strong>{" "}
         Both need per-ASIN sales velocity. The nightly storefront sync currently returns
         aggregate revenue and unit counts only — no ASIN breakdown — so there is no honest

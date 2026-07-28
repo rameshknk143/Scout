@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "@/lib/auth-actions";
@@ -19,8 +19,13 @@ type SidebarSection = {
   items: SidebarItem[];
 };
 
+// Dashboard tabs that have their own sidebar entry. While one of these is the
+// active tab, the plain "Dashboard" entry should not also claim the highlight.
+const TAB_OWNED_BY_ITEM = ["storefront"];
+
 export default function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [selectedMarketplace, setSelectedMarketplace] = useState("amazon.in");
   const [sellerTag, setSellerTag] = useState("Private Label");
@@ -291,7 +296,17 @@ export default function Sidebar() {
               </h3>
               <div className="space-y-0.5">
                 {section.items.map((item) => {
-                  const active = pathname === item.href;
+                  // Items like "/dashboard?tab=storefront" carry a query string,
+                  // which `pathname` never includes -- comparing the raw href
+                  // meant those entries could never light up, and "Dashboard"
+                  // stayed highlighted instead. Compare both halves.
+                  const [itemPath, itemQuery] = item.href.split("?");
+                  const activeTab = searchParams.get("tab") ?? "";
+                  const active =
+                    pathname === itemPath &&
+                    (itemQuery
+                      ? itemQuery === `tab=${activeTab}`
+                      : !TAB_OWNED_BY_ITEM.includes(activeTab));
                   if (item.disabled) {
                     return (
                       <div
@@ -347,9 +362,18 @@ export default function Sidebar() {
               onChange={(e) => handleMarketplaceChange(e.target.value)}
               className="w-full text-xs font-semibold text-zinc-700 bg-zinc-50 border border-black/10 rounded px-2 py-1.5 focus:outline-none focus:border-zinc-300 cursor-pointer"
             >
-              <option value="amazon.in">🇮🇳 Amazon.in</option>
-              <option value="amazon.com">🇺🇸 Amazon.com</option>
-              <option value="amazon.co.uk">🇬🇧 Amazon.co.uk</option>
+              <option value="amazon.in">🇮🇳 Amazon.in (₹ INR)</option>
+              <option value="amazon.com">🇺🇸 Amazon.com ($ USD)</option>
+              <option value="amazon.co.uk">🇬🇧 Amazon.co.uk (£ GBP)</option>
+              <option value="amazon.de">🇩🇪 Amazon.de (€ EUR)</option>
+              <option value="amazon.fr">🇫🇷 Amazon.fr (€ EUR)</option>
+              <option value="amazon.it">🇮🇹 Amazon.it (€ EUR)</option>
+              <option value="amazon.es">🇪🇸 Amazon.es (€ EUR)</option>
+              <option value="amazon.ca">🇨🇦 Amazon.ca ($ CAD)</option>
+              <option value="amazon.com.au">🇦🇺 Amazon.com.au ($ AUD)</option>
+              <option value="amazon.co.jp">🇯🇵 Amazon.co.jp (¥ JPY)</option>
+              <option value="amazon.com.mx">🇲🇽 Amazon.com.mx ($ MXN)</option>
+              <option value="amazon.ae">🇦🇪 Amazon.ae (AED)</option>
             </select>
           </div>
 
@@ -357,7 +381,7 @@ export default function Sidebar() {
           <div className="flex flex-col gap-1.5 px-2 text-xs font-medium text-zinc-500">
             <button
               onClick={() => window.dispatchEvent(new Event("scoutveda_trigger_setup"))}
-              className="hover:text-emerald-600 flex items-center gap-2 transition-colors cursor-pointer text-left font-medium text-zinc-600 hover:bg-emerald-50/50 py-1 px-1.5 rounded"
+              className="hover:text-emerald-600 flex items-center gap-2 transition-colors cursor-pointer text-left w-full font-medium text-zinc-600 hover:bg-emerald-50/50 py-1.5 px-2 rounded"
             >
               <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -366,22 +390,16 @@ export default function Sidebar() {
               Setup Wizard
             </button>
 
-            <Link href="/dashboard/settings" className="hover:text-zinc-900 flex items-center gap-2 transition-colors py-1 px-1.5">
+            <Link href="/dashboard/settings" className="hover:text-zinc-900 hover:bg-zinc-50 flex items-center gap-2 transition-colors py-1.5 px-2 rounded">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="3" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
               </svg>
               Settings
             </Link>
-            <Link href="#" className="hover:text-zinc-900 flex items-center gap-2 transition-colors">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              Documentation
-            </Link>
             <a
               href="mailto:rameshknk143@gmail.com?subject=ScoutVeda Dashboard Feedback"
-              className="hover:text-zinc-900 flex items-center gap-2 transition-colors"
+              className="hover:text-zinc-900 hover:bg-zinc-50 flex items-center gap-2 transition-colors py-1.5 px-2 rounded"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

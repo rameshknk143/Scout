@@ -72,7 +72,7 @@ export default function ProductDetailDrawer({
           >
             {loading || !product ? (
               <div className="flex flex-col items-center justify-center flex-1 space-y-3">
-                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
                 <div className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">
                   Loading Real-time Metrics...
                 </div>
@@ -80,24 +80,24 @@ export default function ProductDetailDrawer({
             ) : (
               <>
                 {/* Header */}
-                <div className="p-6 border-b border-white/5">
+                <div className="p-6 border-b border-black/5">
                   <div className="flex items-start justify-between">
                     <div>
                       <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest bg-[#1a2236] border border-white/5 px-2 py-0.5 rounded">
                         {product.category || "General"}
                       </span>
-                      <h2 className="text-base font-bold text-white mt-2 line-clamp-2">
+                      <h2 className="text-base font-bold text-zinc-900 mt-2 line-clamp-2">
                         {product.title}
                       </h2>
                       <div className="flex items-center gap-3 mt-1.5 text-xs text-zinc-500 font-semibold font-mono">
-                        <span>ASIN: <strong className="text-white">{product.asin}</strong></span>
+                        <span>ASIN: <strong className="text-zinc-900">{product.asin}</strong></span>
                         <span>•</span>
-                        <span>Marketplace: <strong className="text-white">Amazon.in</strong></span>
+                        <span>Marketplace: <strong className="text-zinc-900">Amazon.in</strong></span>
                       </div>
                     </div>
                     <button
                       onClick={onClose}
-                      className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 cursor-pointer"
+                      className="p-1 rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 cursor-pointer"
                     >
                       ✕
                     </button>
@@ -110,7 +110,7 @@ export default function ProductDetailDrawer({
                     <span className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider">
                       Current Price
                     </span>
-                    <span className="block text-base font-extrabold text-white mt-1 font-mono">
+                    <span className="block text-base font-extrabold text-zinc-900 mt-1 font-mono">
                       ₹{product.price?.toLocaleString("en-IN") || "—"}
                     </span>
                   </div>
@@ -141,7 +141,7 @@ export default function ProductDetailDrawer({
                 </div>
 
                 {/* Tabs Navigation */}
-                <div className="flex border-b border-white/5 px-4">
+                <div className="flex border-b border-black/5 px-4">
                   {(["overview", "trends", "listing", "notes"] as const).map((tab) => (
                     <button
                       key={tab}
@@ -149,7 +149,7 @@ export default function ProductDetailDrawer({
                       className={`py-3 px-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
                         activeTab === tab
                           ? "border-[#3b82f6] text-[#3b82f6]"
-                          : "border-transparent text-zinc-400 hover:text-white"
+                          : "border-transparent text-zinc-400 hover:text-zinc-900"
                       }`}
                     >
                       {tab}
@@ -171,18 +171,22 @@ export default function ProductDetailDrawer({
                             <span className="block text-[10px] text-zinc-500 font-semibold uppercase">
                               Estimated Monthly Sales
                             </span>
-                            <span className="text-xs font-bold text-white mt-1 block font-mono">
-                              {product.reviews ? Math.ceil(product.reviews * 1.5) : "185"} Units
+                            {/* This was `reviews * 1.5`, falling back to a flat
+                                185 -- a number with no basis in any data we
+                                hold. Amazon does not expose unit velocity on
+                                the public listing, so we cannot compute it. */}
+                            <span className="text-xs font-bold text-zinc-400 mt-1 block font-mono">
+                              Not available
                             </span>
                           </div>
                           <div className="glass-panel p-3.5 bg-[#181d2c]/50">
                             <span className="block text-[10px] text-zinc-500 font-semibold uppercase">
                               Review Rating
                             </span>
-                            <div className="flex items-center gap-1 mt-1 text-xs font-bold text-white font-mono">
-                              ⭐️ {product.rating || "4.2"}
+                            <div className="flex items-center gap-1 mt-1 text-xs font-bold text-zinc-900 font-mono">
+                              ⭐️ {product.rating ?? "—"}
                               <span className="text-[10px] text-zinc-500 font-normal">
-                                ({product.reviews || "120"} reviews)
+                                ({product.reviews != null ? `${product.reviews.toLocaleString("en-IN")} reviews` : "no review data"})
                               </span>
                             </div>
                           </div>
@@ -197,25 +201,34 @@ export default function ProductDetailDrawer({
                         <div className="glass-panel p-4 space-y-2.5 bg-[#181d2c]/20">
                           <div className="flex justify-between text-xs font-medium">
                             <span className="text-zinc-400">Retail Listing Price</span>
-                            <span className="text-white font-semibold font-mono">₹{product.sell_price?.toLocaleString("en-IN")}</span>
+                            <span className="text-zinc-900 font-semibold font-mono">{product.sell_price != null ? `₹${product.sell_price.toLocaleString("en-IN")}` : "—"}</span>
                           </div>
                           <div className="flex justify-between text-xs font-medium">
                             <span className="text-zinc-400">Estimated Supplier Buy Price</span>
-                            <span className="text-white font-semibold font-mono">₹{product.buy_price?.toLocaleString("en-IN") || "—"}</span>
+                            <span className="text-zinc-900 font-semibold font-mono">₹{product.buy_price?.toLocaleString("en-IN") || "—"}</span>
                           </div>
                           <div className="flex justify-between text-xs font-medium">
                             <span className="text-zinc-400">Shipping & Logistics</span>
-                            <span className="text-white font-semibold font-mono">₹{product.shipping_cost?.toLocaleString("en-IN") || "—"}</span>
+                            <span className="text-zinc-900 font-semibold font-mono">₹{product.shipping_cost?.toLocaleString("en-IN") || "—"}</span>
                           </div>
                           <div className="flex justify-between text-xs font-medium">
                             <span className="text-zinc-400">Amazon Referral & Closing Fees</span>
-                            <span className="text-white font-semibold font-mono">₹{product.fees?.toLocaleString("en-IN") || "—"}</span>
+                            <span className="text-zinc-900 font-semibold font-mono">₹{product.fees?.toLocaleString("en-IN") || "—"}</span>
                           </div>
                           <div className="h-px bg-white/5 my-1" />
                           <div className="flex justify-between text-xs font-bold">
                             <span className="text-zinc-300">Estimated Profit per Unit</span>
-                            <span className="text-emerald-400 font-mono">
-                              ₹{((product.sell_price || product.price || 0) - (product.buy_price || 0) - (product.shipping_cost || 0) - (product.fees || 0)).toFixed(1)}
+                            {/* Treating an unknown buy price / shipping / fees
+                                as ₹0 turned "profit per unit" into "the whole
+                                retail price". Only compute it when we actually
+                                have a cost side to subtract. */}
+                            <span className="text-emerald-600 font-mono">
+                              {(() => {
+                                const revenue = product.sell_price ?? product.price;
+                                if (revenue == null || product.buy_price == null) return "—";
+                                const profit = revenue - product.buy_price - (product.shipping_cost ?? 0) - (product.fees ?? 0);
+                                return `₹${profit.toFixed(1)}`;
+                              })()}
                             </span>
                           </div>
                         </div>

@@ -33,6 +33,9 @@ interface TrendRadarClientProps {
   watchlist: Validation[];
   alerts: Alert[];
   connected: boolean;
+  /** True when the connection check itself failed, as opposed to genuinely
+   *  having no linked account. These need different messages. */
+  statusUnavailable?: boolean;
   accounts: ConnectedAccount[];
   initialMetrics: StorefrontSalesMetric[];
   initialOrders: StorefrontOrder[];
@@ -43,6 +46,7 @@ export default function TrendRadarClient({
   watchlist: watchlistRaw = [],
   alerts = [],
   connected,
+  statusUnavailable = false,
   accounts = [],
   initialMetrics = [],
   initialOrders = [],
@@ -380,14 +384,14 @@ export default function TrendRadarClient({
       </div>
 
       {/* 3. Primary Dashboard Tabs System */}
-      <div className="border-b border-white/5 flex items-center justify-between">
+      <div className="border-b border-black/5 flex items-center justify-between">
         <div className="flex gap-4">
           <button
             onClick={() => setActiveDashboardTab("watchlist")}
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "watchlist"
                 ? "border-[#3b82f6] text-[#3b82f6]"
-                : "border-transparent text-zinc-400 hover:text-white"
+                : "border-transparent text-zinc-400 hover:text-zinc-900"
             }`}
           >
             📋 Catalog & Watchlist
@@ -397,7 +401,7 @@ export default function TrendRadarClient({
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "radar"
                 ? "border-[#3b82f6] text-[#3b82f6]"
-                : "border-transparent text-zinc-400 hover:text-white"
+                : "border-transparent text-zinc-400 hover:text-zinc-900"
             }`}
           >
             ⚡ Business Performance & Radar
@@ -407,7 +411,7 @@ export default function TrendRadarClient({
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "bestsellers"
                 ? "border-[#3b82f6] text-[#3b82f6]"
-                : "border-transparent text-zinc-400 hover:text-white"
+                : "border-transparent text-zinc-400 hover:text-zinc-900"
             }`}
           >
             🔭 Bestsellers Category Explorer
@@ -417,7 +421,7 @@ export default function TrendRadarClient({
             className={`py-3 px-1 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeDashboardTab === "storefront"
                 ? "border-[#3b82f6] text-[#3b82f6]"
-                : "border-transparent text-zinc-400 hover:text-white"
+                : "border-transparent text-zinc-400 hover:text-zinc-900"
             }`}
           >
             🏪 Storefront Performance
@@ -501,7 +505,7 @@ export default function TrendRadarClient({
                   {
                     key: "title",
                     header: "Product Title",
-                    cellClassName: "max-w-md truncate text-white font-medium",
+                    cellClassName: "max-w-md truncate text-zinc-900 font-medium",
                     render: (row) => row.title || "Unresolved Product Title",
                   },
                   {
@@ -528,7 +532,7 @@ export default function TrendRadarClient({
                   {
                     key: "buy_price",
                     header: "Buy Price",
-                    cellClassName: "text-white font-bold font-mono",
+                    cellClassName: "text-zinc-900 font-bold font-mono",
                     render: (row) => `₹${row.buy_price}`,
                   },
                   {
@@ -703,7 +707,7 @@ export default function TrendRadarClient({
                     {
                       key: "price",
                       header: "Price",
-                      cellClassName: "font-bold text-white font-mono",
+                      cellClassName: "font-bold text-zinc-900 font-mono",
                       render: (p) => (p.price ? `₹${p.price}` : "—"),
                     },
                     {
@@ -813,7 +817,7 @@ export default function TrendRadarClient({
                     {
                       key: "num_categories",
                       header: "Featured Count",
-                      cellClassName: "font-bold text-white font-mono",
+                      cellClassName: "font-bold text-zinc-900 font-mono",
                       render: (p) => p.num_categories,
                     },
                     {
@@ -840,7 +844,18 @@ export default function TrendRadarClient({
 
         {activeDashboardTab === "storefront" && (
           <div className="space-y-6">
-            {!connected ? (
+            {statusUnavailable ? (
+              <div className="glass-panel p-8 text-center text-zinc-500 text-sm flex flex-col items-center justify-center space-y-3 bg-white border border-black/5">
+                <div className="text-3xl">⚠️</div>
+                <p className="font-semibold text-zinc-700">
+                  Couldn&apos;t reach the ScoutVeda API to check your Amazon connection.
+                </p>
+                <p className="text-xs">
+                  This does not mean your account is unlinked — we simply could not
+                  confirm it. The API may be cold-starting; reload in a few seconds.
+                </p>
+              </div>
+            ) : !connected ? (
               <div className="glass-panel p-8 text-center text-zinc-500 text-sm flex flex-col items-center justify-center space-y-4 bg-white border border-black/5">
                 <div className="text-3xl">🔌</div>
                 <p>No Amazon account linked. Please link your storefront in Settings first to enable sales and orders tracking.</p>
