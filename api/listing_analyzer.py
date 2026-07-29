@@ -68,17 +68,37 @@ class ListingFetchError(Exception):
     pass
 
 
+MARKETPLACE_CONFIGS = {
+    "A21TJRUUN4KGV": ("in", "en-IN,en;q=0.9"),
+    "amazon.in": ("in", "en-IN,en;q=0.9"),
+    "ATVPDKIKX0DER": ("com", "en-US,en;q=0.9"),
+    "amazon.com": ("com", "en-US,en;q=0.9"),
+    "A1F83G8C2ARO7P": ("co.uk", "en-GB,en;q=0.9"),
+    "amazon.co.uk": ("co.uk", "en-GB,en;q=0.9"),
+    "A1PA6795UKMFR9": ("de", "de-DE,de;q=0.9,en;q=0.8"),
+    "amazon.de": ("de", "de-DE,de;q=0.9,en;q=0.8"),
+    "A13V1IB3VIYZZH": ("fr", "fr-FR,fr;q=0.9,en;q=0.8"),
+    "amazon.fr": ("fr", "fr-FR,fr;q=0.9,en;q=0.8"),
+    "APJ6JRA9NG5V4": ("it", "it-IT,it;q=0.9,en;q=0.8"),
+    "amazon.it": ("it", "it-IT,it;q=0.9,en;q=0.8"),
+    "A1RKKUPIHCS9HS": ("es", "es-ES,es;q=0.9,en;q=0.8"),
+    "amazon.es": ("es", "es-ES,es;q=0.9,en;q=0.8"),
+    "A2EUQ1WTGCTBG2": ("ca", "en-CA,en;q=0.9"),
+    "amazon.ca": ("ca", "en-CA,en;q=0.9"),
+    "A39IBJ37TRP1C6": ("com.au", "en-AU,en;q=0.9"),
+    "amazon.com.au": ("com.au", "en-AU,en;q=0.9"),
+    "A1VC38T7YXB528": ("co.jp", "ja-JP,ja;q=0.9,en;q=0.8"),
+    "amazon.co.jp": ("co.jp", "ja-JP,ja;q=0.9,en;q=0.8"),
+    "A1AM78C64UM0Y8": ("com.mx", "es-MX,es;q=0.9,en;q=0.8"),
+    "amazon.com.mx": ("com.mx", "es-MX,es;q=0.9,en;q=0.8"),
+    "A2VIGQ35RCS4UG": ("ae", "ar-AE,en;q=0.9"),
+    "amazon.ae": ("ae", "ar-AE,en;q=0.9"),
+}
+
+
 def fetch_detail_page(asin, marketplace_id=None):
-    # Determine the TLD and Accept-Language based on marketplace_id
-    tld = "in"
-    lang = "en-IN,en;q=0.9"
-    
-    if marketplace_id == "ATVPDKIKX0DER": # USA
-        tld = "com"
-        lang = "en-US,en;q=0.9"
-    elif marketplace_id == "A1F83G8C2ARO7P": # UK
-        tld = "co.uk"
-        lang = "en-GB,en;q=0.9"
+    # Determine the TLD and Accept-Language based on marketplace_id or domain
+    tld, lang = MARKETPLACE_CONFIGS.get(marketplace_id, ("in", "en-IN,en;q=0.9"))
         
     desktop_url = f"https://www.amazon.{tld}/dp/{{asin}}"
     mobile_url = f"https://www.amazon.{tld}/gp/aw/d/{{asin}}"
@@ -115,10 +135,6 @@ def _clean_text(raw):
 
 
 def parse_listing(page_html):
-    # Title marker differs between the mobile page (<span id="title">,
-    # tried first since that's the page fetched first) and the desktop page
-    # (id="productTitle") -- try both rather than assuming which one this
-    # HTML came from.
     title = None
     for pattern in (r'<span id="title"[^>]*>\s*(.*?)\s*</span>', r'id="productTitle"[^>]*>\s*(.*?)\s*</span>'):
         m = re.search(pattern, page_html, re.S)
@@ -134,15 +150,15 @@ def parse_listing(page_html):
             if text:
                 bullets.append(text)
 
-    # data-num-of-images is the mobile page's own image count attribute;
-    # hiRes-URL counting is the desktop-page fallback.
-    m = re.search(r'data-num-of-images="(\d+)"', page_html)
-    image_count = int(m.group(1)) if m else len(set(re.findall(r'"hiRes":"([^"]+)"', page_html)))
+    image_count = int(m.group(1)) if (m := re.search(r'data-num-of-images="(\d+)"', page_html)) else len(set(re.findall(r'"hiRes":"([^"]+)"', page_html)))
 
     rating = None
-    m = re.search(r"([\d.]+) out of 5 stars", page_html)
+    m = re.search(r"([\d.,]+)\s+(?:out of|von|sur|de|di)\s+5", page_html, re.I)
     if m:
-        rating = float(m.group(1))
+        try:
+            rating = float(m.group(1).replace(",", "."))
+        except ValueError:
+            rating = None
 
     return {
         "title": title,

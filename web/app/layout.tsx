@@ -4,6 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "ScoutVeda",
   description: "Find products worth sourcing — KNK Enterprises",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

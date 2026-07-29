@@ -298,3 +298,23 @@ export async function getStorefrontOrdersData() {
   await requireSession();
   return api.storefrontOrders();
 }
+
+export async function getSaasAuditLogs() {
+  await requireSession();
+  return api.saasAuditLogs();
+}
+
+export async function getSaasOrgMembers() {
+  await requireSession();
+  return api.saasOrgMembers();
+}
+
+export async function addSaasOrgMember(body: { email: string; role: string; name?: string }) {
+  await requireSession();
+  return api.addSaasOrgMember(body);
+}
+
+export async function getPpcAnalytics() {
+  await requireSession();
+  return api.ppcAnalytics();
+}

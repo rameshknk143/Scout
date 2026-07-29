@@ -431,6 +431,17 @@ export const api = {
       {},
       { revalidate: 60, tags: ["storefront-status"] }
     ),
+  saasAuditLogs: () =>
+    request<{ logs: any[] }>("/saas/audit-logs", {}, { revalidate: 0 }),
+  saasOrgMembers: () =>
+    request<{ members: any[] }>("/saas/org-members", {}, { revalidate: 0 }),
+  addSaasOrgMember: (body: { email: string; role: string; name?: string }) =>
+    request<{ ok: boolean }>("/saas/org-members", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  ppcAnalytics: () =>
+    request<any>("/analytics/ppc", {}, { revalidate: 60 }),
 };
 
 export type StorefrontSalesMetric = {

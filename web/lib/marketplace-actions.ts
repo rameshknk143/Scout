@@ -2,20 +2,28 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { MARKETPLACES, type MarketplaceDomain } from "./marketplaces";
+import { MARKETPLACES, DEFAULT_MARKETPLACE_ID } from "./marketplaces";
 
-export async function setMarketplacePreference(domain: string) {
-  if (!(domain in MARKETPLACES)) {
-    throw new Error("Invalid marketplace");
+export async function setMarketplacePreference(val: string) {
+  let mktId: string = DEFAULT_MARKETPLACE_ID;
+
+  if (val in MARKETPLACES) {
+    mktId = MARKETPLACES[val as keyof typeof MARKETPLACES].id;
+  } else {
+    const found = Object.values(MARKETPLACES).find((m) => m.id === val);
+    if (found) {
+      mktId = found.id;
+    } else {
+      mktId = val;
+    }
   }
-  
-  const mkt = MARKETPLACES[domain as MarketplaceDomain];
+
   const cookieStore = await cookies();
-  
+
   // Set the cookie securely
   cookieStore.set({
     name: "scout_marketplace",
-    value: mkt.id,
+    value: mktId,
     path: "/",
     maxAge: 31536000, // 1 year
     sameSite: "lax",

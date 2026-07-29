@@ -4,14 +4,29 @@ import requests
 from datetime import datetime, timedelta, timezone
 import db
 
-# India (A21TJRUUN4KGV) is served by Amazon's EU region endpoint, NOT FE.
-# Getting this wrong returns 403 "marketplaces not valid for region" on every call.
 MARKETPLACE_ENDPOINTS = {
-    "A21TJRUUN4KGV": "https://sellingpartnerapi-eu.amazon.com",  # India (EU region)
-    "ATVPDKIKX0DER": "https://sellingpartnerapi-na.amazon.com",  # USA (NA region)
-    "A1F83G8C2ARO7P": "https://sellingpartnerapi-eu.amazon.com",  # UK (EU region)
+    # North America Region (NA)
+    "ATVPDKIKX0DER": "https://sellingpartnerapi-na.amazon.com",  # USA
+    "A2EUQ1WTGCTBG2": "https://sellingpartnerapi-na.amazon.com",  # Canada
+    "A1AM78C64UM0Y8": "https://sellingpartnerapi-na.amazon.com",  # Mexico
+    "A2Q3Y263D00KWC": "https://sellingpartnerapi-na.amazon.com",  # Brazil
+    # Europe Region (EU)
+    "A21TJRUUN4KGV": "https://sellingpartnerapi-eu.amazon.com",  # India
+    "A1F83G8C2ARO7P": "https://sellingpartnerapi-eu.amazon.com",  # UK
+    "A1PA6795UKMFR9": "https://sellingpartnerapi-eu.amazon.com",  # Germany
+    "A13V1IB3VIYZZH": "https://sellingpartnerapi-eu.amazon.com",  # France
+    "APJ6JRA9NG5V4": "https://sellingpartnerapi-eu.amazon.com",  # Italy
+    "A1RKKUPIHCS9HS": "https://sellingpartnerapi-eu.amazon.com",  # Spain
+    "A1805IZSGTT6HS": "https://sellingpartnerapi-eu.amazon.com",  # Netherlands
+    "A2NODRKZP88ZB9": "https://sellingpartnerapi-eu.amazon.com",  # Sweden
+    "A33AVAJ2PDY3EV": "https://sellingpartnerapi-eu.amazon.com",  # Turkey
+    "A2VIGQ35RCS4UG": "https://sellingpartnerapi-eu.amazon.com",  # UAE
+    # Far East Region (FE)
+    "A1VC38T7YXB528": "https://sellingpartnerapi-fe.amazon.com",  # Japan
+    "A39IBJ37TRP1C6": "https://sellingpartnerapi-fe.amazon.com",  # Australia
+    "A19VAU5U5O7RUS": "https://sellingpartnerapi-fe.amazon.com",  # Singapore
 }
-# India defaults to the EU endpoint if an unknown marketplace slips through.
+# Defaults to EU endpoint if an unknown marketplace slips through.
 DEFAULT_ENDPOINT = "https://sellingpartnerapi-eu.amazon.com"
 
 

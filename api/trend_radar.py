@@ -25,7 +25,7 @@ import db
 _digest_cache: dict | None = None
 _digest_cache_ts: float = 0.0
 _digest_lock = threading.Lock()
-DIGEST_TTL_SECONDS = 60
+DIGEST_TTL_SECONDS = 600
 
 
 def _snapshots_df():

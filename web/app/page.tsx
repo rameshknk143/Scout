@@ -5,9 +5,6 @@ import { useState } from "react";
 import Tilt from "@/components/3d/Tilt";
 import BrowserShowcase from "@/components/BrowserShowcase";
 
-/* ScoutVeda public landing page. All copy/data here is marketing-only sample
-   content — it deliberately does NOT touch the real product-research logic. */
-
 function Wordmark() {
   return (
     <Link href="/" className="sv-mark">
@@ -21,11 +18,34 @@ const NAV = [
   { label: "Product Research", href: "#research" },
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how" },
+  { label: "Security", href: "#security" },
   { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export default function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [annualBilling, setAnnualBilling] = useState(true);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const faqs = [
+    {
+      q: "Is it safe? Do you need my Amazon password?",
+      a: "ScoutVeda connects using Amazon's official Selling Partner API (SP-API) via OAuth 2.0. We never see or store your Amazon password. You approve read-only access directly on Amazon's official site.",
+    },
+    {
+      q: "Can Amazon suspend my seller account for connecting?",
+      a: "No. ScoutVeda uses standard Amazon LWA read-only scopes. We do not place automated orders or execute restricted inventory operations. Access can be revoked anytime with one click.",
+    },
+    {
+      q: "Can I explore ScoutVeda before connecting my seller account?",
+      a: "Yes! You get full access to our product database, keyword harvester, and profit calculator immediately upon sign up. Connecting your Seller Central account is an optional upgrade to unlock live storefront sales sync.",
+    },
+    {
+      q: "What data does ScoutVeda sync from my storefront?",
+      a: "We sync order metrics, sales revenue totals, units sold, and inventory health flags over a 14-day rolling period. We never share, sell, or benchmark your private storefront data with third parties.",
+    },
+  ];
 
   return (
     <div className="sv-page">
@@ -45,7 +65,7 @@ export default function Landing() {
           </nav>
           <div className="sv-header-cta">
             <Link href="/login" className="sv-btn sv-btn-ghost sv-hide-sm">Log in</Link>
-            <Link href="/signup" className="sv-btn sv-btn-primary">Start researching</Link>
+            <Link href="/signup" className="sv-btn sv-btn-primary">Start free</Link>
             <button
               className="sv-burger"
               aria-label="Menu"
@@ -70,23 +90,21 @@ export default function Landing() {
       <section className="sv-wrap sv-hero">
         <div className="sv-hero-grid">
           <div>
-            <span className="sv-eyebrow">Amazon product research</span>
-            <h1 className="sv-h1">Find products worth selling.</h1>
+            <span className="sv-eyebrow">The Operating System for Amazon Sellers</span>
+            <h1 className="sv-h1">Run your Amazon business with total confidence.</h1>
             <p className="sv-lede">
-              ScoutVeda helps Amazon resellers research products, understand competition,
-              and make sourcing decisions with confidence.
+              Research products, calculate real net margins, monitor keywords, and sync storefront sales in one secure workspace.
             </p>
             <div className="sv-hero-cta">
-              <Link href="/signup" className="sv-btn sv-btn-primary sv-btn-lg">Start free research</Link>
-              <a href="#how" className="sv-btn sv-btn-ghost sv-btn-lg">See how it works</a>
+              <Link href="/signup" className="sv-btn sv-btn-primary sv-btn-lg">Start Free Research</Link>
+              <a href="#how" className="sv-btn sv-btn-ghost sv-btn-lg">See How It Works</a>
             </div>
-            <div className="sv-hero-trust">
+            <div className="sv-hero-trust flex items-center gap-2 text-xs text-zinc-400 mt-4">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--sv-teal)" strokeWidth="2"><path d="M20 6 9 17l-5-5" /></svg>
-              Independent research platform — not affiliated with Amazon
+              Built on Amazon&apos;s Official SP-API OAuth · Read-only access · Revoke anytime
             </div>
           </div>
 
-          {/* Dashboard preview (marketing visual only) */}
           <HeroPreview />
         </div>
       </section>
@@ -94,16 +112,16 @@ export default function Landing() {
       {/* PROBLEM / VALUE */}
       <section id="research" className="sv-wrap sv-section">
         <div className="sv-section-head">
-          <span className="sv-eyebrow">The problem</span>
-          <h2 className="sv-h2">Product sourcing gets expensive when decisions are guesswork.</h2>
-          <p className="sv-sub">Buying stock on a hunch ties up capital in products that don&apos;t sell. ScoutVeda replaces the guessing with data you can act on.</p>
+          <span className="sv-eyebrow">The Sourcing Challenge</span>
+          <h2 className="sv-h2">Sourcing gets expensive when decisions are guesswork.</h2>
+          <p className="sv-sub">Buying inventory on a hunch ties up capital in slow-moving products. ScoutVeda gives you the exact numbers before you buy.</p>
         </div>
         <div className="sv-value-grid">
           {[
-            { t: "Discover products faster", d: "Surface opportunities across categories instead of scrolling bestseller lists by hand.", i: "search" },
-            { t: "Evaluate competition first", d: "See how entrenched the incumbents are before you commit a rupee to inventory.", i: "shield" },
-            { t: "Estimate profit before sourcing", d: "Model fees, GST, and margin up front so you know the number before you buy.", i: "coin" },
-            { t: "Track demand and trends", d: "Watch how a product is moving — climbing, stable, seasonal, or fading.", i: "trend" },
+            { t: "Discover High-Margin Niche Products", d: "Surface uncrowded opportunities across categories instead of scrolling bestseller lists by hand.", i: "search" },
+            { t: "Evaluate Incumbent Competition", d: "See review depth, price stability, and seller entrenchment before committing a single rupee.", i: "shield" },
+            { t: "Calculate Real FBA Net Profit", d: "Model Amazon Easy Ship, FBA referral fees, GST (18%), and closing fees up front.", i: "coin" },
+            { t: "Track Rank & Sales Trends", d: "Watch product demand velocity — climbing, stable, seasonal, or fading.", i: "trend" },
           ].map((v) => (
             <div key={v.t} className="sv-glass sv-value">
               <div className="ic"><Icon name={v.i} /></div>
@@ -113,113 +131,17 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section id="features" className="sv-wrap sv-section" style={{ paddingTop: 0 }}>
-        <div className="sv-section-head">
-          <span className="sv-eyebrow">Features</span>
-          <h2 className="sv-h2">Everything you need to vet an opportunity.</h2>
-        </div>
-        <div className="bento-grid">
-          {/* Card 1: Opportunity Scoring (Span 4) */}
-          <div className="bento-card bento-col-4 sv-glass p-6 flex flex-col justify-between h-[280px]">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded font-mono">SCORING ENGINE</span>
-              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
-              </svg>
-            </div>
-            <div className="my-auto py-4 flex items-center justify-center">
-              <div className="sv-score-ring" style={{ "--v": 82 } as React.CSSProperties}><span className="text-xl">82</span></div>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Opportunity Scoring</h3>
-              <p className="text-xs text-zinc-400 font-medium mt-1">See which products deserve a closer look, computed across demand metrics instantly.</p>
-            </div>
-          </div>
-
-          {/* Card 2: Market Analysis (Span 8) */}
-          <div className="bento-card bento-col-8 sv-glass p-6 flex flex-col justify-between h-[280px]">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded font-mono">COMPETITION MAP</span>
-              <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
-              </svg>
-            </div>
-            <div className="my-auto py-4 flex items-end justify-center gap-3.5 h-[100px]">
-              {[35, 68, 48, 92, 54, 76, 62].map((val, idx) => (
-                <div key={idx} className="w-6 bg-blue-500 rounded-t-sm" style={{ height: `${val}%` }} />
-              ))}
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Market Analysis</h3>
-              <p className="text-xs text-zinc-400 font-medium mt-1">Deep-dive into competitor pricing, ratings, reviews depth, and listing entrenchment.</p>
-            </div>
-          </div>
-
-          {/* Card 3: Profit Insights (Span 8) */}
-          <div className="bento-card bento-col-8 sv-glass p-6 flex flex-col justify-between h-[280px]">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded font-mono">MARGIN ESTIMATOR</span>
-              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h6M9 13h6M9 17h6" />
-              </svg>
-            </div>
-            <div className="my-auto py-4 flex flex-col justify-center space-y-3 w-full">
-              <div className="flex justify-between items-center text-xs font-mono">
-                <span className="text-zinc-500 font-bold uppercase">Estimated Gross Profit</span>
-                <span className="text-emerald-400 font-bold">31% Margin</span>
-              </div>
-              <div className="w-full bg-white/[0.04] h-2.5 rounded-full overflow-hidden">
-                <div className="bg-gradient-to-r from-emerald-500/70 to-emerald-400 h-full w-[31%]" />
-              </div>
-              <div className="flex justify-between text-[10px] text-zinc-400 font-medium">
-                <span>FBA Fees: ₹184</span>
-                <span>GST (18%): ₹89</span>
-                <span>Closing Fee: ₹25</span>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Profit Insights</h3>
-              <p className="text-xs text-zinc-400 font-medium mt-1">Model Amazon India Easy Ship / FBA referral fees and taxes before buying stock.</p>
-            </div>
-          </div>
-
-          {/* Card 4: Trend Tracking (Span 4) */}
-          <div className="bento-card bento-col-4 sv-glass p-6 flex flex-col justify-between h-[280px]">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded font-mono">TREND RADAR</span>
-              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <div className="my-auto py-4 flex items-center justify-center w-full">
-              <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: "100%", height: 52 }}>
-                <defs><linearGradient id="trend-bento-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--sv-teal)" stopOpacity="0.4" /><stop offset="1" stopColor="var(--sv-teal)" stopOpacity="0" /></linearGradient></defs>
-                <polygon points="0,40 16,36 33,39 50,22 66,28 83,12 100,5 100,40" fill="url(#trend-bento-grad)" />
-                <polyline points="0,40 16,36 33,39 50,22 66,28 83,12 100,5" fill="none" stroke="var(--sv-teal)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">Trend Radar</h3>
-              <p className="text-xs text-zinc-400 font-medium mt-1">Spot rising, stable, seasonal, or fading product niches with historical charts.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS (3-STEP VISUAL DIAGRAM) */}
       <section id="how" className="sv-wrap sv-section" style={{ paddingTop: 0 }}>
         <div className="sv-section-head">
-          <span className="sv-eyebrow">How it works</span>
-          <h2 className="sv-h2">Three steps from question to confident decision.</h2>
+          <span className="sv-eyebrow">How Connection Works</span>
+          <h2 className="sv-h2">Three simple steps to unlock your seller cockpit.</h2>
         </div>
         <div className="sv-steps">
           {[
-            { n: "1", t: "Search", d: "Enter a product, keyword, or ASIN you're curious about." },
-            { n: "2", t: "Review", d: "Read ScoutVeda's research — score, competition, demand, and margin." },
-            { n: "3", t: "Source with confidence", d: "Commit capital knowing the numbers back the decision." },
+            { n: "1", t: "1. Authorize on Amazon", d: "Click 'Connect' on ScoutVeda. You are redirected to Seller Central to log in and approve read-only permissions on Amazon's site." },
+            { n: "2", t: "2. We Sync Read-Only Data", d: "ScoutVeda's 4-wave sync engine securely backfills order metrics, sales totals, and inventory health without touching your password." },
+            { n: "3", t: "3. Actionable Insights", d: "Your personalized dashboard populates with live sales trends, stockout alerts, and AI next actions." },
           ].map((s) => (
             <div key={s.n} className="sv-glass sv-step">
               <div className="sv-step-n">{s.n}</div>
@@ -230,18 +152,138 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section id="pricing" className="sv-wrap">
-        <div className="sv-glass sv-final">
-          <span className="sv-eyebrow">Get started</span>
-          <h2 className="sv-h2" style={{ marginTop: 14 }}>Make every sourcing decision with better data.</h2>
-          <p className="sv-sub" style={{ margin: "14px auto 0", maxWidth: 520 }}>
-            Create your ScoutVeda account and start researching your next opportunity.
-          </p>
-          <div style={{ marginTop: 26, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/signup" className="sv-btn sv-btn-primary sv-btn-lg">Create free account</Link>
-            <Link href="/login" className="sv-btn sv-btn-ghost sv-btn-lg">Log in</Link>
+      {/* DEDICATED SECURITY BLOCK */}
+      <section id="security" className="sv-wrap sv-section" style={{ paddingTop: 0 }}>
+        <div className="sv-glass p-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-md">
+          <div className="max-w-2xl mb-8">
+            <span className="sv-eyebrow text-emerald-400">Trust & Security</span>
+            <h2 className="sv-h2 text-white mt-1">Trust is the product. Enterprise security at every layer.</h2>
+            <p className="sv-sub text-zinc-400 mt-2">
+              We handle your storefront tokens and financial data with the highest security standards.
+            </p>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { title: "Fernet Token Encryption", desc: "Refresh tokens are encrypted at rest using AES-128 Fernet keys." },
+              { title: "OAuth 2.0 Protocol", desc: "Your Amazon password never touches ScoutVeda servers." },
+              { title: "Least-Privilege Scopes", desc: "We request only the minimum read-only permissions needed." },
+              { title: "Instant Revocation", desc: "One-click disconnect deletes stored credentials immediately." },
+            ].map((sec) => (
+              <div key={sec.title} className="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+                <div className="text-xs font-bold text-emerald-400 mb-1">{sec.title}</div>
+                <div className="text-[11px] text-zinc-400 leading-relaxed">{sec.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING SECTION */}
+      <section id="pricing" className="sv-wrap sv-section" style={{ paddingTop: 0 }}>
+        <div className="sv-section-head">
+          <span className="sv-eyebrow">Transparent Pricing</span>
+          <h2 className="sv-h2">Plans that scale with your Amazon business.</h2>
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <span className={`text-xs font-semibold ${!annualBilling ? "text-white" : "text-zinc-500"}`}>Monthly</span>
+            <button
+              onClick={() => setAnnualBilling(!annualBilling)}
+              className="relative w-12 h-6 rounded-full bg-emerald-500/20 p-1 transition-colors border border-emerald-500/40"
+            >
+              <div className={`w-4 h-4 rounded-full bg-emerald-400 transition-transform ${annualBilling ? "translate-x-6" : ""}`} />
+            </button>
+            <span className={`text-xs font-semibold ${annualBilling ? "text-emerald-400" : "text-zinc-500"}`}>
+              Annual <span className="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30">Save 35%</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          {[
+            {
+              name: "Starter",
+              price: annualBilling ? "₹1,499" : "₹2,299",
+              desc: "Perfect for new resellers researching their first products.",
+              features: ["1 Connected Storefront", "100 ASIN Validations/mo", "Basic Margin Calculator", "Daily Keyword Tracking"],
+              cta: "Start Free Trial",
+              popular: false,
+            },
+            {
+              name: "Pro Reseller",
+              price: annualBilling ? "₹2,999" : "₹4,499",
+              desc: "For active Amazon sellers scaling inventory & PPC.",
+              features: ["3 Connected Storefronts", "Unlimited Validations", "FBA Fee & Tax Breakdown", "Real-Time Stockout Alerts", "Competitor Review Miner"],
+              cta: "Get Pro Access",
+              popular: true,
+            },
+            {
+              name: "Agency & Brand",
+              price: annualBilling ? "₹6,999" : "₹9,999",
+              desc: "For agencies managing multiple Amazon seller accounts.",
+              features: ["10 Connected Storefronts", "Multi-Workspace Access", "Custom Export Reports", "Dedicated Account Manager", "API Data Access"],
+              cta: "Contact Sales",
+              popular: false,
+            },
+          ].map((plan) => (
+            <div
+              key={plan.name}
+              className={`sv-glass p-6 rounded-2xl flex flex-col justify-between relative ${
+                plan.popular ? "border-emerald-500/50 bg-emerald-500/[0.06] ring-1 ring-emerald-500/30" : ""
+              }`}
+            >
+              {plan.popular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full">
+                  Most Popular
+                </span>
+              )}
+              <div>
+                <h3 className="text-base font-bold text-white">{plan.name}</h3>
+                <p className="text-xs text-zinc-400 mt-1">{plan.desc}</p>
+                <div className="my-5">
+                  <span className="text-3xl font-extrabold text-white">{plan.price}</span>
+                  <span className="text-xs text-zinc-500 font-medium"> / month</span>
+                </div>
+                <ul className="space-y-2 text-xs text-zinc-300">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2">
+                      <span className="text-emerald-400 font-bold">✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Link
+                href="/signup"
+                className={`sv-btn mt-6 w-full text-center ${plan.popular ? "sv-btn-primary" : "sv-btn-ghost"}`}
+              >
+                {plan.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section id="faq" className="sv-wrap sv-section" style={{ paddingTop: 0 }}>
+        <div className="sv-section-head">
+          <span className="sv-eyebrow">Frequently Asked Questions</span>
+          <h2 className="sv-h2">Answers to your top questions.</h2>
+        </div>
+        <div className="max-w-2xl mx-auto space-y-3 mt-6">
+          {faqs.map((faq, idx) => (
+            <div key={idx} className="sv-glass rounded-xl overflow-hidden border border-white/10">
+              <button
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                className="w-full p-4 text-left font-semibold text-xs text-white flex justify-between items-center"
+              >
+                <span>{faq.q}</span>
+                <span className="text-emerald-400 font-bold">{openFaq === idx ? "−" : "+"}</span>
+              </button>
+              {openFaq === idx && (
+                <div className="px-4 pb-4 text-xs text-zinc-400 leading-relaxed border-t border-white/5 pt-3">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </section>
 
@@ -284,11 +326,10 @@ export default function Landing() {
             <nav className="sv-footer-links" aria-label="Footer">
               <a href="#features">Product</a>
               <a href="#pricing">Pricing</a>
+              <a href="#security">Security</a>
+              <a href="#faq">FAQ</a>
               <a href="#feedback">Feedback</a>
               <a href="mailto:rameshknk143@gmail.com">Support</a>
-              <a href="#">Privacy</a>
-              <a href="#">Terms</a>
-              <a href="mailto:rameshknk143@gmail.com">Contact</a>
             </nav>
           </div>
           <p className="sv-footer-fine">
@@ -301,7 +342,6 @@ export default function Landing() {
   );
 }
 
-/* ---------- Hero dashboard preview (pure visual) ---------- */
 function HeroPreview() {
   return (
     <Tilt className="relative w-full max-w-[620px] mx-auto py-10">

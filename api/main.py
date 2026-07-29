@@ -20,7 +20,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 import pandas as pd
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 
@@ -32,6 +32,7 @@ import google_auth
 import listing_analyzer
 import password_breach
 import profit_calculator
+import ppc_analytics
 import scorer
 import sync_engine
 import trend_radar
@@ -86,9 +87,32 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def startup_event():
+    try:
+        db.init_db()
+        logger.info("Database schema & migrations verified.")
+    except Exception as e:
+        logger.error(f"Failed to run database migrations: {e}")
+
+
 def require_key(x_scout_key: str = Header(default="")):
     if x_scout_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid or missing X-Scout-Key header")
+
+
+def _client_ip(request: Request):
+    """Best-effort client IP for audit records.
+
+    Render terminates TLS at its own proxy and *appends* the real peer address to
+    X-Forwarded-For, so anything a client forges lands to the left of it. The
+    rightmost entry is the only part of that header we can trust. Returns None
+    rather than a placeholder when we genuinely can't tell."""
+    forwarded = request.headers.get("x-forwarded-for", "")
+    parts = [p.strip() for p in forwarded.split(",") if p.strip()]
+    if parts:
+        return parts[-1]
+    return request.client.host if request.client else None
 
 
 def require_user(x_scout_user: str = Header(default="")) -> int:
@@ -830,4 +854,63 @@ def get_storefront_sales(user_id: int = Depends(require_user)):
 def get_storefront_orders(user_id: int = Depends(require_user)):
     orders = db.get_storefront_orders(user_id, limit=20)
     return {"orders": orders}
+
+
+# --- Stage 5 SaaS Controls Endpoints ----------------------------------------
+
+@app.get("/saas/audit-logs", dependencies=[Depends(require_key)])
+def get_audit_logs(user_id: int = Depends(require_user)):
+    logs = db.get_audit_logs(user_id, limit=50)
+    return {"logs": logs}
+
+
+# NOTE: there is deliberately no POST /saas/audit-logs. An audit trail whose
+# actor, action and IP are supplied by the caller records whatever the caller
+# wants it to say, which is worse than no audit trail because the UI presents it
+# as an immutable record. Audit events are written only by the server-side code
+# paths that actually perform the sensitive action (see add_org_member below).
+
+
+@app.get("/saas/org-members", dependencies=[Depends(require_key)])
+def get_org_members(user_id: int = Depends(require_user)):
+    members = db.get_org_members(user_id)
+    return {"members": members}
+
+
+ORG_MEMBER_ROLES = {"Admin", "Analyst", "Viewer"}
+
+
+@app.post("/saas/org-members", dependencies=[Depends(require_key)])
+def add_org_member(body: dict, request: Request, user_id: int = Depends(require_user)):
+    email = body.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+
+    role = body.get("role", "Analyst")
+    if role not in ORG_MEMBER_ROLES:
+        raise HTTPException(status_code=400, detail=f"Role must be one of: {', '.join(sorted(ORG_MEMBER_ROLES))}")
+
+    name = body.get("name") or email.split("@")[0]
+    db.add_org_member(owner_id=user_id, email=email, name=name, role=role)
+
+    # Actor and IP are derived server-side, never taken from the request body,
+    # so an audit row cannot be attributed to someone who didn't perform the action.
+    actor = db.get_user_by_id(user_id)
+    db.log_audit_event(
+        user_id=user_id,
+        actor_email=(actor or {}).get("email") or f"user:{user_id}",
+        action=f"Added Team Member ({role})",
+        target=email,
+        ip_address=_client_ip(request),
+    )
+    return {"ok": True}
+
+
+# --- Stage 6 Depth & Scale PPC Analytics ------------------------------------
+
+@app.get("/analytics/ppc", dependencies=[Depends(require_key)])
+def get_ppc_analytics(user_id: int = Depends(require_user)):
+    validations = db.get_validations(user_id)
+    sales = db.get_storefront_sales_metrics(user_id)
+    return ppc_analytics.calculate_ppc_performance(validations, sales)
 

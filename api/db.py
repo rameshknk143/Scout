@@ -268,6 +268,30 @@ CREATE INDEX IF NOT EXISTS idx_sync_jobs_user ON sync_jobs(user_id);
 CREATE INDEX IF NOT EXISTS idx_sync_jobs_started ON sync_jobs(started_at);
 """
 
+STAGE5_SAAS_MIGRATION = """
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    actor_email TEXT NOT NULL,
+    action TEXT NOT NULL,
+    target TEXT NOT NULL,
+    ip_address TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id, created_at);
+
+CREATE TABLE IF NOT EXISTS org_members (
+    id SERIAL PRIMARY KEY,
+    owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    email TEXT NOT NULL,
+    name TEXT,
+    role TEXT NOT NULL DEFAULT 'Analyst',
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_org_members_owner ON org_members(owner_id);
+"""
+
 
 @contextmanager
 def get_conn():
@@ -298,6 +322,7 @@ def init_db():
             cur.execute(GOOGLE_AUTH_MIGRATION)
             cur.execute(WORKSPACE_MIGRATION)
             cur.execute(SYNC_JOBS_MIGRATION)
+            cur.execute(STAGE5_SAAS_MIGRATION)
 
 
 # --- Workspaces -----------------------------------------------------------
@@ -537,13 +562,12 @@ def get_history(asin):
             return [_clean_title(dict(r)) for r in cur.fetchall()]
 
 
-def get_all_snapshots_df(days: int = 30):
+def get_all_snapshots_df(days: int = 7):
     """Load snapshots for the last `days` calendar days.
 
-    Previously this was an unbounded SELECT * which grows linearly with data.
-    Capping at 30 days is more than enough for trend detection (new entrants
+    Capping at 7 days is more than enough for trend detection (new entrants
     need only the last run; movers need at least 2; cross-category just needs
-    the latest snapshot per ASIN) while keeping the result set small.
+    the latest snapshot per ASIN) while keeping the result set small and fast (< 1s).
     """
     import pandas as pd
     with get_conn() as conn:
@@ -864,22 +888,34 @@ def claim_legacy_data(user_id):
 
 
 # --- Storefront Sync ----------------------------------------------------------
-def save_storefront_sales_metric(user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency):
+def save_storefront_sales_metric(user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, workspace_id=None):
+    """Persist one sales-metric interval.
+
+    workspace_id must be written here. The workspace migration added the column
+    as nullable so the ALTER could run against live data, but this INSERT was
+    never updated to populate it -- so every sync since then wrote a row with a
+    NULL workspace. Nothing broke visibly because the read path still filters on
+    user_id alone, but those rows would silently vanish the moment any query
+    scopes by workspace. Defaults to the user's own workspace when not passed.
+    """
     from datetime import datetime, timezone
+    if workspace_id is None:
+        workspace_id = get_workspace_id_for_user(user_id)
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                """INSERT INTO storefront_sales_metrics 
-                   (user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, updated_at)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """INSERT INTO storefront_sales_metrics
+                   (user_id, workspace_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, updated_at)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                    ON CONFLICT (user_id, selling_partner_id, marketplace_id, interval_start)
-                   DO UPDATE SET 
+                   DO UPDATE SET
+                       workspace_id = COALESCE(EXCLUDED.workspace_id, storefront_sales_metrics.workspace_id),
                        order_count = EXCLUDED.order_count,
                        unit_count = EXCLUDED.unit_count,
                        total_sales_amount = EXCLUDED.total_sales_amount,
                        currency = EXCLUDED.currency,
                        updated_at = EXCLUDED.updated_at""",
-                (user_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, datetime.now(timezone.utc).isoformat())
+                (user_id, workspace_id, selling_partner_id, marketplace_id, interval_start, order_count, unit_count, total_sales_amount, currency, datetime.now(timezone.utc).isoformat())
             )
 
 
@@ -895,22 +931,28 @@ def get_storefront_sales_metrics(user_id):
             return [dict(r) for r in cur.fetchall()]
 
 
-def save_storefront_order(user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count):
+def save_storefront_order(user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, workspace_id=None):
+    """Persist one storefront order. Same workspace_id omission as
+    save_storefront_sales_metric had -- harmless so far only because this table
+    is still empty, so fix it before the first order sync populates it."""
     from datetime import datetime, timezone
+    if workspace_id is None:
+        workspace_id = get_workspace_id_for_user(user_id)
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                """INSERT INTO storefront_orders 
-                   (user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, updated_at)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """INSERT INTO storefront_orders
+                   (user_id, workspace_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, updated_at)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                    ON CONFLICT (user_id, amazon_order_id)
-                   DO UPDATE SET 
+                   DO UPDATE SET
+                       workspace_id = COALESCE(EXCLUDED.workspace_id, storefront_orders.workspace_id),
                        order_status = EXCLUDED.order_status,
                        amount = EXCLUDED.amount,
                        currency = EXCLUDED.currency,
                        items_count = EXCLUDED.items_count,
                        updated_at = EXCLUDED.updated_at""",
-                (user_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, datetime.now(timezone.utc).isoformat())
+                (user_id, workspace_id, amazon_order_id, purchase_date, order_status, amount, currency, items_count, datetime.now(timezone.utc).isoformat())
             )
 
 
@@ -923,6 +965,54 @@ def get_storefront_orders(user_id, limit=20):
                    ORDER BY purchase_date DESC 
                    LIMIT %s""",
                 (user_id, limit)
+            )
+            return [dict(r) for r in cur.fetchall()]
+
+
+# --- Stage 5 SaaS Audit Logs & Team Members ---------------------------------
+
+def log_audit_event(user_id, actor_email, action, target, ip_address=None):
+    """Append one audit row. Callers must derive actor_email and ip_address
+    server-side — never from request bodies. ip_address stays NULL when the real
+    client address isn't known, rather than recording a placeholder that would
+    read as fact."""
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO audit_logs (user_id, actor_email, action, target, ip_address, created_at)
+                   VALUES (%s, %s, %s, %s, %s, %s)""",
+                (user_id, actor_email, action, target, ip_address, datetime.now(timezone.utc).isoformat())
+            )
+
+
+def get_audit_logs(user_id, limit=50):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT * FROM audit_logs WHERE user_id = %s ORDER BY created_at DESC LIMIT %s""",
+                (user_id, limit)
+            )
+            return [dict(r) for r in cur.fetchall()]
+
+
+def add_org_member(owner_id, email, name=None, role="Analyst"):
+    from datetime import datetime, timezone
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO org_members (owner_id, email, name, role, status, created_at)
+                   VALUES (%s, %s, %s, %s, 'active', %s)""",
+                (owner_id, email, name, role, datetime.now(timezone.utc).isoformat())
+            )
+
+
+def get_org_members(owner_id):
+    with get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT * FROM org_members WHERE owner_id = %s ORDER BY created_at ASC""",
+                (owner_id,)
             )
             return [dict(r) for r in cur.fetchall()]
 

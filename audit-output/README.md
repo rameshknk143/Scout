@@ -31,3 +31,14 @@ cd audit-output/tools && node extract.mjs
 ## Handling
 - This folder is **untracked** — keep it out of git (contains the owner's watchlist/sourcing rows; pushing the repo would also auto-deploy).
 - "Public data" here means "served by the deployed app to its authorized user" — the only truly world-readable surfaces are `/login` and API `/health`.
+
+> ⚠️ **The "untracked" note above is out of date.** As of 2026-07-28 all 14 files in
+> this folder, including `scraped-data.csv` and `scraped-data.jsonl`, are tracked in
+> git. The repo appears to be private, and the files were re-scanned for credentials
+> with no matches — but the statement above should not be relied on. See
+> `2026-07-28-stage-audit-and-remediation.md` §11 for the two ways to resolve it.
+
+## Related audits
+| File | What |
+|---|---|
+| `2026-07-28-stage-audit-and-remediation.md` | Source-side audit of blueprint stages 0–6: 11 findings, remediation, and the RLS lockdown applied to production |
