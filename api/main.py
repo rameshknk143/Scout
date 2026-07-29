@@ -14,6 +14,7 @@ to reuse if it ever stopped being personal-only.
 
 import html
 import json
+import logging
 import math
 import os
 import re
@@ -36,6 +37,8 @@ import ppc_analytics
 import scorer
 import sync_engine
 import trend_radar
+
+logger = logging.getLogger(__name__)
 
 API_KEY = os.environ["API_KEY"]
 
