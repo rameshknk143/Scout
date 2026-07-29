@@ -23,39 +23,11 @@ export default function DashboardLayout({
             the page body below -- otherwise the search box and the page's <h1>
             start at two different left edges on a wide screen. */}
         <header className="sticky top-0 z-20 bg-white/85 backdrop-blur-md border-b border-black/5">
-          <div className="flex items-center justify-between gap-4 px-4 md:px-8 py-3 max-w-6xl w-full mx-auto">
-          {/* Left: Global Search */}
-          <div className="flex items-center gap-4 flex-1 max-w-md">
-            <div className="relative w-full">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-zinc-400 text-xs">
-                🔍
-              </span>
-              <input
-                type="text"
-                placeholder="Search ASIN, SKU, title, brand, or keyword..."
-                className="w-full text-xs bg-zinc-100/60 border border-black/5 rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-300 transition-all text-zinc-900"
-              />
-            </div>
-          </div>
-
-          {/* Right: Quick actions, notifications, user profile */}
+          <div className="flex items-center justify-end gap-4 px-4 md:px-8 py-3 max-w-6xl w-full mx-auto">
+          {/* Quick actions, user profile */}
           <div className="flex items-center gap-3">
             {/* Marketplace Indicator */}
             <MarketplaceIndicator />
-
-            {/* Date Range Selector */}
-            <select className="text-xs font-semibold text-zinc-700 bg-white border border-black/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-300 cursor-pointer shadow-sm">
-              <option>Last 30 Days</option>
-              <option>Last 7 Days</option>
-              <option>Today</option>
-              <option>Year to Date</option>
-            </select>
-
-            {/* Notifications Bell */}
-            <button className="p-1.5 text-zinc-600 hover:text-zinc-900 bg-white border border-black/10 rounded-lg relative cursor-pointer shadow-sm">
-              🔔
-              <span className="absolute top-0.5 right-0.5 block h-1.5 w-1.5 rounded-full bg-red-500" />
-            </button>
 
             <div className="flex items-center gap-2 border-l border-black/5 pl-3">
               <div className="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-900 border border-black/10">

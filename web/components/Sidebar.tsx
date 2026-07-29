@@ -213,6 +213,15 @@ export default function Sidebar() {
             </svg>
           ),
         },
+        {
+          href: "/dashboard/analytics",
+          label: "Analytics",
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l4-3v16M9 19l-4-2V4l4 2M9 19l4-3M13 3l6 3v13l-6-3" />
+            </svg>
+          ),
+        },
       ],
     },
     {

@@ -335,7 +335,7 @@ export default function TrendRadarClient({
           {lowStockAsin ? (
             <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
               <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
-                Restock ASIN <strong className="font-mono text-zinc-900">{lowStockAsin}</strong> within 7 days to prevent stockout based on current velocity.
+                Restock ASIN <strong className="font-mono text-zinc-900">{lowStockAsin}</strong> soon — its opportunity score has dropped below 60, a signal worth checking against your actual inventory levels.
               </p>
               <Link href="/dashboard/inventory" className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 View Inventory Details →
@@ -364,7 +364,7 @@ export default function TrendRadarClient({
           {lowQualityAsin ? (
             <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
               <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
-                Listing quality score is low on ASIN <strong className="font-mono text-zinc-900">{lowQualityAsin}</strong>. Add high-volume keywords to title.
+                Opportunity score is low on ASIN <strong className="font-mono text-zinc-900">{lowQualityAsin}</strong> (below 75) — worth an audit in Listing Health for keyword and title gaps.
               </p>
               <Link href={`/dashboard/listing?asin=${lowQualityAsin}`} className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
                 Optimize Listing →
