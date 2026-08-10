@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "@/lib/auth-actions";
 import { setMarketplacePreference } from "@/lib/marketplace-actions";
@@ -27,9 +27,11 @@ export default function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [selectedMarketplace, setSelectedMarketplace] = useState("amazon.in");
   const [sellerTag, setSellerTag] = useState("Private Label");
   const [isPending, startTransition] = useTransition();
+  const accountMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedMarketplace") || "amazon.in";
@@ -69,10 +71,30 @@ export default function Sidebar() {
     window.dispatchEvent(new Event("marketplaceChanged"));
   };
 
-  // close the mobile drawer on route change
+  // close the mobile drawer and the account menu on route change
   useEffect(() => {
     setOpen(false);
+    setAccountOpen(false);
   }, [pathname]);
+
+  // dismiss the account menu on an outside click or Escape
+  useEffect(() => {
+    if (!accountOpen) return;
+
+    const handlePointerDown = (e: MouseEvent) => {
+      if (!accountMenuRef.current?.contains(e.target as Node)) setAccountOpen(false);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAccountOpen(false);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [accountOpen]);
 
   const sections: SidebarSection[] = [
     {
@@ -224,20 +246,6 @@ export default function Sidebar() {
         },
       ],
     },
-    {
-      title: "Connections",
-      items: [
-        {
-          href: "/dashboard/settings",
-          label: "Amazon Connection",
-          icon: (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-            </svg>
-          ),
-        },
-      ],
-    },
   ];
 
   return (
@@ -360,16 +368,15 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer / Account / Marketplace selector */}
-        <div className="mt-auto pt-4 border-t border-black/5 flex flex-col gap-3">
-          {/* Marketplace Selector */}
+        <div className="mt-auto pt-3 border-t border-black/5 flex flex-col gap-2">
+          {/* Marketplace Selector -- the flag and currency label the control, so
+              it carries no separate heading; the footer is tight on space. */}
           <div className="px-2">
-            <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
-              Active Marketplace
-            </label>
             <select
+              aria-label="Active marketplace"
               value={selectedMarketplace}
               onChange={(e) => handleMarketplaceChange(e.target.value)}
-              className="w-full text-xs font-semibold text-zinc-700 bg-zinc-50 border border-black/10 rounded px-2 py-1.5 focus:outline-none focus:border-zinc-300 cursor-pointer"
+              className="w-full text-xs font-semibold text-zinc-700 bg-zinc-50 border border-black/10 rounded px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus:border-zinc-300 cursor-pointer"
             >
               <option value="amazon.in">🇮🇳 Amazon.in (₹ INR)</option>
               <option value="amazon.com">🇺🇸 Amazon.com ($ USD)</option>
@@ -386,43 +393,87 @@ export default function Sidebar() {
             </select>
           </div>
 
-          {/* Settings & Help */}
-          <div className="flex flex-col gap-1.5 px-2 text-xs font-medium text-zinc-500">
-            <button
-              onClick={() => window.dispatchEvent(new Event("scoutveda_trigger_setup"))}
-              className="hover:text-emerald-600 flex items-center gap-2 transition-colors cursor-pointer text-left w-full font-medium text-zinc-600 hover:bg-emerald-50/50 py-1.5 px-2 rounded"
-            >
-              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Setup Wizard
-            </button>
+          {/* Account menu -- Setup Wizard, Settings, Feedback and Sign Out used
+              to sit as four permanently stacked rows, which crowded the footer.
+              They live behind one trigger now. */}
+          <div ref={accountMenuRef} className="relative px-2">
+            {accountOpen && (
+              <div
+                role="menu"
+                className="absolute bottom-full left-2 right-2 mb-1 flex flex-col gap-0.5 rounded-lg border border-black/10 bg-white p-1 text-xs font-medium text-zinc-600 shadow-lg"
+              >
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setAccountOpen(false);
+                    window.dispatchEvent(new Event("scoutveda_trigger_setup"));
+                  }}
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors cursor-pointer hover:bg-emerald-50/60 hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-zinc-400 focus:outline-none"
+                >
+                  <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Setup Wizard
+                </button>
 
-            <Link href="/dashboard/settings" className="hover:text-zinc-900 hover:bg-zinc-50 flex items-center gap-2 transition-colors py-1.5 px-2 rounded">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-              </svg>
-              Settings
-            </Link>
-            <a
-              href="mailto:rameshknk143@gmail.com?subject=ScoutVeda Dashboard Feedback"
-              className="hover:text-zinc-900 hover:bg-zinc-50 flex items-center gap-2 transition-colors py-1.5 px-2 rounded"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              Email Feedback
-            </a>
+                <Link
+                  role="menuitem"
+                  href="/dashboard/settings"
+                  onClick={() => setAccountOpen(false)}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 transition-colors hover:bg-zinc-50 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400 focus:outline-none"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  Amazon Connection &amp; Settings
+                </Link>
+
+                <a
+                  role="menuitem"
+                  href="mailto:rameshknk143@gmail.com?subject=ScoutVeda Dashboard Feedback"
+                  onClick={() => setAccountOpen(false)}
+                  className="flex items-center gap-2 rounded px-2 py-1.5 transition-colors hover:bg-zinc-50 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400 focus:outline-none"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Send Feedback
+                </a>
+
+                <button
+                  role="menuitem"
+                  onClick={() => logout()}
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors cursor-pointer hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-zinc-400 focus:outline-none"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            )}
+
             <button
-              onClick={() => logout()}
-              className="hover:text-red-600 flex items-center gap-2 text-left w-full cursor-pointer mt-1 text-zinc-500 hover:bg-zinc-50 py-1.5 px-2 rounded transition-colors"
+              onClick={() => setAccountOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={accountOpen}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-zinc-600 transition-colors cursor-pointer hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400 focus:outline-none"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="3.25" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 20a7.5 7.5 0 0115 0" />
               </svg>
-              Sign Out
+              <span className="flex-1 text-left">Account</span>
+              <svg
+                className={`w-3 h-3 shrink-0 transition-transform ${accountOpen ? "" : "rotate-180"}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 15l-6-6-6 6" />
+              </svg>
             </button>
           </div>
         </div>
