@@ -32,6 +32,7 @@ Design notes (see BLUEPRINT / plan for full context):
 """
 
 import html
+import os
 import random
 import re
 import sys
@@ -113,19 +114,54 @@ PRICE_RE = re.compile(r'₹([\d,]+\.\d{2})')
 IMAGE_RE = re.compile(r'<img[^>]+src="([^"]+)"')
 
 
-def fetch(url, timeout=20, retries=1):
-    """GET with one retry on failure. Returns response text or raises."""
+MOBILE_USER_AGENT = (
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 "
+    "(KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
+)
+
+SCRAPEOPS_API_KEY = os.environ.get("SCRAPEOPS_API_KEY")
+
+def fetch(url, timeout=25, retries=2):
+    """GET with retries, header rotation, and optional ScrapeOps proxy API fallback."""
     last_err = None
+    
+    # Try direct fetch with rotating user-agents first
+    header_options = [
+        HEADERS,
+        {
+            "User-Agent": MOBILE_USER_AGENT,
+            "Accept-Language": "en-IN,en;q=0.9",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        }
+    ]
+    
     for attempt in range(retries + 1):
+        headers = header_options[attempt % len(header_options)]
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=timeout)
+            resp = requests.get(url, headers=headers, timeout=timeout)
             resp.raise_for_status()
-            return resp.text
+            text = resp.text
+            # Verify it's a real Amazon page and not a bot interstitial
+            if len(text) > 40_000 and "automated access" not in text.lower() and "enter the characters" not in text.lower():
+                return text
         except Exception as e:
             last_err = e
             if attempt < retries:
-                time.sleep(3)
-    raise last_err
+                time.sleep(2 * (attempt + 1))
+                
+    # If direct fetch was blocked and SCRAPEOPS_API_KEY is available, route via free proxy API
+    if SCRAPEOPS_API_KEY:
+        try:
+            proxy_url = f"https://proxy.scrapeops.io/v1/?api_key={SCRAPEOPS_API_KEY}&url={url}"
+            resp = requests.get(proxy_url, timeout=35)
+            resp.raise_for_status()
+            if len(resp.text) > 40_000:
+                return resp.text
+        except Exception as e:
+            last_err = e
+
+    raise last_err or ValueError(f"Failed to fetch valid Amazon page for {url}")
+
 
 
 def parse_products(page_html):

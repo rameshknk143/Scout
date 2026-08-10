@@ -917,3 +917,76 @@ def get_ppc_analytics(user_id: int = Depends(require_user)):
     sales = db.get_storefront_sales_metrics(user_id)
     return ppc_analytics.calculate_ppc_performance(validations, sales)
 
+
+# --- Maxun Visual Scraper Ingestion ----------------------------------------
+
+class MaxunRowItem(BaseModel):
+    asin: str
+    title: str | None = None
+    category: str | None = "Maxun Visual Scrape"
+    list_type: str | None = "custom-scrape"
+    rank: int | None = None
+    price: float | None = None
+    rating: float | None = None
+    reviews: int | None = None
+    review_count: int | None = None
+    image_url: str | None = None
+    url: str | None = None
+
+
+class MaxunIngestPayload(BaseModel):
+    items: list[MaxunRowItem]
+    category: str | None = "Maxun Visual Scrape"
+
+
+@app.post("/ingest/maxun", dependencies=[Depends(require_key)])
+def ingest_maxun_batch(payload: MaxunIngestPayload, request: Request):
+    """Ingests raw visual scraping batches from Maxun (CSV/JSON exports).
+    Sanitizes ASINs, validates ratings/prices against bounds, and inserts rows into Supabase snapshots."""
+    now = datetime.now(timezone.utc).isoformat()
+    default_cat = payload.category or "Maxun Visual Scrape"
+    valid_rows = []
+
+    for item in payload.items:
+        raw_asin = (item.asin or "").strip().upper()
+        if not ASIN_RE.match(raw_asin):
+            continue
+
+        rc = item.review_count if item.review_count is not None else item.reviews
+        if rc is not None and (rc < 0 or rc > 10_000_000):
+            rc = None
+
+        p = item.price
+        if p is not None and (p < 1.0 or p > 10_000_000.0):
+            p = None
+
+        r = item.rating
+        if r is not None and (r < 0.5 or r > 5.0):
+            r = None
+
+        rank_val = item.rank
+        if rank_val is not None and (rank_val < 1 or rank_val > 10_000_000):
+            rank_val = None
+
+        valid_rows.append({
+            "asin": raw_asin,
+            "category": item.category or default_cat,
+            "list_type": item.list_type or "custom-scrape",
+            "rank": rank_val,
+            "title": html.unescape(item.title.strip()) if item.title else None,
+            "price": p,
+            "rating": r,
+            "review_count": rc,
+            "image_url": item.image_url,
+            "collected_at": now,
+        })
+
+    inserted_count = db.insert_snapshot_rows(valid_rows)
+    return {
+        "ok": True,
+        "processed": len(payload.items),
+        "inserted": inserted_count,
+        "skipped": len(payload.items) - len(valid_rows),
+    }
+
+
