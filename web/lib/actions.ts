@@ -161,10 +161,15 @@ export async function gatherKeywords(seed: string) {
 
 async function fetchSuggestions(term: string): Promise<string[]> {
   const encoded = encodeURIComponent(term);
+  // India first — this is an Amazon India seller tool, so IN keywords must win.
+  // The host matters as much as the marketplace id: completion.amazon.com returns
+  // an empty suggestions array for the India mid (A21TJRUUN4KGV) under every
+  // parameter combination, while completion.amazon.co.uk returns real Indian
+  // suggestions for that same mid. Do not "simplify" this back to the .com host.
   const sources = [
+    `https://completion.amazon.co.uk/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=A21TJRUUN4KGV&alias=aps&prefix=${encoded}`,
+    `https://suggestqueries.google.com/complete/search?client=chrome&hl=en&gl=in&q=${encoded}+amazon`,
     `https://completion.amazon.com/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=ATVPDKIKX0DER&alias=aps&prefix=${encoded}`,
-    `https://completion.amazon.com/api/2017/suggestions?limit=10&client-info=amazon-search-ui&mid=A21TJRUUN4KGV&alias=aps&prefix=${encoded}`,
-    `https://suggestqueries.google.com/complete/search?client=chrome&q=${encoded}+amazon`,
   ];
 
   for (const url of sources) {
