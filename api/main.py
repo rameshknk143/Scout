@@ -932,6 +932,10 @@ class MaxunRowItem(BaseModel):
     review_count: int | None = None
     image_url: str | None = None
     url: str | None = None
+    # When the row was actually scraped, ISO-8601. Without this every row is
+    # stamped with the ingest time, which collapses a backfill of historical
+    # rows onto one timestamp and destroys the price-over-time axis.
+    collected_at: str | None = None
 
 
 class MaxunIngestPayload(BaseModel):
