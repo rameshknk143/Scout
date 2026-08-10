@@ -7,3 +7,8 @@ __pycache__/
 venv/
 web/dev.log
 .vercel
+
+# Runtime state written by laptop_mode.py. Machine-specific and rewritten on
+# every pass, so committing it just produces conflicts between machines.
+scraper/.laptop_mode_state.json
+scraper/.maxun_bridge_state.json
