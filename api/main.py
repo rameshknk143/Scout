@@ -50,6 +50,11 @@ ALLOW_MOCK_LWA = os.environ.get("ALLOW_MOCK_LWA") == "1"
 # interpolated into amazon.in URLs or used in queries keeps those paths inert.
 ASIN_RE = re.compile(r"^[A-Z0-9]{10}$")
 
+# Floor for a caller-supplied collected_at. This project began in 2026, so a
+# timestamp before this is a parsing accident (epoch 0, a two-digit year) rather
+# than real history, and would drag trend charts back to 1970.
+EARLIEST_PLAUSIBLE = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
 
 def clean_asin(asin: str) -> str:
     asin = (asin or "").strip().upper()
@@ -972,6 +977,22 @@ def ingest_maxun_batch(payload: MaxunIngestPayload, request: Request):
         if rank_val is not None and (rank_val < 1 or rank_val > 10_000_000):
             rank_val = None
 
+        # Prefer the time the row was actually scraped. Falling back to `now`
+        # for everything collapses a historical backfill onto a single
+        # timestamp, which destroys the price-over-time axis those rows exist
+        # for. Anything unparseable or implausible falls back rather than
+        # writing a date that would silently corrupt a trend line.
+        collected = now
+        if item.collected_at:
+            try:
+                parsed = datetime.fromisoformat(item.collected_at.replace("Z", "+00:00"))
+                if parsed.tzinfo is None:
+                    parsed = parsed.replace(tzinfo=timezone.utc)
+                if EARLIEST_PLAUSIBLE <= parsed <= datetime.now(timezone.utc) + timedelta(days=1):
+                    collected = parsed.isoformat()
+            except (ValueError, TypeError):
+                pass
+
         valid_rows.append({
             "asin": raw_asin,
             "category": item.category or default_cat,
@@ -982,7 +1003,7 @@ def ingest_maxun_batch(payload: MaxunIngestPayload, request: Request):
             "rating": r,
             "review_count": rc,
             "image_url": item.image_url,
-            "collected_at": now,
+            "collected_at": collected,
         })
 
     inserted_count = db.insert_snapshot_rows(valid_rows)

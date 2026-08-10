@@ -149,7 +149,32 @@ def extract_rows(run):
     return rows
 
 
-def map_rows(rows, category, list_type):
+def run_finished_iso(run):
+    """Maxun stores finishedAt as new Date().toLocaleString(), e.g.
+    '30/7/2026, 12:23:10 am' - day-first en-IN, not ISO.
+
+    Returns ISO-8601, or None to let the API stamp ingest time. Returning None
+    on any doubt is deliberate: a wrong date silently bends a price trend, while
+    a slightly late one only matters for runs forwarded long after the fact.
+    """
+    raw = (run or {}).get("finishedAt") or (run or {}).get("startedAt")
+    if not raw:
+        return None
+    raw = str(raw).strip()
+    try:                                    # already ISO? use it
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")).isoformat()
+    except ValueError:
+        pass
+    for fmt in ("%d/%m/%Y, %I:%M:%S %p", "%d/%m/%Y, %H:%M:%S"):
+        try:
+            return datetime.strptime(raw.lower().replace("am", "AM").replace("pm", "PM"),
+                                     fmt).isoformat()
+        except ValueError:
+            continue
+    return None
+
+
+def map_rows(rows, category, list_type, collected_at=None):
     """Convert Maxun rows into /ingest/maxun items. Returns (items, skipped)."""
     if not rows:
         return [], 0
@@ -185,6 +210,9 @@ def map_rows(rows, category, list_type):
                             if to_number(rec.get("review_count")) else None,
             "image_url": rec.get("image_url") or None,
             "url": rec.get("url") or None,
+            # Maxun's run finish time, so a run forwarded days later (laptop was
+            # off) is filed under when it was scraped, not when it was sent.
+            "collected_at": collected_at,
         })
 
     return items, skipped
@@ -250,7 +278,8 @@ def main():
         detail = maxun_get("/api/robots/%s/runs/%s" % (MAXUN_ROBOT_ID, run_id))
         run = detail.get("run") or {}
         rows = extract_rows(run)
-        items, skipped = map_rows(rows, args.category, args.list_type)
+        items, skipped = map_rows(rows, args.category, args.list_type,
+                                  collected_at=run_finished_iso(run))
 
         print("\nrun %s: %d scraped row(s) -> %d valid item(s), %d skipped (no usable ASIN)"
               % (run_id, len(rows), len(items), skipped))
