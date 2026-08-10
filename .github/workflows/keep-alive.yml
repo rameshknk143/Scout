@@ -2,13 +2,24 @@ name: Scout Keep-Alive
 
 # Render's free plan puts a service to sleep after ~15 minutes with no inbound
 # requests, so the next visitor pays a 30-60s cold start (this is what made
-# login feel broken). Pinging the public /health endpoint every 10 minutes keeps
-# the service warm. /health is the one route with no require_key dependency and
-# it touches no database, so this is safe to run from a public runner.
+# login feel broken). Pinging the public /health endpoint keeps it warm.
+# /health is the one route with no require_key dependency and it touches no
+# database, so this is safe to run from a public runner.
+#
+# The `schedule:` trigger was REMOVED on 2026-08-02. It did not work. Measured:
+# the API was still a 42s cold start after only ~25 minutes idle, which cannot
+# happen if a 10-minute ping is landing. GitHub's scheduler is best-effort and
+# routinely stretches short intervals past Render's 15-minute sleep timer.
+#
+# The ping now runs from cron on the Oracle VM (/home/ubuntu/keep-warm.sh),
+# which is up 24/7 anyway and fires on the exact minute. It is windowed to
+# 02:00-19:59 UTC (07:30-01:29 IST) because Render's free tier allows only
+# 750 instance hours/month -- a 24/7 ping burns ~730 and risks suspension.
+#
+# Do not re-add `schedule:` here. Two pingers would push Render past that cap.
+# This is kept for manual use only: run it to wake the API on demand.
 
 on:
-  schedule:
-    - cron: "*/10 * * * *"
   workflow_dispatch: {}
 
 jobs:
