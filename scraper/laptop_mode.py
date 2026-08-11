@@ -59,6 +59,30 @@ CATEGORY = os.environ.get("SCOUT_CATEGORY", "Grocery & Gourmet")
 LIST_TYPE = os.environ.get("SCOUT_LIST_TYPE", "bestsellers")
 
 
+def robots():
+    """The robots to run this pass, as [(robot_id, scoutveda_category), ...].
+
+    MAXUN_ROBOTS="id=Category;id=Category" drives the multi-category setup; a bare
+    MAXUN_ROBOT_ID still works so nothing breaks if the var is absent. One list
+    request yields ~30 products against the VM's one product per request, so adding
+    categories buys far more data than raising the frequency of a single robot -
+    and costs one page load each.
+    """
+    spec = os.environ.get("MAXUN_ROBOTS", "").strip()
+    if not spec:
+        return [(MAXUN_ROBOT_ID, CATEGORY)] if MAXUN_ROBOT_ID else []
+    out = []
+    for chunk in spec.split(";"):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        robot_id, _, name = chunk.partition("=")
+        robot_id = robot_id.strip()
+        if robot_id:
+            out.append((robot_id, name.strip() or CATEGORY))
+    return out
+
+
 def log(msg):
     print("%s  %s" % (datetime.now().strftime("%H:%M:%S"), msg), flush=True)
 
@@ -143,10 +167,10 @@ def health_check():
     return True
 
 
-def trigger_run():
-    log("triggering a Maxun robot run (this blocks until it finishes)")
+def trigger_run(robot_id, label):
+    log("  triggering %s (blocks until it finishes)" % label)
     req = urllib.request.Request(
-        "%s/api/robots/%s/runs" % (MAXUN_API_URL, MAXUN_ROBOT_ID),
+        "%s/api/robots/%s/runs" % (MAXUN_API_URL, robot_id),
         data=b"{}",
         headers={"x-api-key": MAXUN_API_KEY, "Content-Type": "application/json"},
         method="POST",
@@ -155,21 +179,23 @@ def trigger_run():
         with urllib.request.urlopen(req, timeout=900) as resp:
             body = json.loads(resp.read().decode())
         run = body.get("run") or {}
-        log("run %s finished with status=%s" % (run.get("runId"), run.get("status")))
+        log("    run %s status=%s" % (run.get("runId"), run.get("status")))
         return True
     except urllib.error.HTTPError as e:
-        log("trigger failed HTTP %s: %s" % (e.code, e.read().decode(errors="replace")[:200]))
+        log("    trigger failed HTTP %s: %s"
+            % (e.code, e.read().decode(errors="replace")[:200]))
     except Exception as e:
-        log("trigger failed: %s" % e)
+        log("    trigger failed: %s" % e)
     return False
 
 
-def forward():
+def forward(robot_id, category):
     """Hand off to the bridge, which already tracks what it has forwarded."""
-    log("forwarding any unforwarded runs")
+    log("  forwarding %s" % category)
     r = subprocess.run(
         [sys.executable, str(HERE / "maxun_bridge.py"),
-         "--category", CATEGORY, "--list-type", LIST_TYPE],
+         "--robot-id", robot_id,
+         "--category", category, "--list-type", LIST_TYPE],
         cwd=str(HERE), capture_output=True, text=True,
     )
     for line in (r.stdout or "").splitlines():
@@ -188,17 +214,19 @@ def main():
                     help="trigger a run even if one happened recently")
     args = ap.parse_args()
 
-    if not (MAXUN_API_KEY and MAXUN_ROBOT_ID):
-        sys.exit("MAXUN_API_KEY and MAXUN_ROBOT_ID must be set.")
+    fleet = robots()
+    if not (MAXUN_API_KEY and fleet):
+        sys.exit("MAXUN_API_KEY and one of MAXUN_ROBOTS / MAXUN_ROBOT_ID must be set.")
 
-    log("laptop mode starting")
+    log("laptop mode starting (%d robot(s))" % len(fleet))
     st = load_state()
 
     if not health_check():
         # Still worth trying to forward: earlier runs may be sitting unsent and
         # forwarding needs nothing from Maxun's browser.
         log("health check failed - attempting forward-only catch-up anyway")
-        forward()
+        for robot_id, category in fleet:
+            forward(robot_id, category)
         return
 
     if args.forward_only:
@@ -216,11 +244,21 @@ def main():
             except Exception:
                 due = True
         if due:
-            if trigger_run():
+            # Robots run one after another, never in parallel: they share a single
+            # Playwright browser, and firing four Amazon page loads at once from one
+            # residential IP is the pattern that gets it flagged.
+            fired = 0
+            for robot_id, category in fleet:
+                if trigger_run(robot_id, category):
+                    fired += 1
+            if fired:
                 st["last_trigger_utc"] = datetime.now(timezone.utc).isoformat()
                 save_state(st)
+            log("  %d/%d robot(s) ran" % (fired, len(fleet)))
 
-    forward()
+    for robot_id, category in fleet:
+        forward(robot_id, category)
+
     st["last_pass_utc"] = datetime.now(timezone.utc).isoformat()
     save_state(st)
     log("laptop mode done")

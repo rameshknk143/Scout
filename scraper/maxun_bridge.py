@@ -348,14 +348,22 @@ def main():
     ap.add_argument("--dry-run", action="store_true",
                     help="print what would be sent; contact ScoutVeda not at all")
     ap.add_argument("--run-id", help="forward this run even if already forwarded")
-    ap.add_argument("--category", default="Maxun Visual Scrape")
+    ap.add_argument("--robot-id", default=MAXUN_ROBOT_ID,
+                    help="robot to forward (default: MAXUN_ROBOT_ID)")
+    # No default. A hand-run that silently invented "Maxun Visual Scrape" put the
+    # Grocery robot's rows under two category names, which splits any chart grouped
+    # by category. Better to refuse than to guess.
+    ap.add_argument("--category", required=True,
+                    help='ScoutVeda category, e.g. "Grocery & Gourmet"')
     ap.add_argument("--list-type", default="custom-scrape")
     ap.add_argument("--limit", type=int, default=5,
                     help="max new runs to forward in one pass")
     args = ap.parse_args()
 
-    if not MAXUN_ROBOT_ID:
-        sys.exit("MAXUN_ROBOT_ID is not set. List robots with: GET /api/robots")
+    robot_id = args.robot_id
+    if not robot_id:
+        sys.exit("No robot. Set MAXUN_ROBOT_ID or pass --robot-id. "
+                 "List them with: GET /api/robots")
 
     state = load_state()
     done = set(state.get("forwarded_run_ids", []))
@@ -363,7 +371,7 @@ def main():
     if args.run_id:
         target_ids = [args.run_id]
     else:
-        listing = maxun_get("/api/robots/%s/runs" % MAXUN_ROBOT_ID)
+        listing = maxun_get("/api/robots/%s/runs" % robot_id)
         runs = listing.get("runs") or listing.get("data") or []
         if isinstance(runs, dict):
             runs = runs.get("items", [])
@@ -380,7 +388,7 @@ def main():
     print("Forwarding %d run(s): %s" % (len(target_ids), ", ".join(target_ids)))
 
     for run_id in target_ids:
-        detail = maxun_get("/api/robots/%s/runs/%s" % (MAXUN_ROBOT_ID, run_id))
+        detail = maxun_get("/api/robots/%s/runs/%s" % (robot_id, run_id))
         run = detail.get("run") or {}
         rows = extract_rows(run)
         items, skipped = map_rows(rows, args.category, args.list_type,
