@@ -32,7 +32,16 @@ def _snapshots_df():
     df = db.get_all_snapshots_df()
     if df.empty:
         return df
-    df["collected_at"] = pd.to_datetime(df["collected_at"])
+    # format="ISO8601", not the default. While collected_at is TEXT the column
+    # holds two shapes - collector.py writes microseconds
+    # ("2026-07-06T07:42:20.884377+00:00") and the VM/Maxun paths do not
+    # ("2026-08-11T03:20:05+00:00"). pandas infers one format from the first
+    # element and then raises ValueError on every row that differs, which took
+    # /trend-radar/digest and /trend-radar/category down with a 500. utc=True
+    # keeps the result tz-aware so .dt.date and the comparisons below are
+    # unambiguous. Once collected_at is timestamptz this is already datetime64
+    # and the call is a cheap no-op.
+    df["collected_at"] = pd.to_datetime(df["collected_at"], format="ISO8601", utc=True)
     df["collected_date"] = df["collected_at"].dt.date
     return df
 
