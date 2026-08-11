@@ -44,7 +44,9 @@ from pathlib import Path
 HERE = Path(__file__).parent
 STATE = HERE / ".laptop_mode_state.json"
 
-MAXUN_API_URL = os.environ.get("MAXUN_API_URL", "http://localhost:8080").rstrip("/")
+# 127.0.0.1 deliberately - see the note in maxun_bridge.py. localhost resolves
+# to ::1 first on Windows, which lets any IPv6 listener shadow Maxun.
+MAXUN_API_URL = os.environ.get("MAXUN_API_URL", "http://127.0.0.1:8080").rstrip("/")
 MAXUN_API_KEY = os.environ.get("MAXUN_API_KEY")
 MAXUN_ROBOT_ID = os.environ.get("MAXUN_ROBOT_ID")
 BROWSER_DIR = Path(os.environ.get(

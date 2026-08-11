@@ -26,7 +26,7 @@ logged; --dry-run prints rows but never the keys.
     set MAXUN_ROBOT_ID=...       robot whose runs to forward
     set SCOUT_API_KEY=...        same value as Render's API_KEY env var
     set SCOUT_API_URL=https://scout-api-3yvy.onrender.com   (default)
-    set MAXUN_API_URL=http://localhost:8080                 (default)
+    set MAXUN_API_URL=http://127.0.0.1:8080                 (default)
 
     python maxun_bridge.py --dry-run     # show what would be sent
     python maxun_bridge.py               # forward new runs
@@ -38,12 +38,16 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
 
-MAXUN_API_URL = os.environ.get("MAXUN_API_URL", "http://localhost:8080").rstrip("/")
+# 127.0.0.1, not localhost. On Windows localhost resolves to ::1 first, and on
+# 2026-08-10 a stray `python -m http.server 8080` bound [::]:8080 while Maxun held
+# only 0.0.0.0:8080 - so every call silently hit the wrong server and the bridge
+# 404'd for a day. Pinning IPv4 makes that class of hijack impossible.
+MAXUN_API_URL = os.environ.get("MAXUN_API_URL", "http://127.0.0.1:8080").rstrip("/")
 SCOUT_API_URL = os.environ.get(
     "SCOUT_API_URL", "https://scout-api-3yvy.onrender.com"
 ).rstrip("/")
@@ -52,6 +56,14 @@ MAXUN_ROBOT_ID = os.environ.get("MAXUN_ROBOT_ID")
 SCOUT_API_KEY = os.environ.get("SCOUT_API_KEY")
 
 STATE_FILE = Path(__file__).with_name(".maxun_bridge_state.json")
+
+# Timezone Maxun's server reports its run times in. Override if the stack is ever
+# moved off this laptop: MAXUN_TZ_OFFSET="+00:00" for a UTC container.
+_off = os.environ.get("MAXUN_TZ_OFFSET", "+05:30")
+MAXUN_TZ = timezone(timedelta(
+    hours=int(_off[:3]),
+    minutes=int(_off[0] + _off[4:6]),
+))
 
 ASIN_RE = re.compile(r"^[A-Z0-9]{10}$")
 ASIN_IN_URL_RE = re.compile(r"/(?:dp|gp/product|product)/([A-Z0-9]{10})")
@@ -72,9 +84,85 @@ FIELD_ALIASES = {
 }
 
 
+# Content signatures, used when the headers are useless. Maxun's recorder names
+# columns "Label 1..N" unless the person recording renames every one by hand, and
+# renaming cannot help anyway when the recorder generalises a field into several
+# alternative selectors: the Grocery robot spreads titles across Label 9/10/11
+# (17+8+7 of 30 rows), so no single column IS the title. Classify by what the
+# values look like, then coalesce the candidates per row.
+IMAGE_RE = re.compile(r"^https?://\S+\.(?:jpg|jpeg|png|webp|gif)(?:[?#]|$)", re.I)
+PRICE_RE = re.compile(r"[₹$€£]\s*[\d,]+(?:\.\d+)?")
+RATING_RE = re.compile(r"([0-5](?:\.\d+)?)\s*out of\s*5", re.I)
+RANK_RE = re.compile(r"^#\s*\d+$")
+COUNT_RE = re.compile(r"^\d{1,3}(?:,\d{3})*$|^\d{1,9}$")
+# Review links carry the ASIN too, so they rescue rows whose product link is blank.
+ASIN_ANYWHERE_RE = re.compile(r"/(?:dp|gp/product|product-reviews|product)/([A-Z0-9]{10})")
+
+# Real product titles here run 40-120 chars. The same robot also captures "Watch
+# the video" (15 chars) as its own column, so a generous floor keeps that junk out.
+MIN_TITLE_LEN = 25
+
+
 def norm(key):
     """Normalise a column header for alias matching."""
     return re.sub(r"[^a-z0-9]", "", str(key).lower())
+
+
+def classify_value(value):
+    """Guess which field a single scraped cell holds, or None if unclear."""
+    s = str(value or "").strip()
+    if not s:
+        return None
+    if IMAGE_RE.match(s):
+        return "image_url"
+    if s.lower().startswith("http"):
+        # Only a real product link is a url; review links are still mined for ASIN.
+        return "url" if ASIN_IN_URL_RE.search(s) else None
+    if PRICE_RE.search(s):
+        return "price"
+    if RATING_RE.search(s):          # before COUNT: "4.3 out of 5 stars  22,189"
+        return "rating"
+    if RANK_RE.match(s):
+        return "rank"
+    if COUNT_RE.match(s):
+        return "review_count"
+    if len(s) >= MIN_TITLE_LEN:
+        return "title"
+    return None
+
+
+def infer_column_roles(rows):
+    """Return {field: [column, ...]} ordered by how many rows each column fills.
+
+    A column has to be consistent to count - at least 60% of its non-empty values
+    must agree - so a stray number inside a title column cannot rename the column.
+    """
+    tally = {}
+    for row in rows:
+        for key, value in row.items():
+            role = classify_value(value)
+            if role:
+                slot = tally.setdefault(key, {})
+                slot[role] = slot.get(role, 0) + 1
+
+    candidates = {}
+    for key, roles in tally.items():
+        total = sum(roles.values())
+        role, hits = max(roles.items(), key=lambda kv: kv[1])
+        if hits / total >= 0.6:
+            candidates.setdefault(role, []).append((hits, key))
+
+    return {role: [k for _, k in sorted(v, reverse=True)]
+            for role, v in candidates.items()}
+
+
+def first_filled(row, columns):
+    """First non-empty value across a field's candidate columns."""
+    for col in columns:
+        value = row.get(col)
+        if str(value or "").strip():
+            return value
+    return None
 
 
 def build_column_map(sample_row):
@@ -167,10 +255,14 @@ def run_finished_iso(run):
         pass
     for fmt in ("%d/%m/%Y, %I:%M:%S %p", "%d/%m/%Y, %H:%M:%S"):
         try:
-            return datetime.strptime(raw.lower().replace("am", "AM").replace("pm", "PM"),
-                                     fmt).isoformat()
+            naive = datetime.strptime(
+                raw.lower().replace("am", "AM").replace("pm", "PM"), fmt)
         except ValueError:
             continue
+        # toLocaleString() has no offset, so the wall clock is the Maxun host's
+        # local time - IST here. Stamping it as UTC put every row 5h30m into the
+        # future. Attach the offset and hand the API a real UTC instant.
+        return naive.replace(tzinfo=MAXUN_TZ).astimezone(timezone.utc).isoformat()
     return None
 
 
@@ -179,20 +271,33 @@ def map_rows(rows, category, list_type, collected_at=None):
     if not rows:
         return [], 0
     colmap = build_column_map(rows[0])
+    named = set(colmap.values())
+    # Headers win when the robot was recorded with real column names; content
+    # inference only fills the fields they left unresolved.
+    inferred = {f: cols for f, cols in infer_column_roles(rows).items()
+                if f not in named}
     items, skipped = [], 0
 
     for row in rows:
         rec = {}
         for raw_key, field in colmap.items():
             rec[field] = row.get(raw_key)
+        for field, cols in inferred.items():
+            if not str(rec.get(field) or "").strip():
+                rec[field] = first_filled(row, cols)
 
         asin = str(rec.get("asin") or "").strip().upper()
         if not ASIN_RE.match(asin):
             # Most Amazon list scrapes capture the product link but not the ASIN
             # as its own column - recover it from the URL rather than dropping
-            # an otherwise good row.
-            m = ASIN_IN_URL_RE.search(str(rec.get("url") or ""))
-            asin = m.group(1) if m else ""
+            # an otherwise good row. Scan every cell, not just the mapped url:
+            # a row with no product link often still has a review link.
+            asin = ""
+            for value in row.values():
+                m = ASIN_ANYWHERE_RE.search(str(value or ""))
+                if m:
+                    asin = m.group(1)
+                    break
         if not ASIN_RE.match(asin):
             skipped += 1
             continue
