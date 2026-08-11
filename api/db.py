@@ -853,10 +853,36 @@ def get_drawer_data(asin, user_id):
                 if snap.get("title"):
                     snap["title"] = html.unescape(snap["title"])
 
-            # 2. History (last 7, global market data)
-            cur.execute("SELECT * FROM snapshots WHERE asin = %s ORDER BY collected_at DESC LIMIT 7", (asin,))
+            # 2. History: the newest snapshot of each of the last 7 DAYS.
+            #
+            # This was "ORDER BY collected_at DESC LIMIT 7", i.e. the last 7 rows.
+            # That was the same thing back when every ASIN was captured once a
+            # night, but the laptop's Maxun robots now refresh four categories
+            # hourly, so the last 7 rows of a grocery ASIN are the last 7 *hours*
+            # and the drawer chart drew a flat line across one afternoon. Measured
+            # on 2026-08-12: 40% of the 9,191 ASINs had a chart spanning <= 2 days.
+            #
+            # The day key is an explicit UTC date, not substr() of the text form:
+            # once collected_at is timestamptz its ::text rendering follows the
+            # session TimeZone, which would silently regroup the chart per client.
+            # The ::timestamptz cast is a no-op on the migrated column and parses
+            # the ISO strings on a pre-migration database.
+            #
+            # DISTINCT ON needs its leading ORDER BY to match the distinct key, so
+            # the per-day pick and the final chronological sort are separate steps.
+            cur.execute(
+                """
+                SELECT * FROM (
+                    SELECT DISTINCT ON ((collected_at::timestamptz AT TIME ZONE 'UTC')::date) *
+                    FROM snapshots WHERE asin = %s
+                    ORDER BY (collected_at::timestamptz AT TIME ZONE 'UTC')::date DESC,
+                             collected_at DESC
+                    LIMIT 7
+                ) d ORDER BY collected_at ASC
+                """,
+                (asin,),
+            )
             history = [dict(r) for r in cur.fetchall()]
-            history.reverse()
 
             # 3. This user's validation matching this ASIN
             cur.execute("SELECT * FROM validations WHERE asin = %s AND user_id = %s LIMIT 1", (asin, user_id))
