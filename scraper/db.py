@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS snapshots (
     rating REAL,
     review_count INTEGER,
     image_url TEXT,
-    collected_at TEXT NOT NULL
+    collected_at TIMESTAMPTZ NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_snapshots_asin ON snapshots(asin);
 CREATE INDEX IF NOT EXISTS idx_snapshots_category ON snapshots(category, list_type, collected_at);

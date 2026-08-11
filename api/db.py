@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS snapshots (
     rating REAL,
     review_count INTEGER,
     image_url TEXT,
-    collected_at TEXT NOT NULL
+    collected_at TIMESTAMPTZ NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_snapshots_asin ON snapshots(asin);
 CREATE INDEX IF NOT EXISTS idx_snapshots_category ON snapshots(category, list_type, collected_at);
@@ -572,11 +572,12 @@ def get_all_snapshots_df(days: int = 7):
     import pandas as pd
     with get_conn() as conn:
         return pd.read_sql_query(
-            # collected_at is stored as TEXT (ISO-8601), so it must be cast to
-            # timestamptz before comparing against NOW() - interval, otherwise
-            # Postgres raises "operator does not exist: text >= timestamp with
-            # time zone" and the whole digest 500s. make_interval(days => %s)
-            # keeps the window count safely parameterised.
+            # The ::timestamptz cast is a no-op now that the column is
+            # timestamptz, and is kept only so this query still runs against a
+            # database that predates the 2026-08-12 migration - there it is
+            # required, or Postgres raises "operator does not exist: text >=
+            # timestamp with time zone" and the whole digest 500s.
+            # make_interval(days => %s) keeps the window count parameterised.
             """
             SELECT * FROM snapshots
             WHERE collected_at::timestamptz >= NOW() - make_interval(days => %s)

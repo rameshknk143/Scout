@@ -56,6 +56,26 @@ ASIN_RE = re.compile(r"^[A-Z0-9]{10}$")
 EARLIEST_PLAUSIBLE = datetime(2025, 1, 1, tzinfo=timezone.utc)
 
 
+def day_label(value) -> str:
+    """Short MM-DD label for a chart x-axis.
+
+    Takes either a datetime or an ISO-8601 string, because collected_at is being
+    migrated from TEXT to timestamptz and psycopg2 returns str for one and
+    datetime for the other. This used to be `value[-5:]`, which on a full ISO
+    string takes the last five characters of "...+00:00" and labelled every
+    point "00:00" - it only ever worked back when the column held bare dates.
+    """
+    if not value:
+        return "—"
+    if isinstance(value, datetime):
+        return value.strftime("%m-%d")
+    text = str(value)
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).strftime("%m-%d")
+    except ValueError:
+        return text[:10] or "—"
+
+
 def clean_asin(asin: str) -> str:
     asin = (asin or "").strip().upper()
     if not ASIN_RE.match(asin):
@@ -341,7 +361,13 @@ def df_to_records(df: pd.DataFrame):
     clean = df.replace({math.nan: None})
     for col in clean.columns:
         if pd.api.types.is_datetime64_any_dtype(clean[col]):
-            clean[col] = clean[col].astype(str)
+            # isoformat(), not astype(str): pandas stringifies a Timestamp as
+            # "2026-08-11 18:24:37+00:00" (space), and JS Date() only parses the
+            # "T" form reliably. Every other path here emits ISO-8601, so keep
+            # this one identical.
+            clean[col] = clean[col].apply(
+                lambda v: v.isoformat() if pd.notna(v) else None
+            )
     records = clean.to_dict(orient="records")
     # dates (python datetime.date objects from trend_radar's collected_date column, if present)
     for r in records:
@@ -791,7 +817,7 @@ def get_drawer_details(asin: str, user_id: int = Depends(require_user)):
     if history:
         for s in history[-7:]:
             chart_points.append({
-                "day": s["collected_at"][-5:] if s["collected_at"] else "—",
+                "day": day_label(s["collected_at"]),
                 "BSR": s["rank"] if s["rank"] is not None else None,
                 "Price": s["price"] if s["price"] is not None else sell_price
             })
