@@ -343,6 +343,31 @@ def post_to_scoutveda(items, category):
     return r.json()
 
 
+def canonical_categories():
+    """The category names collector.py writes, read from its source.
+
+    Parsed rather than imported because `import collector` needs DATABASE_URL and
+    this bridge deliberately never holds one - it posts through the API. Parsed
+    rather than copied because a copy is exactly how this broke: MAXUN_ROBOTS was
+    configured with "Beauty" and "Grocery & Gourmet", which are what the Amazon
+    page calls them, while collector.py and the API's CATEGORIES both say
+    "Beauty & Personal Care" and "Grocery & Gourmet Foods". 240 rows landed under
+    names the Trend Radar has no entry for and were invisible in the UI.
+
+    Returns an empty set if collector.py cannot be read, so a missing file
+    degrades to the old no-validation behaviour rather than blocking a run.
+    """
+    src_path = Path(__file__).with_name("collector.py")
+    try:
+        src = src_path.read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    block = re.search(r"^CATEGORIES\s*=\s*\{(.*?)^\}", src, re.S | re.M)
+    if not block:
+        return set()
+    return set(re.findall(r'"([^"]+)"\s*:', block.group(1)))
+
+
 def main():
     ap = argparse.ArgumentParser(description="Forward Maxun run output into ScoutVeda.")
     ap.add_argument("--dry-run", action="store_true",
@@ -350,15 +375,30 @@ def main():
     ap.add_argument("--run-id", help="forward this run even if already forwarded")
     ap.add_argument("--robot-id", default=MAXUN_ROBOT_ID,
                     help="robot to forward (default: MAXUN_ROBOT_ID)")
-    # No default. A hand-run that silently invented "Maxun Visual Scrape" put the
-    # Grocery robot's rows under two category names, which splits any chart grouped
-    # by category. Better to refuse than to guess.
+    # No default, and checked against collector.py below. A hand-run that silently
+    # invented "Maxun Visual Scrape" put the Grocery robot's rows under two category
+    # names, which splits any chart grouped by category. Better to refuse than guess.
     ap.add_argument("--category", required=True,
-                    help='ScoutVeda category, e.g. "Grocery & Gourmet"')
+                    help='ScoutVeda category, e.g. "Grocery & Gourmet Foods"')
     ap.add_argument("--list-type", default="custom-scrape")
     ap.add_argument("--limit", type=int, default=5,
                     help="max new runs to forward in one pass")
     args = ap.parse_args()
+
+    known = canonical_categories()
+    if known and args.category not in known:
+        close = [c for c in known if c.lower().startswith(args.category.lower()[:6])]
+        sys.exit(
+            "Unknown category %r.\n"
+            "It must match collector.py's CATEGORIES exactly, or these rows land "
+            "under a name the API's CATEGORIES list does not contain and they never "
+            "appear in the Trend Radar.%s\n"
+            "Known: %s" % (
+                args.category,
+                ("\nDid you mean: %s" % ", ".join(repr(c) for c in close)) if close else "",
+                ", ".join(sorted(known)),
+            )
+        )
 
     robot_id = args.robot_id
     if not robot_id:
