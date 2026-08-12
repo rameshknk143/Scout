@@ -1,0 +1,56 @@
+name: Scout Monitor
+
+# Hourly end-to-end check of the API and web app. scripts/monitor.py exits
+# non-zero when something is wrong, which fails this workflow, which makes
+# GitHub send Ram its standard "run failed" email. No paid alerting service,
+# no new account, no extra secret beyond the API key -- the notification
+# channel is one GitHub already owns.
+#
+# WHY A SCHEDULE HERE WHEN keep-alive.yml HAD ITS SCHEDULE REMOVED
+# ----------------------------------------------------------------
+# keep-alive.yml's schedule was removed because GitHub's cron is best-effort
+# and routinely stretches a 10-minute interval past Render's 15-minute sleep
+# timer -- for a keep-warm ping, late means it did not work at all. A monitor
+# does not care: a check that lands at 07:40 instead of 07:00 is still a valid
+# check. Same unreliable scheduler, different tolerance.
+#
+# WHY THE HOURS ARE WINDOWED (03:00-18:00 UTC, 08:30-23:30 IST)
+# -------------------------------------------------------------
+# Render's free tier allows 750 instance hours/month and the service sleeps
+# after ~15 idle minutes. The Oracle VM's keep-warm cron (*/10 2-19 UTC)
+# already holds it awake across this whole window, so these requests land on
+# an instance that is running anyway and add ZERO instance hours. A check
+# outside the window would wake a sleeping service and burn hours that the
+# 750 cap cannot spare. The window ends at 18:00 rather than 19:00 so that
+# scheduler drift cannot push a run past the 19:59 edge of keep-warm.
+#
+# Roughly 16 runs/day at ~10s each is ~90 minutes/month of Actions time,
+# against the 2,000-minute free allowance.
+
+on:
+  schedule:
+    - cron: "0 3-18 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the API key secret is present
+        # Without this, a missing secret looks identical to a broken API: four
+        # authenticated checks fail with 401 every hour and the real cause is
+        # not in the log anywhere.
+        run: |
+          if [ -z "${{ secrets.SCOUT_KEY }}" ]; then
+            echo "::error::Repository secret SCOUT_KEY is not set."
+            echo "Settings -> Secrets and variables -> Actions -> New repository secret."
+            echo "Value is API_KEY from the API's environment (Render dashboard)."
+            exit 1
+          fi
+
+      - name: Run checks
+        env:
+          SCOUT_KEY: ${{ secrets.SCOUT_KEY }}
+        run: python3 scripts/monitor.py
