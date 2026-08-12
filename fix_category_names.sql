@@ -1,24 +1,37 @@
 -- Normalise snapshots.category onto the names the API actually knows.
 --
 -- api/main.py's CATEGORIES (31 names, kept in sync with scraper/collector.py's
--- CATEGORIES dict) is what the Trend Radar dropdown is built from. Five names in
--- the table are not in it, so those rows are collected, stored, and then never
--- shown:
+-- CATEGORIES dict) is what the Trend Radar dropdown is built from. Rows sitting
+-- under a name outside that list are collected, stored, and then never shown;
+-- rows sitting under the WRONG name inside it are worse, because they are shown.
 --
---   category               list_type      rows  what they actually are
---   ---------------------  -------------  ----  ---------------------------------
+-- State of the table as read on 2026-08-13:
+--
+--   category                list_type      rows  what they actually are
+--   ----------------------  -------------  ----  --------------------------------
 --   Beauty                  bestsellers      90  Maxun Beauty robot
+--   Beauty                  watchlist         6  VM deep-tracker
 --   Grocery & Gourmet       bestsellers     150  Maxun Grocery robot
 --   Maxun Visual Scrape     custom-scrape    60  Maxun Grocery robot, hand-run
---   Electronics             watchlist        48  VM deep-tracker (phone cases)
---   Competitor Watchlist    watchlist        18  VM deep-tracker (phone cases)
+--   Electronics             watchlist        54  VM deep-tracker (phone cases)
+--   Competitor Watchlist    watchlist        36  VM deep-tracker
+--   Health & Personal Care  watchlist         6  VM deep-tracker - IN CATEGORIES
+--   Home & Kitchen          watchlist         6  VM deep-tracker - IN CATEGORIES
 --
--- Cause. MAXUN_ROBOTS was configured with the names Amazon puts on the page
--- ("Beauty", "Grocery & Gourmet") rather than the names collector.py writes
--- ("Beauty & Personal Care", "Grocery & Gourmet Foods"). Fixed at source in
--- laptop.env, and maxun_bridge.py now refuses a --category that is not in
--- collector.py's CATEGORIES, so it cannot recur. This file repairs the rows
--- already written.
+-- Two independent causes, both fixed at source before this file was written:
+--
+--   1. MAXUN_ROBOTS was configured with the names Amazon puts on the page
+--      ("Beauty", "Grocery & Gourmet") rather than the names collector.py writes
+--      ("Beauty & Personal Care", "Grocery & Gourmet Foods"). Fixed in
+--      laptop.env, and maxun_bridge.py now refuses a --category that is not in
+--      collector.py's CATEGORIES, so it cannot recur.
+--
+--   2. push_to_scoutveda.py set the category from `rank_category`, the department
+--      parsed off the BSR line. Invisible while the watchlist was three phone
+--      cases that all said "Electronics"; once targets.txt went to 15 ASINs it
+--      started writing real category names. Fixed 2026-08-13 - see section 4.
+--
+-- This file repairs the rows already written.
 --
 -- It also deletes one mislabelled pass (30 rows) - see section 5, which explains
 -- why a delete and not a rename, and what was checked first.
@@ -34,14 +47,21 @@ SELECT 'before: ' || category || ' / ' || list_type || ' = ' || count(*) AS stat
 FROM snapshots
 WHERE category IN ('Beauty', 'Grocery & Gourmet', 'Maxun Visual Scrape',
                    'Electronics', 'Competitor Watchlist')
+   OR list_type = 'watchlist'
 GROUP BY category, list_type ORDER BY category;
 
 -- 1-2. The two Maxun bestseller robots. Straight rename onto the canonical name.
+--
+-- The list_type filter is load-bearing, not defensive. 'Beauty' is no longer only
+-- the Maxun robot: since targets.txt went to 15 ASINs the VM deep-tracker has been
+-- writing watchlist rows under it too (6 as of 2026-08-13). Without the filter this
+-- statement would sweep those into the canonical Beauty category, which is exactly
+-- what section 4 exists to prevent.
 UPDATE snapshots SET category = 'Beauty & Personal Care'
-WHERE category = 'Beauty';
+WHERE category = 'Beauty' AND list_type = 'bestsellers';
 
 UPDATE snapshots SET category = 'Grocery & Gourmet Foods'
-WHERE category = 'Grocery & Gourmet';
+WHERE category = 'Grocery & Gourmet' AND list_type = 'bestsellers';
 
 -- 3. Same Grocery robot, forwarded by hand before --category was required. The
 -- titles are the same Aashirvaad/Fortune/Tata rows. list_type is deliberately
@@ -50,18 +70,30 @@ WHERE category = 'Grocery & Gourmet';
 UPDATE snapshots SET category = 'Grocery & Gourmet Foods'
 WHERE category = 'Maxun Visual Scrape';
 
--- 4. The VM deep-tracker wrote 'Competitor Watchlist' until 2026-08-10 and
--- 'Electronics' after, so its own history is split across two names. Consolidate
--- onto the original.
+-- 4. Every watchlist row onto 'Competitor Watchlist'.
 --
--- Deliberately NOT renamed to a canonical category. weekly_digest() in
--- api/trend_radar.py filters by category but not by list_type (only
--- category_table does), so folding these rows into 'Electronics Accessories'
--- would feed deep-tracked competitor snapshots into that category's new_entrants
--- and top_movers. Keeping them under a name outside CATEGORIES is what keeps
--- them out of the Trend Radar, which is correct for a watchlist.
+-- The deep-tracker's history is split across five names. push_to_scoutveda.py set
+-- the category from `rank_category` - the department parsed off the BSR line,
+-- "#1,714 in Electronics" - falling back to CATEGORY. While the target list was
+-- three phone cases that always said 'Electronics' and looked deliberate. Widening
+-- targets.txt to 15 ASINs across four departments turned it into:
+--
+--     Electronics             54     (phone cases)
+--     Competitor Watchlist    36     (before rank_category won)
+--     Beauty                   6
+--     Health & Personal Care   6     <-- already inside CATEGORIES
+--     Home & Kitchen           6     <-- already inside CATEGORIES
+--
+-- The last two are the damaging ones: weekly_digest() in api/trend_radar.py filters
+-- by category but NOT by list_type (only category_table does), so those 12 rows are
+-- being fed into those categories' new_entrants and top_movers as though they were
+-- bestseller captures. Fixed at source on 2026-08-13 - the push script now always
+-- sends CATEGORY - so this repairs the rows already written.
+--
+-- Written against list_type rather than a list of names so it also catches whatever
+-- department a future target lands in, if the source fix is ever regressed.
 UPDATE snapshots SET category = 'Competitor Watchlist'
-WHERE category = 'Electronics' AND list_type = 'watchlist';
+WHERE list_type = 'watchlist' AND category <> 'Competitor Watchlist';
 
 -- 5. One mislabelled pass: 30 Grocery rows written under 'Health & Personal Care'
 -- at 2026-08-11T18:18:00Z.
@@ -91,6 +123,7 @@ FROM snapshots
 WHERE category IN ('Beauty', 'Grocery & Gourmet', 'Maxun Visual Scrape',
                    'Electronics', 'Competitor Watchlist',
                    'Beauty & Personal Care', 'Grocery & Gourmet Foods')
+   OR list_type = 'watchlist'
 GROUP BY category, list_type ORDER BY category;
 
 COMMIT;
