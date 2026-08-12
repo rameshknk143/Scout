@@ -93,6 +93,24 @@ def _health():
     return "200 ok"
 
 
+@check("deployed build")
+def _version():
+    status, body = get(f"{BASE}/version", key=KEY)
+    assert status == 200, f"expected 200, got {status}"
+    commit = (body or {}).get("commit", "")
+    assert commit and commit != "dev", f"service does not know its build: {body!r}"
+
+    # Reported, deliberately not asserted. A mismatch usually means Render is
+    # mid-build after a push a minute ago, and failing on that would make the
+    # monitor cry wolf every time anything ships. A genuinely failed deploy
+    # shows up as this line disagreeing with main across several hourly runs.
+    expected = os.environ.get("GITHUB_SHA", "")
+    if expected:
+        state = "matches main" if commit == expected else f"main is {expected[:8]}"
+        return f"{commit[:8]} ({state})"
+    return commit[:8]
+
+
 # --- the API is not wide open ----------------------------------------------
 # require_key is one decorator argument on each route. Dropping it would not
 # break any page -- the web app sends the key anyway -- so nothing else in the
