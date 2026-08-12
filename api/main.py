@@ -388,6 +388,33 @@ def health():
     return {"ok": True}
 
 
+@app.get("/version", dependencies=[Depends(require_key)])
+def version():
+    """Which commit is actually running.
+
+    "Pushed to main" and "live on Render" are not the same thing, and there was
+    no way to tell them apart from outside: every externally reachable response
+    happens to contain no field that differs between recent builds. That matters
+    for changes that must be deployed BEFORE something else happens — the
+    collected_at TEXT -> timestamptz migration is the case in point, because
+    psycopg2 returns str for one type and datetime for the other, so running the
+    ALTER against an API that predates the tolerant readers 500s the product
+    drawer.
+
+    Render injects these at build time. They are absent when running locally,
+    hence the "dev" fallbacks.
+
+    Behind require_key: a commit SHA is not a secret, but it is free to keep it
+    off an unauthenticated route. /health stays as it was — no auth, no
+    database, safe for the public keep-warm ping.
+    """
+    return {
+        "commit": os.environ.get("RENDER_GIT_COMMIT", "dev"),
+        "branch": os.environ.get("RENDER_GIT_BRANCH", "dev"),
+        "service": os.environ.get("RENDER_SERVICE_NAME", "local"),
+    }
+
+
 @app.get("/trend-radar/categories", dependencies=[Depends(require_key)])
 def get_categories():
     return {"categories": CATEGORIES}
