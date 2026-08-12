@@ -415,6 +415,20 @@ def version():
     }
 
 
+@app.get("/pipelines", dependencies=[Depends(require_key)])
+def pipelines():
+    """Per-writer freshness, so a dead collector cannot hide behind a live one.
+
+    The monitor's original freshness check looked at the newest row in the whole
+    table. The laptop robots write hourly, so that check stays green even if the
+    nightly collector — 96k of the ~114k rows, and the only source of the
+    most-gifted / most-wished-for / new-releases lists — stops entirely. Since
+    nothing is allowed to depend on the laptop being on, table-wide freshness
+    was measuring the one source that does not count.
+    """
+    return db.pipeline_freshness()
+
+
 @app.get("/trend-radar/categories", dependencies=[Depends(require_key)])
 def get_categories():
     return {"categories": CATEGORIES}

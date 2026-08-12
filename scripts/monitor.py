@@ -164,6 +164,36 @@ def _fresh():
     return f"newest {newest} ({age}d old)"
 
 
+@check("nightly collector")
+def _collector():
+    """The check above is table-wide, which is not good enough on its own.
+
+    The laptop robots write hourly, so whole-table freshness stays green even if
+    the nightly collector stops dead — and the collector is 96k of ~114k rows
+    and the only source of the most-gifted / most-wished-for / new-releases
+    lists. Nothing is allowed to depend on the laptop being on, so this asks
+    about the collector specifically.
+
+    The other two writers are printed but NOT asserted: the laptop runs about an
+    hour a day by design, and the VM deep-tracker is a known-degraded pipeline
+    (datacenter-IP rate limiting). Failing on either would be noise.
+    """
+    status, body = get(f"{BASE}/pipelines", key=KEY)
+    assert status == 200, f"expected 200, got {status}"
+    collector = (body or {}).get("nightly_collector") or {}
+    age = collector.get("age_hours")
+    assert age is not None, "collector has never written a row"
+
+    others = "  ".join(
+        f"{n.split('_')[0]}={(body[n].get('age_hours'))}h"
+        for n in ("vm_watchlist", "laptop_maxun") if body.get(n)
+    )
+    # Runs 20:45 UTC and takes ~1.5h, so ~25h is the normal worst case. 48h
+    # tolerates one entirely missed night before shouting.
+    assert age <= 48, f"collector last wrote {age}h ago -- it has stopped"
+    return f"{age}h ago (advisory: {others})"
+
+
 @check(f"category table ({SAMPLE_CATEGORY})")
 def _category():
     url = f"{BASE}/trend-radar/category/{urllib.parse.quote(SAMPLE_CATEGORY)}"

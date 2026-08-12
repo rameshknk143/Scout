@@ -1044,6 +1044,51 @@ def get_org_members(owner_id):
             return [dict(r) for r in cur.fetchall()]
 
 
+def pipeline_freshness():
+    """When each writer last landed a row, for monitoring.
+
+    There is no `source` column on snapshots, so the three writers are told
+    apart by what only they produce:
+
+      * nightly collector — the ONLY writer of most-gifted, most-wished-for and
+        new-releases. The laptop robots do bestsellers exclusively, so these
+        three list_types identify the collector unambiguously.
+      * VM deep-tracker — the only writer of list_type 'watchlist'.
+      * laptop Maxun — bestsellers in the four categories it runs. This one
+        overlaps with the collector, which also covers those categories, so its
+        row count is a lower bound and its freshness is advisory only. It is
+        expected to be stale for most of the day: the laptop runs roughly an
+        hour a day by design, and nothing may depend on it being on.
+
+    Returned as hours, computed in SQL against now(), so the answer does not
+    depend on the caller's clock.
+    """
+    sources = {
+        "nightly_collector": "list_type IN ('most-gifted', 'most-wished-for', 'new-releases')",
+        "vm_watchlist": "list_type = 'watchlist'",
+        "laptop_maxun": ("list_type = 'bestsellers' AND category IN "
+                         "('Home & Kitchen', 'Health & Personal Care', "
+                         "'Beauty & Personal Care', 'Grocery & Gourmet Foods')"),
+    }
+    out = {}
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            for name, where in sources.items():
+                cur.execute(
+                    f"""SELECT max(collected_at),
+                               EXTRACT(EPOCH FROM (now() - max(collected_at))) / 3600.0,
+                               count(*)
+                        FROM snapshots WHERE {where}"""      # noqa: S608 - constants above, no input
+                )
+                last, age_h, rows = cur.fetchone()
+                out[name] = {
+                    "last_seen": last.isoformat() if last else None,
+                    "age_hours": round(float(age_h), 2) if age_h is not None else None,
+                    "rows": rows,
+                }
+    return out
+
+
 if __name__ == "__main__":
     init_db()
     print("Initialized Supabase Postgres schema.")
