@@ -157,6 +157,13 @@ Three independent paths, because each covers a case the others cannot.
    monitor workflow. Everything else reports its own failures; a machine that is
    off reports nothing, and nothing looks exactly like a healthy quiet night.
 
+   It watches **`vm-health` only**, and that is deliberate. A dead-man's switch
+   wants one beacon that is reliable around the clock, not several whose silence
+   has innocent explanations — every other component has a schedule with gaps
+   longer than the 90-minute threshold, including keep-warm, which is meant to
+   be quiet for six hours a night. Add a component to `DEADMAN_EXEMPT` in
+   `api/ops.py` unless it genuinely runs at least hourly, forever.
+
 ### Alert-storm suppression is load-bearing
 
 A system that mails on every failed tick sends hundreds of emails in one outage,
@@ -332,3 +339,15 @@ The honest limits, in the order they will actually bite:
   records `peak_mb`; after a week of real passes, set it to ~1.5× the observed
   peak. Tightening on a guess can only do harm — too low kills scrapes that were
   working, and the symptom looks nothing like the cause.
+
+- **A dead VM takes up to ~9 hours to be noticed.** The in-VM alerting is
+  15-minute, but it dies with the box; the outside check runs 4×/day, and the
+  gap between the 18:00 and 03:00 UTC runs is the worst case. Closing it means
+  spending Actions minutes that are not there (§10). Given that the box has run
+  for months without vanishing, and that the failure it covers is rare and not
+  urgent at 3am, this was judged the right trade — but it is a choice, not an
+  oversight, and it is the first thing to revisit if the VM ever does disappear.
+
+- **The reboot test has not been done.** Boot persistence is configured and the
+  units are enabled, but nothing has yet been proven by actually rebooting. The
+  kernel update pending since 1 Aug is the natural chance to prove it.

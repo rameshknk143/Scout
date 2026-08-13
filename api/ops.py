@@ -273,7 +273,39 @@ DEADMAN_MINUTES = int(os.environ.get("DEADMAN_MINUTES", "90"))
 
 # Components that only run occasionally are exempt from the staleness rule --
 # the nightly maintenance job is *supposed* to be silent for 23 hours.
-DEADMAN_EXEMPT = {"vm-maintain", "vm-scrape", "vm-push", "deploy-check"}
+#
+# vm-keepwarm is exempt for the same reason, less obviously: its timer covers
+# 02:00-19:59 UTC only, to stay inside Render's 750 instance-hours, so it goes
+# quiet for over six hours every night by design. Watching it would have mailed
+# a false "VM is down" nightly. Only the schedule of the monitor workflow --
+# which happens to run entirely inside the keep-warm window -- was hiding it.
+#
+# That leaves vm-health as the sole watched component, and it should be: it is
+# the only thing that runs every 15 minutes around the clock. If the box is
+# alive, it says so; if it is gone, nothing else being watched would add a
+# thing. A dead-man's switch wants one reliable beacon, not several unreliable
+# ones whose silence has innocent explanations.
+DEADMAN_EXEMPT = {"vm-maintain", "vm-scrape", "vm-push", "vm-keepwarm",
+                  "deploy-check"}
+
+
+def _incident_open(component, event):
+    """True if the last thing said about this fault was that it was happening.
+
+    Ordering is by id, not created_at: two rows written in the same transaction
+    can share a timestamp, and then "the latest one" becomes a coin toss.
+    """
+    with db.get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """SELECT severity FROM ops_events
+                   WHERE component = %s AND event = %s
+                     AND severity IN ('warn','error','resolved')
+                   ORDER BY id DESC LIMIT 1""",
+                (component, event),
+            )
+            row = cur.fetchone()
+    return bool(row) and row[0] in ("warn", "error")
 
 
 def deadman():
@@ -315,8 +347,14 @@ def deadman():
                "The scraping VM is presumed down: check that the Oracle instance "
                "is running, then that the scout-health timer is active.",
                {"stale": stale, "threshold_minutes": DEADMAN_MINUTES})
-    else:
+    elif _incident_open("deadman", "vm-silent"):
         # Closes the incident when the box comes back, without anyone acting.
+        #
+        # Only when one is actually open. record() already refuses to *mail* an
+        # unearned recovery, but it still stores the row, and a healthy check
+        # runs four times a day -- which would fill the 48-hour event feed with
+        # "All components are reporting again" and push real warnings out of it.
+        # Silence is the correct output of a check that found nothing wrong.
         record("deadman", "resolved", "vm-silent",
                "All components are reporting again.",
                {"checked": len(watched)})
