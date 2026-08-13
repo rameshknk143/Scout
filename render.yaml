@@ -3,6 +3,11 @@ services:
     name: scout-api
     runtime: python
     plan: free
+    # rootDir also decides WHEN Render deploys: pushes that change nothing under
+    # api/ are skipped, by design. So the service can sit several commits behind
+    # main and be perfectly current -- on 13 Aug it served 2ff1955 while main was
+    # two monitoring-only commits ahead, which is correct, not a stuck deploy.
+    # scripts/monitor.py compares against the last api/ commit for this reason.
     rootDir: api
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT

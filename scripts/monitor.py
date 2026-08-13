@@ -125,13 +125,19 @@ def _version():
     commit = (body or {}).get("commit", "")
     assert commit and commit != "dev", f"service does not know its build: {body!r}"
 
-    # Reported, deliberately not asserted. A mismatch usually means Render is
-    # mid-build after a push a minute ago, and failing on that would make the
-    # monitor cry wolf every time anything ships. A genuinely failed deploy
-    # shows up as this line disagreeing with main across several hourly runs.
-    expected = os.environ.get("GITHUB_SHA", "")
+    # Compared against the last commit that touched api/, not against HEAD.
+    # render.yaml sets `rootDir: api`, so Render deliberately does not rebuild
+    # for a commit that only changes scripts/ or a workflow. Against HEAD this
+    # line reads "main is <newer sha>" after every monitoring-only push, which
+    # is indistinguishable from a deploy that failed.
+    #
+    # Reported, deliberately not asserted either way: a real mismatch is usually
+    # just Render mid-build, and failing on that would cry wolf every time
+    # anything ships. A genuinely stuck deploy shows up as this line disagreeing
+    # across several hourly runs.
+    expected = os.environ.get("EXPECTED_COMMIT", "")
     if expected:
-        state = "matches main" if commit == expected else f"main is {expected[:8]}"
+        state = "current" if commit == expected else f"api/ is at {expected[:8]}"
         return f"{commit[:8]} ({state})"
     return commit[:8]
 

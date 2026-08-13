@@ -37,6 +37,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history so the step below can find the last commit that touched
+          # api/. The default depth of 1 would make every run think the current
+          # commit is the API commit.
+          fetch-depth: 0
+
+      - name: Work out which commit Render should be serving
+        # NOT github.sha. render.yaml sets `rootDir: api`, so Render only builds
+        # when something under api/ changes -- a commit to scripts/ or to this
+        # workflow deliberately does not deploy. Comparing the running service
+        # against HEAD therefore prints "main is <newer sha>" whenever the last
+        # push was monitoring-only, which looks like a stuck deploy and is not
+        # one. That exact line cost an evening of chasing on 13 Aug.
+        id: api_commit
+        run: echo "sha=$(git log -1 --format=%H -- api/)" >> "$GITHUB_OUTPUT"
 
       - name: Check the API key secret is present
         # Without this, a missing secret looks identical to a broken API: four
@@ -60,5 +75,5 @@ jobs:
       - name: Run checks
         env:
           SCOUT_KEY: ${{ secrets.API_KEY }}
-          GITHUB_SHA: ${{ github.sha }}
+          EXPECTED_COMMIT: ${{ steps.api_commit.outputs.sha }}
         run: python3 scripts/monitor.py
