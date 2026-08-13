@@ -34,6 +34,25 @@ BASE = os.environ.get("SCOUT_API_BASE", "https://scout-api-3yvy.onrender.com").r
 WEB = os.environ.get("SCOUT_WEB_BASE", "https://scoutveda.com").rstrip("/")
 KEY = os.environ.get("SCOUT_KEY", "")
 
+# Everything Ram reads is IST. The servers all run UTC -- Render, the GitHub
+# runner, the Oracle VM -- so every timestamp that reaches a human gets
+# converted here rather than making him do the +5:30 in his head.
+IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30), "IST")
+
+
+def ist(value):
+    """Any ISO-8601 timestamp -> 'DD Mon HH:MM IST'."""
+    if not value:
+        return "never"
+    text = str(value).replace("Z", "+00:00")
+    try:
+        stamp = datetime.datetime.fromisoformat(text)
+    except ValueError:
+        return str(value)
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=datetime.timezone.utc)
+    return stamp.astimezone(IST).strftime("%d %b %H:%M IST")
+
 # Generous because Render's free tier cold start is 30-60s. The workflow is
 # scheduled inside the VM keep-warm window so it should never actually pay
 # that, but a timeout here would be a false alarm, and a false alarm that
@@ -158,10 +177,10 @@ def _fresh():
     dates = (body or {}).get("collection_dates") or []
     assert dates, "no collection dates at all -- the table is empty"
     newest = datetime.date.fromisoformat(max(dates)[:10])
-    age = (datetime.datetime.now(datetime.timezone.utc).date() - newest).days
+    age = (datetime.datetime.now(IST).date() - newest).days
     assert age <= MAX_STALE_DAYS, (
-        f"newest data is {newest} ({age} days old) -- a collector has stopped")
-    return f"newest {newest} ({age}d old)"
+        f"newest data is {newest:%d %b} ({age} days old) -- a collector has stopped")
+    return f"newest {newest:%d %b} ({age}d old)"
 
 
 @check("nightly collector")
@@ -185,13 +204,39 @@ def _collector():
     assert age is not None, "collector has never written a row"
 
     others = "  ".join(
-        f"{n.split('_')[0]}={(body[n].get('age_hours'))}h"
+        f"{n.split('_')[0]} {ist(body[n].get('last_seen'))}"
         for n in ("vm_watchlist", "laptop_maxun") if body.get(n)
     )
     # Runs 20:45 UTC and takes ~1.5h, so ~25h is the normal worst case. 48h
     # tolerates one entirely missed night before shouting.
     assert age <= 48, f"collector last wrote {age}h ago -- it has stopped"
     return f"{age}h ago (advisory: {others})"
+
+
+@check("vm scrape yield")
+def _yield():
+    """How much of the last VM pass actually landed.
+
+    This is the check that removes "go and watch the 15:20 run" from anyone's
+    job. The VM scrapes 15 targets twice a day and amazon.in blocks its Oracle
+    datacenter IP intermittently, so a pass returns anywhere from 15 down to 2 —
+    and until now the only way to know which was to read cron.log over SSH.
+
+    Half the target list is the line. Below that the run is not producing usable
+    price history, and the cause is essentially always the same one, so the
+    message says so rather than making someone re-derive it.
+    """
+    status, body = get(f"{BASE}/pipelines", key=KEY)
+    assert status == 200, f"expected 200, got {status}"
+    vm = (body or {}).get("vm_watchlist") or {}
+    got, want = vm.get("last_pass_asins") or 0, vm.get("targets") or 15
+    when = ist(vm.get("last_seen"))
+    assert got >= want / 2, (
+        f"last pass landed only {got} of {want} targets at {when}. "
+        "amazon.in is refusing the VM's datacenter IP -- check the phone tunnel "
+        "(SOCKS on 127.0.0.1:1080); with it up this should be 15 of 15"
+    )
+    return f"{got} of {want} at {when}"
 
 
 @check(f"category table ({SAMPLE_CATEGORY})")
@@ -218,7 +263,7 @@ def _web():
 
 failed = [r for r in results if not r[0]]
 width = max(len(name) for _, name, _ in results)
-print(f"ScoutVeda monitor  {datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M UTC}")
+print(f"ScoutVeda monitor  {datetime.datetime.now(IST):%d %b %Y %H:%M IST}")
 print(f"api {BASE}\nweb {WEB}\n")
 for ok, name, detail in results:
     print(f"  {'PASS' if ok else 'FAIL'}  {name.ljust(width)}  {detail}")

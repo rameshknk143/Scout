@@ -1044,6 +1044,11 @@ def get_org_members(owner_id):
             return [dict(r) for r in cur.fetchall()]
 
 
+# targets.txt on the VM, as of 2026-08-13. Only used to render "3 of 15" in the
+# monitor, so drifting out of sync makes a label slightly wrong, nothing worse.
+VM_TARGET_COUNT = 15
+
+
 def pipeline_freshness():
     """When each writer last landed a row, for monitoring.
 
@@ -1086,6 +1091,27 @@ def pipeline_freshness():
                     "age_hours": round(float(age_h), 2) if age_h is not None else None,
                     "rows": rows,
                 }
+
+            # How many distinct ASINs the VM's most recent pass actually landed.
+            #
+            # Total row count says nothing about whether a run went well: the VM
+            # scrapes 15 targets twice a day, and amazon.in blocks its datacenter
+            # IP intermittently, so a pass can return anywhere from 15 down to 2.
+            # Without this the only way to know a run went badly was to read
+            # cron.log on the VM by hand, which is not monitoring.
+            #
+            # A "pass" is grouped by the half-hour it landed in: one pass writes
+            # its rows over a few minutes, and the two daily passes are 12h
+            # apart, so there is no chance of merging two of them.
+            cur.execute(
+                """SELECT count(DISTINCT asin) FROM snapshots
+                   WHERE list_type = 'watchlist'
+                     AND collected_at >= (SELECT max(collected_at) - interval '30 minutes'
+                                          FROM snapshots WHERE list_type = 'watchlist')"""
+            )
+            got = cur.fetchone()[0]
+            out["vm_watchlist"]["last_pass_asins"] = got
+            out["vm_watchlist"]["targets"] = VM_TARGET_COUNT
     return out
 
 
