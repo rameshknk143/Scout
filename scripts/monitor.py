@@ -32,7 +32,13 @@ import urllib.request
 
 BASE = os.environ.get("SCOUT_API_BASE", "https://scout-api-3yvy.onrender.com").rstrip("/")
 WEB = os.environ.get("SCOUT_WEB_BASE", "https://scoutveda.com").rstrip("/")
-KEY = os.environ.get("SCOUT_KEY", "")
+# .strip() is load-bearing. The repository secret was saved with a trailing
+# newline, and urllib rejects a header value containing one outright --
+# "ValueError: Invalid header value" on all seven authenticated checks, which
+# reads exactly like the API being broken. A key with surrounding whitespace is
+# never the intended value, so strip it here instead of relying on whoever
+# pastes it next getting the selection right.
+KEY = os.environ.get("SCOUT_KEY", "").strip()
 
 # Everything Ram reads is IST. The servers all run UTC -- Render, the GitHub
 # runner, the Oracle VM -- so every timestamp that reaches a human gets
