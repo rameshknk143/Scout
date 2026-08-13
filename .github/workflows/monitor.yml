@@ -42,9 +42,16 @@ jobs:
         # Without this, a missing secret looks identical to a broken API: four
         # authenticated checks fail with 401 every hour and the real cause is
         # not in the log anywhere.
+        #
+        # API_KEY, not a new SCOUT_KEY. This workflow originally asked for a
+        # secret of its own and failed its guard step on all 8 scheduled runs of
+        # 13 Aug, waiting on someone to add one -- when the repository already
+        # had the same value under the name nightly-storefront-sync.yml sends as
+        # X-Scout-Key. A monitor nobody can run is worth nothing, and a second
+        # copy of one key is a second thing to rotate.
         run: |
-          if [ -z "${{ secrets.SCOUT_KEY }}" ]; then
-            echo "::error::Repository secret SCOUT_KEY is not set."
+          if [ -z "${{ secrets.API_KEY }}" ]; then
+            echo "::error::Repository secret API_KEY is not set."
             echo "Settings -> Secrets and variables -> Actions -> New repository secret."
             echo "Value is API_KEY from the API's environment (Render dashboard)."
             exit 1
@@ -52,5 +59,6 @@ jobs:
 
       - name: Run checks
         env:
-          SCOUT_KEY: ${{ secrets.SCOUT_KEY }}
+          SCOUT_KEY: ${{ secrets.API_KEY }}
+          GITHUB_SHA: ${{ github.sha }}
         run: python3 scripts/monitor.py
