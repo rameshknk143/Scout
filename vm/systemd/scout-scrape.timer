@@ -1,0 +1,27 @@
+[Unit]
+Description=Run the ScoutVeda watchlist scrape twice a day
+Documentation=https://github.com/scoutveda/scout-cloud/blob/main/vm/README.md
+
+[Timer]
+# 03:20 and 15:20 UTC = 08:50 and 20:50 IST. Twelve hours apart, and that gap is
+# the whole design: amazon.in rate-limits this Oracle datacenter IP on time
+# since the last request, not on batch size. Measured over several days --
+# a gap of 11.9h or more returned 15 of 15 targets every time, while gaps of
+# 6.9h or less produced heavy failures. Do not add a third daily run.
+OnCalendar=*-*-* 03:20:00
+OnCalendar=*-*-* 15:20:00
+
+# Up to 15 minutes of jitter. Requests arriving at exactly 03:20:00 every single
+# day are a pattern, and a pattern is a fingerprint; this costs nothing and
+# makes the traffic look less like a machine. It also keeps the scrape from
+# starting in the same second as anything else on the box.
+RandomizedDelaySec=900
+
+# The reason for moving off cron. A cron job whose slot passes while the VM is
+# down or rebooting is simply lost, forever, with no record. Persistent=true
+# runs it as soon as the machine is back -- so an Oracle host reboot at 03:15
+# costs a delayed pass rather than a missing day of price history.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

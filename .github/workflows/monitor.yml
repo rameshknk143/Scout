@@ -24,12 +24,26 @@ name: Scout Monitor
 # 750 cap cannot spare. The window ends at 18:00 rather than 19:00 so that
 # scheduler drift cannot push a run past the 19:59 edge of keep-warm.
 #
-# Roughly 16 runs/day at ~10s each is ~90 minutes/month of Actions time,
-# against the 2,000-minute free allowance.
+# FOUR RUNS A DAY, NOT SIXTEEN. This used to run hourly, on the assumption that
+# 16 runs of ~10s each cost ~90 minutes a month. That arithmetic was wrong in a
+# way worth recording: GitHub bills each *job* rounded up to a whole minute, so
+# a 10-second run costs a full minute and the true price was 16 x 30 = 480
+# minutes a month. This repo is private, so the 2,000-minute allowance is real,
+# and it was already 77% consumed -- exhausting it stops workflows outright,
+# which would silently kill the nightly collector.
+#
+# Hourly polling from here is also no longer what it was for. The VM now runs
+# its own watchdog every 15 minutes and mails its own failures, so continuous
+# liveness is covered from inside, for free, at four times the resolution. What
+# only an outside observer can do is notice that the VM has gone silent
+# altogether, and that check does not need to run hourly to be useful.
+#
+# 03/08/13/18 UTC keeps every run inside the keep-warm window and puts at most
+# a 9-hour gap between checks. 120 billed minutes a month, down from 480.
 
 on:
   schedule:
-    - cron: "0 3-18 * * *"
+    - cron: "0 3,8,13,18 * * *"
   workflow_dispatch: {}
 
 jobs:

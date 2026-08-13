@@ -1,0 +1,16 @@
+[Unit]
+Description=Nightly ScoutVeda backup and housekeeping
+
+[Timer]
+# 01:10 UTC = 06:40 IST. Chosen to sit in the quietest part of the schedule:
+# after the 15:20 scrape and nearly two hours before the 03:20 one, clear of
+# apt-daily-upgrade (~06:00 UTC) and of the 02:00 UTC automatic reboot window.
+OnCalendar=*-*-* 01:10:00
+RandomizedDelaySec=600
+
+# Backups are the one thing that must not be skipped because the box happened
+# to be down at 01:10.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

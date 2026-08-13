@@ -1,0 +1,28 @@
+# Fires whenever any scout unit fails. Instantiated by OnFailure=, so %i is the
+# name of the unit that died.
+#
+# This exists because of one hard limit: a process killed by SIGKILL runs no
+# exception handler. The two failures most likely to end this system quietly --
+# a job wedged past its timeout, and a job killed for exceeding its memory cap --
+# are both SIGKILL, and in both cases the Python inside has no chance to report
+# anything. systemd is the only component still standing to notice.
+#
+# So the in-process reporting in scoutd/run.py covers failures the job can see,
+# and this covers the failures it cannot. Between them there is no way for a
+# scheduled job to die silently.
+[Unit]
+Description=Report failure of %i to ScoutVeda ops
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/scoutd
+Environment=PYTHONPATH=/home/ubuntu/scoutd
+EnvironmentFile=-/home/ubuntu/.config/scoutd/env
+ExecStart=/usr/bin/python3 -m scoutd.notify_failure %i
+
+# Never let the failure reporter become a failure of its own: a crash loop here
+# during an outage would bury the original cause.
+TimeoutStartSec=3min
+NoNewPrivileges=yes

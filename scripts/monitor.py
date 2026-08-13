@@ -251,6 +251,39 @@ def _yield():
     return f"{got} of {want} at {when}"
 
 
+@check("vm alive (dead-man's switch)")
+def _deadman():
+    """The only check here that the VM cannot possibly perform for itself.
+
+    Everything else in this system reports its own failures: a scrape that
+    breaks says so, a push that cannot reach the API says so. A VM that is
+    powered off, kernel panicked, or cut off from the network says nothing --
+    and nothing is exactly what a healthy quiet night also looks like.
+
+    So this asks the API, from outside, whether the VM has been reporting. It
+    is a POST because it has a side effect by design: the API mails the alarm
+    itself, which means a dead VM is reported even in the window before anyone
+    notices this workflow went red.
+    """
+    request = urllib.request.Request(
+        f"{BASE}/ops/deadman", data=b"{}", method="POST",
+        headers={"X-Scout-Key": KEY, "Content-Type": "application/json",
+                 "User-Agent": "scoutveda-monitor"})
+    try:
+        with urllib.request.urlopen(request, timeout=TIMEOUT) as resp:
+            body = json.loads(resp.read() or "{}")
+    except urllib.error.HTTPError as exp:
+        raise AssertionError(f"deadman check returned HTTP {exp.code}") from exp
+
+    ages = body.get("components") or {}
+    summary = ", ".join(f"{name} {age}m" for name, age in sorted(ages.items()))
+    assert body.get("ok"), (
+        f"{body.get('reason') or 'no heartbeat from ' + ', '.join(body.get('stale', []))} "
+        f"-- the scraping VM is presumed down. Check the Oracle console first, "
+        f"then 'systemctl list-timers scout-*' on the box. Ages: {summary}")
+    return f"{body.get('checked', 0)} component(s) reporting: {summary}"
+
+
 @check(f"category table ({SAMPLE_CATEGORY})")
 def _category():
     url = f"{BASE}/trend-radar/category/{urllib.parse.quote(SAMPLE_CATEGORY)}"

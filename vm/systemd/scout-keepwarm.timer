@@ -1,0 +1,16 @@
+[Unit]
+Description=Ping the API every 10 minutes during Indian waking hours
+
+[Timer]
+# 02:00-19:59 UTC = 07:30-01:29 IST. The window is a budget, not a preference:
+# Render's free tier allows 750 instance hours a month, and pinging around the
+# clock keeps the service awake for ~730 of them, leaving no margin. This
+# window uses roughly 547 hours and still covers every hour anyone is awake.
+OnCalendar=*-*-* 02..19:00/10:00
+
+# No Persistent=true here, unlike the other timers. Catching up on a missed
+# keep-warm ping is pointless -- the API has already gone cold and the next
+# scheduled ping is at most ten minutes away.
+
+[Install]
+WantedBy=timers.target

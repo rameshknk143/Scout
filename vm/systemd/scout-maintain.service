@@ -1,0 +1,28 @@
+[Unit]
+Description=ScoutVeda nightly backup and housekeeping
+After=network-online.target
+Wants=network-online.target
+OnFailure=scout-alert@%N.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/scoutd
+Environment=PYTHONPATH=/home/ubuntu/scoutd
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/home/ubuntu/.config/scoutd/env
+ExecStart=/usr/bin/python3 -m scoutd.run maintain
+TimeoutStartSec=30min
+MemoryAccounting=yes
+MemoryMax=350M
+Nice=15
+IOSchedulingClass=idle
+
+# NOT PrivateTmp: cleaning the real /tmp is part of the job.
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=no
+
+[Install]
+WantedBy=multi-user.target

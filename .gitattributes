@@ -1,0 +1,7 @@
+
+# The VM tree is checked out onto Linux and deployed verbatim. A CRLF here is
+# not cosmetic: a shell script with CRLF line endings fails with the famously
+# unhelpful "bad interpreter: /usr/bin/env bash^M", and a systemd unit with
+# them is silently mis-parsed. This repo is edited from Windows, so pin it.
+vm/** text eol=lf
+*.sh text eol=lf

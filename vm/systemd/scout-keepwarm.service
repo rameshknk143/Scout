@@ -1,0 +1,27 @@
+[Unit]
+Description=Keep the Render free-tier API awake
+After=network-online.target
+Wants=network-online.target
+# Deliberately no OnFailure. A failed ping means the API is cold or restarting,
+# which is a slow page load and not an incident; tasks/health.py escalates it
+# only if it persists across several consecutive checks.
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/scoutd
+Environment=PYTHONPATH=/home/ubuntu/scoutd
+EnvironmentFile=-/home/ubuntu/.config/scoutd/env
+ExecStart=/usr/bin/python3 -m scoutd.run keepwarm
+TimeoutStartSec=5min
+MemoryAccounting=yes
+MemoryMax=120M
+Nice=15
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=no
+
+[Install]
+WantedBy=multi-user.target

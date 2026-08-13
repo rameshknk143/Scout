@@ -1132,6 +1132,18 @@ def ops_status():
     return ops.status()
 
 
+@app.post("/ops/deadman", dependencies=[Depends(require_key)])
+def ops_deadman():
+    """Presume the VM dead if it has stopped reporting, and raise the alarm.
+
+    Called from the monitor workflow, which is the only always-available thing
+    that lives outside the VM. Every other failure is reported by whatever
+    suffered it; a machine that is off reports nothing, and this is the check
+    that turns that silence into an email.
+    """
+    return ops.deadman()
+
+
 @app.post("/ops/prune", dependencies=[Depends(require_key)])
 def ops_prune():
     """Drop operational history past retention. Called by the VM's nightly

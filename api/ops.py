@@ -266,6 +266,67 @@ def status():
             "generated_at_ist": _ist(datetime.datetime.now(datetime.timezone.utc))}
 
 
+# How long a component may go quiet before it is presumed dead. The watchdog on
+# the VM beats every 15 minutes, so 90 covers a slow run, a reboot, and a missed
+# tick without crying wolf.
+DEADMAN_MINUTES = int(os.environ.get("DEADMAN_MINUTES", "90"))
+
+# Components that only run occasionally are exempt from the staleness rule --
+# the nightly maintenance job is *supposed* to be silent for 23 hours.
+DEADMAN_EXEMPT = {"vm-maintain", "vm-scrape", "vm-push", "deploy-check"}
+
+
+def deadman():
+    """Detect a VM that has gone silent, and say so. The one check it cannot do.
+
+    Every other failure in this system is reported by the component that
+    suffered it. This is the exception: a VM that is powered off, kernel
+    panicked, or cut off from the network sends nothing at all, and silence is
+    indistinguishable from health unless somebody is specifically looking for
+    it. That "somebody" has to live outside the VM, which is why this runs here
+    and is called from GitHub Actions rather than from the box itself.
+
+    Deliberately a POST with a side effect rather than a field on /ops/status:
+    a GET that silently emails people is a surprise, and this needs to be an
+    explicit act by a caller whose job is to check.
+    """
+    with db.get_conn() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                """SELECT component,
+                          round(EXTRACT(EPOCH FROM (now() - last_seen))/60.0)::int AS age
+                   FROM ops_heartbeats ORDER BY component""")
+            beats = [dict(r) for r in cur.fetchall()]
+
+    watched = [b for b in beats if b["component"] not in DEADMAN_EXEMPT]
+    stale = [b for b in watched if b["age"] > DEADMAN_MINUTES]
+
+    if not watched:
+        # Nothing has ever reported. Either this is a fresh deployment or the
+        # VM has never once succeeded -- both worth saying out loud rather than
+        # returning a cheerful "no stale components found".
+        return {"ok": False, "reason": "no components have ever reported",
+                "checked": 0, "stale": []}
+
+    names = ", ".join(f"{b['component']} ({b['age']}m)" for b in stale)
+    if stale:
+        record("deadman", "error", "vm-silent",
+               f"No heartbeat from {names} for over {DEADMAN_MINUTES} minutes. "
+               "The scraping VM is presumed down: check that the Oracle instance "
+               "is running, then that the scout-health timer is active.",
+               {"stale": stale, "threshold_minutes": DEADMAN_MINUTES})
+    else:
+        # Closes the incident when the box comes back, without anyone acting.
+        record("deadman", "resolved", "vm-silent",
+               "All components are reporting again.",
+               {"checked": len(watched)})
+
+    return {"ok": not stale, "checked": len(watched),
+            "threshold_minutes": DEADMAN_MINUTES,
+            "stale": [b["component"] for b in stale],
+            "components": {b["component"]: b["age"] for b in watched}}
+
+
 def prune():
     """Delete operational history past the retention window.
 

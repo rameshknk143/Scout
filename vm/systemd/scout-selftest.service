@@ -1,0 +1,33 @@
+# A unit that fails on purpose, to prove the alerting chain still works.
+#
+# Monitoring that has never been fired is a guess. This is the cheapest way to
+# answer "if a job died tonight, would anyone find out?" without waiting for a
+# real outage or editing a production unit to break it -- which is both risky
+# and easy to forget to undo.
+#
+# Run it, confirm the email arrives, and that is the whole chain verified:
+# systemd notices the failure -> OnFailure starts scout-alert@ -> the notifier
+# reaches the API -> the API records the event and sends mail.
+#
+#   sudo systemctl start scout-selftest.service      # expect: unit fails
+#   journalctl -u 'scout-alert@*' -n 20 --no-pager   # expect: alert reported
+#
+# MODE=timeout instead exercises the SIGKILL path, which is the one an
+# in-process handler can never cover:
+#
+#   sudo systemd-run --unit=scout-selftest-timeout --property=TimeoutStartSec=8s \
+#        --property=Type=oneshot --property=OnFailure=scout-alert@scout-selftest.service \
+#        /bin/sleep 300
+#
+# Safe to leave installed: it is not enabled, has no timer, and does nothing
+# until somebody deliberately starts it.
+[Unit]
+Description=ScoutVeda alerting self-test (fails on purpose)
+OnFailure=scout-alert@%N.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+ExecStart=/bin/sh -c 'echo "scout-selftest: failing on purpose to test the alert chain"; exit 7'
+NoNewPrivileges=yes

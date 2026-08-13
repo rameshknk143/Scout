@@ -1,0 +1,70 @@
+[Unit]
+Description=ScoutVeda watchlist scrape
+Documentation=https://github.com/scoutveda/scout-cloud/blob/main/vm/README.md
+# The scrape is useless without a route out, and on boot systemd will happily
+# start it before DHCP has finished. Waiting costs seconds and removes a class
+# of "failed at every reboot" alerts.
+After=network-online.target
+Wants=network-online.target
+OnFailure=scout-alert@%N.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/scoutd
+Environment=PYTHONPATH=/home/ubuntu/scoutd
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/home/ubuntu/.config/scoutd/env
+ExecStart=/usr/bin/python3 -m scoutd.run scrape
+
+# A full pass over 15 targets takes ~20 minutes including backoff. 45 minutes is
+# past any legitimate run, so anything that reaches this limit is hung, not slow.
+# Without it a wedged Playwright call holds the lock indefinitely and every
+# later run skips quietly -- collection stops while the logs look healthy.
+TimeoutStartSec=45min
+KillMode=mixed
+# Chromium ignores SIGTERM often enough to matter; give it a moment, then kill.
+TimeoutStopSec=30s
+
+# The cap exists so that a runaway browser kills its own cgroup instead of
+# letting the kernel OOM killer choose a victim -- which on a 956 MB box is as
+# likely to be sshd, and being locked out of the machine is a far worse outcome
+# than a failed scrape.
+#
+# These are deliberately loose for now, because the honest position is that
+# nobody has measured what a real pass costs. Tightening a limit on a guess can
+# only do harm: too low kills scrapes that were working fine, and the symptom
+# ("collection stopped") looks nothing like the cause. So MemoryMax is set only
+# where a runaway is unambiguous, and every run now records its own high-water
+# mark (peak_mb in scoutd-state/runs.jsonl and in the heartbeat). After a week
+# of real passes, set MemoryMax to roughly 1.5x the observed peak.
+#
+# MemoryHigh throttles rather than kills: past it the kernel reclaims hard and
+# the job goes slow, which is the correct response to a scrape that is merely
+# heavy, and it buys the run a chance to finish instead of dying.
+MemoryAccounting=yes
+MemoryHigh=650M
+MemoryMax=850M
+
+# The scrape is the only thing that matters here, but it should still yield to
+# sshd if the box is struggling -- being able to get in and look is worth more
+# than finishing a pass a minute sooner.
+Nice=5
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+# Playwright leaves profile directories behind whenever a browser is killed
+# rather than closed, which is exactly what happens on a timeout or an OOM kill.
+# A private /tmp is destroyed when the unit exits, so that mess cleans itself
+# up rather than accumulating fastest at the worst possible times.
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=no
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target
