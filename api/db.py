@@ -290,6 +290,31 @@ CREATE TABLE IF NOT EXISTS org_members (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_org_members_owner ON org_members(owner_id);
+
+-- Operational telemetry for the unattended platform (see api/ops.py).
+-- TIMESTAMPTZ, not TEXT: these are compared against now() in SQL so that a
+-- verdict never depends on the clock of whichever machine asked.
+CREATE TABLE IF NOT EXISTS ops_heartbeats (
+    component TEXT PRIMARY KEY,
+    last_seen TIMESTAMPTZ NOT NULL,
+    status TEXT NOT NULL DEFAULT 'ok',
+    detail JSONB
+);
+
+CREATE TABLE IF NOT EXISTS ops_events (
+    id SERIAL PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    component TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    event TEXT NOT NULL,
+    message TEXT,
+    detail JSONB,
+    notified_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_ops_events_recent ON ops_events(created_at DESC);
+-- Serves the cooldown lookup, which runs on every single alert.
+CREATE INDEX IF NOT EXISTS idx_ops_events_dedupe
+    ON ops_events(component, event, notified_at DESC);
 """
 
 

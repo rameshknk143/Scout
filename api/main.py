@@ -31,6 +31,7 @@ import auth
 import db
 import google_auth
 import listing_analyzer
+import ops
 import password_breach
 import profit_calculator
 import ppc_analytics
@@ -1082,3 +1083,58 @@ def ingest_maxun_batch(payload: MaxunIngestPayload, request: Request):
     }
 
 
+
+
+# --- operational telemetry -------------------------------------------------
+# The scraping VM is the only always-on component, but it has no mail transport
+# and, by standing rule, no production DATABASE_URL. So it reports here using
+# the API key it already holds, and this service -- which does have Resend
+# configured -- owns delivery and history. See api/ops.py for the full rationale.
+
+class HeartbeatPayload(BaseModel):
+    component: str = Field(min_length=1, max_length=64)
+    status: str = "ok"
+    detail: dict | None = None
+
+
+class OpsAlertPayload(BaseModel):
+    component: str = Field(min_length=1, max_length=64)
+    severity: str = "warn"
+    event: str = Field(min_length=1, max_length=120)
+    message: str = ""
+    detail: dict | None = None
+
+
+@app.post("/ops/heartbeat", dependencies=[Depends(require_key)])
+def ops_heartbeat(payload: HeartbeatPayload):
+    """'I ran, and this is what I saw.' Upserted per component."""
+    return ops.heartbeat(payload.component, payload.status, payload.detail)
+
+
+@app.post("/ops/alert", dependencies=[Depends(require_key)])
+def ops_alert(payload: OpsAlertPayload):
+    """Record an operational event; mail it if it clears the cooldown.
+
+    Returns whether mail actually went out, so the VM can log the truth rather
+    than assume it was delivered.
+    """
+    return ops.record(payload.component, payload.severity, payload.event,
+                      payload.message, payload.detail)
+
+
+@app.get("/ops/status", dependencies=[Depends(require_key)])
+def ops_status():
+    """Heartbeats plus 48h of real events, for the outside observer.
+
+    This is what makes a dead VM detectable: the box cannot report its own
+    death, but a stale heartbeat here is visible to anyone who asks.
+    """
+    return ops.status()
+
+
+@app.post("/ops/prune", dependencies=[Depends(require_key)])
+def ops_prune():
+    """Drop operational history past retention. Called by the VM's nightly
+    maintenance, because this service sleeps on the free tier and cannot run
+    anything on its own schedule."""
+    return ops.prune()
