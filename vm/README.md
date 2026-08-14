@@ -19,7 +19,7 @@ here is downstream of one of them.
 |---|---|---|
 | VM shape | Oracle always-free x86 micro: **2 vCPU, 956 MB RAM**, 45 GB disk, 4 GB swap | No resident daemons. No container runtime. Memory ceilings on everything. |
 | The VM cannot speak | No mail transport, and by standing rule **no production `DATABASE_URL`** | It reports to the API over the key it already holds; the API owns delivery. |
-| amazon.in rate limiting | Blocks on **time since last request** from this datacenter IP, not batch size. ≥11.9 h gap → 15/15 every time; ≤6.9 h → heavy failures | Twice a day, twelve hours apart. This is a hard ceiling, not a tuning knob. |
+| amazon.in blocking | Blocks this datacenter IP roughly **a third of all passes**, and a wide gap does not buy immunity: a 12 h gap has both succeeded and failed. Time of day looks like it matters more than gap. | Twice a day, no more, and never on demand. The yield is a fact to be measured, not a knob to be turned. |
 | GitHub Actions | Private repo → **2,000 min/month**, billed **per job rounded up to the whole minute**. Already ~77% consumed | Recurring work lives on the VM. Actions does only what must come from outside. |
 | Render free tier | Sleeps after ~15 min idle; **750 instance-hours/month** | Keep-warm runs in a window, not around the clock. The API cannot run its own schedules. |
 | Supabase free tier | 500 MB | Operational history has a retention window. |
@@ -128,7 +128,7 @@ All times UTC; IST in brackets. The VM runs UTC, everything a human reads is IST
 
 | Unit | When | Timeout | MemoryMax | Catch-up |
 |---|---|---|---|---|
-| `scout-scrape` | 03:20, 15:20 (08:50, 20:50 IST) ±15 min jitter | 45 min | 850 M | yes |
+| `scout-scrape` | 06:20, 15:20 (11:50, 20:50 IST) ±15 min jitter | 45 min | 850 M | yes |
 | `scout-push` | hourly at :35 | 15 min | 250 M | yes |
 | `scout-keepwarm` | every 10 min, 02:00–19:59 (07:30–01:29 IST) | 5 min | 120 M | no |
 | `scout-health` | every 15 min, and 2 min after boot | 8 min | 200 M | yes |
@@ -136,11 +136,14 @@ All times UTC; IST in brackets. The VM runs UTC, everything a human reads is IST
 | unattended-upgrades reboot | 02:00 (07:30 IST) when required | — | — | — |
 | `monitor.yml` (GitHub) | 03, 08, 13, 18 | — | — | — |
 
-The jitter on the scrape is not cosmetic: requests arriving at exactly 03:20:00
+The jitter on the scrape is not cosmetic: requests arriving at exactly 06:20:00
 every day are a pattern, and a pattern is a fingerprint.
 
-**Do not add a third daily scrape.** The twelve-hour gap is the entire reason
-the pass returns 15/15. See the rate-limiting row in §1.
+**Do not add a third daily scrape.** Every extra request from this IP raises the
+odds that the two scheduled passes get refused, and the scheduled passes are the
+only ones that matter. An ad-hoc run has already cost a scheduled pass its whole
+sweep once. `scrape.py` enforces `MIN_GAP_HOURS = 8` for exactly this reason;
+`--force` exists but spends the budget the next pass needs.
 
 ---
 

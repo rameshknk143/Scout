@@ -3,12 +3,35 @@ Description=Run the ScoutVeda watchlist scrape twice a day
 Documentation=https://github.com/scoutveda/scout-cloud/blob/main/vm/README.md
 
 [Timer]
-# 03:20 and 15:20 UTC = 08:50 and 20:50 IST. Twelve hours apart, and that gap is
-# the whole design: amazon.in rate-limits this Oracle datacenter IP on time
-# since the last request, not on batch size. Measured over several days --
-# a gap of 11.9h or more returned 15 of 15 targets every time, while gaps of
-# 6.9h or less produced heavy failures. Do not add a third daily run.
-OnCalendar=*-*-* 03:20:00
+# 06:20 and 15:20 UTC = 11:50 and 20:50 IST.
+#
+# The morning slot used to be 03:20 UTC (08:50 IST) on the theory that only the
+# gap since the last request mattered. Two weeks of history says the gap is not
+# the whole story, because the two slots sit the same distance apart and do not
+# perform the same:
+#
+#     03:20 UTC (08:50 IST)   13 passes,  7 fully successful   33 of 56 targets
+#     15:20 UTC (20:50 IST)   13 passes, 10 fully successful   57 of 63 targets
+#
+# Per target that is 59% against 90%; per pass, 7/13 against 10/13. The first
+# number looks decisive and the second does not, and the second is the honest
+# one -- targets inside a pass are not independent, since one block cascades
+# into the next. So this is a suggestive difference, not a proven one, and the
+# move below is an experiment rather than a fix. It is worth running because it
+# costs nothing and reverses in one line.
+#
+# The plausible mechanism, if it is real: 20:50 IST is peak Indian shopping
+# traffic and a burst from one datacenter IP disappears into it, while at
+# 08:50 IST the same burst stands out against a quiet network.
+#
+# 06:20 is the LATEST the morning slot can move to. scrape.py refuses to start
+# within MIN_GAP_HOURS=8 of the last attempt, and with +/-15 min of jitter on
+# both ends, 06:20 leaves 8h35m before the evening slot. Anything later would
+# have the guard cancel the 15:20 pass -- trading a 59% slot for a 90% one.
+#
+# Revisit after ~2 weeks: if 06:20 UTC is not clearly beating 7/13, move it
+# back. Do not add a third daily run either way.
+OnCalendar=*-*-* 06:20:00
 OnCalendar=*-*-* 15:20:00
 
 # Up to 15 minutes of jitter. Requests arriving at exactly 03:20:00 every single
