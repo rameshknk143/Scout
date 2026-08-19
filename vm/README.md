@@ -337,11 +337,10 @@ The honest limits, in the order they will actually bite:
   scheduled slot.
 - **No `DATABASE_URL` on the VM.** Standing rule. A compromise of this box
   reaches authenticated API endpoints, not the database.
-- **Memory ceilings are not yet tightened.** Nobody has measured a real scrape
-  pass, so `MemoryMax` is set only where a runaway is unambiguous. Every run
-  records `peak_mb`; after a week of real passes, set it to ~1.5× the observed
-  peak. Tightening on a guess can only do harm — too low kills scrapes that were
-  working, and the symptom looks nothing like the cause.
+- **Memory ceilings are measured now, and still loose on purpose.** A real
+  scrape pass peaks at **108 MB** against an 850 MB `MemoryMax` -- 8x headroom,
+  where the rule of thumb says ~1.5x. Tightening to ~250 MB is safe and is
+  outstanding work, not a decision against it.
 
 - **A dead VM takes up to ~9 hours to be noticed.** The in-VM alerting is
   15-minute, but it dies with the box; the outside check runs 4×/day, and the
@@ -351,6 +350,35 @@ The honest limits, in the order they will actually bite:
   urgent at 3am, this was judged the right trade — but it is a choice, not an
   oversight, and it is the first thing to revisit if the VM ever does disappear.
 
-- **The reboot test has not been done.** Boot persistence is configured and the
-  units are enabled, but nothing has yet been proven by actually rebooting. The
-  kernel update pending since 1 Aug is the natural chance to prove it.
+- ~~**The reboot test has not been done.**~~ **Done, and it passed unsupervised.**
+  The box rebooted itself in the configured window on 15 Aug 02:00 UTC, moved
+  6.8.0-1054-oracle -> 6.8.0-1058-oracle, and brought all five timers back with
+  no hand on the wheel. Boot persistence is now proven rather than configured.
+
+- **No Scrapling (evaluated 19 Aug 2026, rejected).** Proposed as a fix for the
+  scrape yield. It is not one, for two independent reasons.
+
+  Its anti-bot work is *fingerprint*-based -- TLS spoofing, canvas and WebRTC
+  leak prevention, defeating headless detection. That answers "does this client
+  look like a bot?". This VM is failing a different question: "do I trust this
+  IP?". The evidence is already in our own data -- the laptop's residential IP
+  collects 14,940 rows against the same targets that this datacenter IP gets
+  refused on. Same code, same targets, different IP, opposite result. Scrapling
+  supplies no IPs of its own; it hands you a `ProxyRotator` and an empty list,
+  and residential proxies cost money we have decided not to spend.
+
+  Separately, its stealth fetchers cannot physically run here. `StealthyFetcher`
+  launches a real patched Firefox (camoufox); one session budgets at ~1 GB
+  against this box's 956 MB total. It would OOM before it ever reached amazon.in.
+
+  The one genuinely good part -- adaptive parsing that re-finds an element after
+  a site changes its markup -- solves a problem we have never actually had. In
+  16 days of history every failure was the IP being refused and not one was a
+  parse failure; when a pass gets through it lands 15 of 15 and parses cleanly.
+  Rewriting working parse logic to defend against a hypothetical, on a box where
+  the real fault is elsewhere, is motion rather than progress.
+
+  If markup breakage ever does appear, the cheap answer is a canary -- alert when
+  requests succeed but fields come back empty -- which buys the *detection* that
+  matters for an unattended run without a dependency or a rewrite. Revisit only
+  if that canary actually fires.
