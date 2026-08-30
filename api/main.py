@@ -1150,3 +1150,49 @@ def ops_prune():
     maintenance, because this service sleeps on the free tier and cannot run
     anything on its own schedule."""
     return ops.prune()
+
+
+# --- scrape relay -----------------------------------------------------------
+# amazon.in penalises the VM's datacenter IP on recent request volume, and when
+# it does, every route the VM holds is refused at once. This endpoint lets the
+# scraper borrow this service's egress IP for a single product page: a different
+# IP that the keepwarm timer already keeps awake during both scrape slots, at no
+# extra cost. Deliberately narrow: GET only, one well-formed ASIN, nothing else
+# proxied, and a block page is reported as a 502 rather than shipped as if it
+# were data -- the scraper's own block heuristic re-checks the body regardless.
+
+_RELAY_DP_URL = "https://www.amazon.in/dp/%s"
+_RELAY_HEADERS = {
+    "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                   "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"),
+    "Accept-Language": "en-IN,en;q=0.9",
+    "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
+               "image/avif,image/webp,*/*;q=0.8"),
+}
+# A real product page is well over a megabyte; a bot wall is a few KB. Same
+# threshold common.py uses, so both ends agree on what a block looks like.
+_RELAY_MIN_PAGE_BYTES = 50_000
+_RELAY_BLOCK_MARKERS = ("automated access", "enter the characters you see below",
+                        "api-services-support@amazon.com", "not a robot")
+
+
+@app.get("/ops/relay", dependencies=[Depends(require_key)])
+def ops_relay(asin: str):
+    from fastapi.responses import PlainTextResponse
+
+    if not ASIN_RE.fullmatch(asin):
+        raise HTTPException(status_code=400,
+                            detail="asin must be 10 characters, A-Z0-9")
+    import requests
+    try:
+        r = requests.get(_RELAY_DP_URL % asin, headers=_RELAY_HEADERS,
+                         timeout=(10, 30))
+    except requests.RequestException as e:
+        logger.warning("relay: amazon fetch failed for %s: %s", asin, e)
+        raise HTTPException(status_code=502, detail="upstream fetch failed")
+    body = r.text
+    low = body.lower()
+    if len(body) < _RELAY_MIN_PAGE_BYTES or any(m in low for m in _RELAY_BLOCK_MARKERS):
+        logger.info("relay: amazon refused the fetch for %s (%d bytes)", asin, len(body))
+        raise HTTPException(status_code=502, detail="amazon refused this request")
+    return PlainTextResponse(body, media_type="text/html")
