@@ -214,10 +214,17 @@ def collect_category(label, slug, list_type="bestsellers"):
     products = parse_products(page_html)
 
     valid = [p for p in products if p["asin"] and p["title"]]
-    if not valid:
+    # Sanity floor, not just a zero-check -- but sized from measured data, not
+    # vibes: some categories are legitimately tiny (Music new-releases has 2,
+    # Movies & TV Shows 3, every night). A floor of 10 would have rejected
+    # those real fetches forever; a floor of 2 still catches the failure mode
+    # that matters: a blocked/placeholder page that parses to 0-1 stray ASINs.
+    # Bigger pages are already gated by fetch()'s 40 KB + captcha-text checks
+    # before parsing. (Audit 31 Aug: "no post-parse sanity check".)
+    if len(valid) < 2:
         raise ValueError(
-            f"parsed 0 valid products (got {len(products)} raw asin matches) "
-            f"— page may be a placeholder/blocked response"
+            f"parsed only {len(valid)} valid products ({len(products)} raw asin matches) "
+            f"— page likely truncated, blocked, or a placeholder response"
         )
 
     now = datetime.now(timezone.utc).isoformat()

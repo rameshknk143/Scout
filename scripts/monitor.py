@@ -230,8 +230,9 @@ def _yield():
     """How much of the last VM pass actually landed.
 
     This is the check that removes "go and watch the 15:20 run" from anyone's
-    job. The VM scrapes 15 targets twice a day and amazon.in blocks its Oracle
-    datacenter IP intermittently, so a pass returns anywhere from 15 down to 2 —
+    job. The VM scrapes its watchlist twice a day (12 targets since 31 Aug,
+    when three parked ASINs were removed) and amazon.in blocks its Oracle
+    datacenter IP intermittently, so a pass returns anywhere from 12 down to 2 —
     and until now the only way to know which was to read cron.log over SSH.
 
     Half the target list is the line. Below that the run is not producing usable
@@ -241,12 +242,14 @@ def _yield():
     status, body = get(f"{BASE}/pipelines", key=KEY)
     assert status == 200, f"expected 200, got {status}"
     vm = (body or {}).get("vm_watchlist") or {}
-    got, want = vm.get("last_pass_asins") or 0, vm.get("targets") or 15
+    got, want = vm.get("last_pass_asins") or 0, vm.get("targets") or 12
     when = ist(vm.get("last_seen"))
     assert got >= want / 2, (
         f"last pass landed only {got} of {want} targets at {when}. "
-        "amazon.in is refusing the VM's datacenter IP -- check the phone tunnel "
-        "(SOCKS on 127.0.0.1:1080); with it up this should be 15 of 15"
+        "amazon.in is refusing the VM's datacenter IP -- bring up the phone "
+        "tunnel (SOCKS on 127.0.0.1:1080) so the fallback route works; the "
+        f"relay route may also rescue some. With routes up this should be "
+        f"{want} of {want}"
     )
     return f"{got} of {want} at {when}"
 

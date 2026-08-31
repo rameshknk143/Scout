@@ -202,10 +202,8 @@ def run(args):
                f"{reclaimed_mb} MB reclaimed, {remote.get('deleted', 0)} ops events "
                f"pruned, disk {round(usage.used * 100.0 / usage.total)}% full")
 
-    return {
+    result = {
         "ok": ok,
-        "event": "maintenance-failed",
-        "severity": "warn",
         "message": message,
         "backup": backup.name if backup else None,
         "backups_pruned": pruned,
@@ -215,3 +213,17 @@ def run(args):
         "disk_pct": round(usage.used * 100.0 / usage.total),
         "seconds": round(time.time() - started, 1),
     }
+
+    # Failure labels belong on failures only. This dict is merged into the
+    # heartbeat's detail verbatim, so labelling a successful night
+    # "maintenance-failed / warn" made every /ops/status reader (and the
+    # 31 Aug audit) believe maintenance was broken while it was fine.
+    # The event name is "vm-maintain-failed", not the old "maintenance-failed":
+    # run.py raises recovery mail under f"{task_name}-failed", and record()
+    # only delivers a recovery when a notified fault with the SAME event name
+    # exists -- the old mismatch meant a real failure's recovery would have
+    # been silently swallowed.
+    if not ok:
+        result["event"] = "vm-maintain-failed"
+        result["severity"] = "warn"
+    return result

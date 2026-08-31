@@ -285,8 +285,12 @@ DEADMAN_MINUTES = int(os.environ.get("DEADMAN_MINUTES", "90"))
 # alive, it says so; if it is gone, nothing else being watched would add a
 # thing. A dead-man's switch wants one reliable beacon, not several unreliable
 # ones whose silence has innocent explanations.
-DEADMAN_EXEMPT = {"vm-maintain", "vm-scrape", "vm-push", "vm-keepwarm",
-                  "deploy-check"}
+DEADMAN_EXEMPT = {"vm-maintain", "vm-scrape", "vm-push", "vm-keepwarm"}
+# "deploy-check" was removed on 31 Aug 2026: its only sender was a manual
+# laptop curl during deploys, last seen 14 Aug. A permanently stale heartbeat
+# that nothing will ever refresh is noise, not signal -- the row was deleted
+# and the exemption dropped. Re-add BOTH if a deploy heartbeat ever returns,
+# because a non-exempt component that never beats is presumed dead forever.
 
 
 def _incident_open(component, event):
