@@ -68,17 +68,24 @@ def init_db():
 
 def insert_snapshot_rows(rows):
     """rows: list of dicts with keys matching the snapshots columns
-    (except id). Returns number of rows inserted."""
+    (except id). Returns number of rows actually inserted.
+
+    ON CONFLICT DO NOTHING pairs with the uq_snapshots_row unique index
+    (asin, category, list_type, collected_at): a replayed push --all, a
+    retried ingest, or any double-delivery now inserts 0 instead of
+    duplicating history. execute_values(fetch=True) returns the exact
+    accumulated inserted-row list across pages (cur.rowcount would only
+    reflect the last page; psycopg2 paginates at 100 rows)."""
     if not rows:
         return 0
     with get_conn() as conn:
         with conn.cursor() as cur:
-            psycopg2.extras.execute_values(
+            inserted = psycopg2.extras.execute_values(
                 cur,
                 """INSERT INTO snapshots
                    (asin, category, list_type, rank, title, price, rating,
                     review_count, image_url, collected_at)
-                   VALUES %s""",
+                   VALUES %s ON CONFLICT DO NOTHING RETURNING id""",
                 [
                     (
                         r["asin"], r["category"], r["list_type"], r["rank"],
@@ -87,8 +94,9 @@ def insert_snapshot_rows(rows):
                     )
                     for r in rows
                 ],
+                fetch=True,
             )
-    return len(rows)
+            return len(inserted)
 
 
 def get_latest_snapshot(asin):
