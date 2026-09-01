@@ -449,6 +449,12 @@ export const api = {
     request<OpsStatus>("/ops/status", {}, { revalidate: 60 }),
   pipelines: () =>
     request<Pipelines>("/pipelines", {}, { revalidate: 60 }),
+  tunnelHistory: (days: number = 7) =>
+    request<TunnelHistory>(
+      `/ops/tunnel-history?days=${days}`,
+      {},
+      { revalidate: 300 } // 5 min -- this powers the 3D chart, no point re-fetching more often
+    ),
 };
 
 // --- System Health types ---------------------------------------------------
@@ -487,6 +493,19 @@ export type Pipeline = {
 };
 
 export type Pipelines = Record<string, Pipeline>;
+
+export type TunnelHistoryBucket = {
+  hour: string;       // "2026-09-01T14:00"
+  samples: number;    // how many 5-min samples landed in this hour
+  up_pct: number;     // 0..100 -- % of samples that said "up"
+};
+
+export type TunnelHistory = {
+  history: TunnelHistoryBucket[];
+  days: number;
+  current_state: "up" | "down";
+  generated_at_ist: string;
+};
 
 export type StorefrontSalesMetric = {
   id: number;

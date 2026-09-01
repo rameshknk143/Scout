@@ -7,11 +7,18 @@ import SystemHealthClient from "./system-health-client";
 export const dynamic = "force-dynamic";
 
 async function SystemHealthData() {
-  const [status, pipelines] = await Promise.all([
+  const [status, pipelines, tunnelHistory] = await Promise.all([
     api.opsStatus().catch(() => null),
     api.pipelines().catch(() => null),
+    api.tunnelHistory(7).catch(() => null),
   ]);
-  return <SystemHealthClient status={status} pipelines={pipelines} />;
+  return (
+    <SystemHealthClient
+      status={status}
+      pipelines={pipelines}
+      tunnelHistory={tunnelHistory}
+    />
+  );
 }
 
 export default function SystemHealthPage() {

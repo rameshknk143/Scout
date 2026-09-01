@@ -266,6 +266,54 @@ def status():
             "generated_at_ist": _ist(datetime.datetime.now(datetime.timezone.utc))}
 
 
+def tunnel_history(days: int = 7):
+    """Hourly tunnel-uptime history, parsed from the VM's tunnel-watch.log.
+
+    The log is a flat list of `YYYY-MM-DD HH:MM:SSZ up|DOWN` lines written by
+    the 5-minute sampler on the VM. We bucket them by hour and report the
+    percentage of `up` samples per hour for the requested number of days. The
+    dashboard's 3D bar chart renders this as a "tunnel uptime over time" view
+    -- without it, the page is just a snapshot.
+
+    A custom 7-day window covers the longest reasonable "is the tunnel actually
+    working?" question. Capped at 30 to keep the response small. The log file
+    is read locally -- this endpoint only ever runs on the VM, never on Render.
+    """
+    from pathlib import Path
+    cap = max(1, min(30, int(days)))
+    log_path = Path.home() / "tunnel-watch.log"
+    now = datetime.datetime.now(datetime.timezone.utc)
+    cutoff = now - datetime.timedelta(days=cap)
+    buckets: dict = {}
+    try:
+        lines = log_path.read_text(errors="replace").splitlines()[-5000:]
+    except OSError:
+        lines = []
+    for line in lines:
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        try:
+            ts = datetime.datetime.strptime(parts[0] + " " + parts[1].rstrip("Z"),
+                                            "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
+        except ValueError:
+            continue
+        if ts < cutoff:
+            continue
+        is_up = parts[-1].lower() == "up"
+        key = ts.strftime("%Y-%m-%dT%H:00")
+        buckets.setdefault(key, []).append(is_up)
+    history = []
+    for key in sorted(buckets.keys()):
+        samples = buckets[key]
+        ups = sum(1 for s in samples if s)
+        history.append({"hour": key, "samples": len(samples),
+                        "up_pct": round(100.0 * ups / max(1, len(samples)), 1)})
+    return {"history": history, "days": cap,
+            "generated_at_ist": _ist(now),
+            "current_state": "up" if history and history[-1]["up_pct"] > 50 else "down"}
+
+
 # How long a component may go quiet before it is presumed dead. The watchdog on
 # the VM beats every 15 minutes, so 90 covers a slow run, a reboot, and a missed
 # tick without crying wolf.

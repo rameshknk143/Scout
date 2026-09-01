@@ -1132,6 +1132,16 @@ def ops_status():
     return ops.status()
 
 
+@app.get("/ops/tunnel-history", dependencies=[Depends(require_key)])
+def ops_tunnel_history(days: int = 7):
+    """Hourly tunnel uptime, parsed from the VM's tunnel-watch.log.
+
+    Drives the System Health page's 3D bar chart. Read-only, cheap; the log
+    is the only thing this endpoint depends on. Capped at 30 days.
+    """
+    return ops.tunnel_history(days=days)
+
+
 @app.post("/ops/deadman", dependencies=[Depends(require_key)])
 def ops_deadman():
     """Presume the VM dead if it has stopped reporting, and raise the alarm.
