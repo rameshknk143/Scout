@@ -254,6 +254,85 @@ def _check_data_freshness(report):
                        severity="error")
 
 
+def _check_tunnel(report):
+    """Phone tunnel state -- the residential-IP route that scrapes fall back on.
+
+    Three signals, cheapest first:
+      1. Listener: is 127.0.0.1:1080 up at all (the ssh -R forward from the phone)?
+      2. Data flow: can a request actually THROUGH the tunnel fetch a page --
+         the half-tunnel failure mode of 1 Sep 2026, where the SOCKS handshake
+         succeeded but every byte died in the app, evaded the listener check
+         for hours. Data flow is the only truth.
+      3. Trend: last 12 watch-log samples, so the page can show a flapping
+         tunnel rather than a single boolean.
+
+    The data-flow probe costs one small request every 15 minutes and only runs
+    when the listener is up; when it is down there is nothing to probe.
+    """
+    try:
+        out = subprocess.run(
+            ["ss", "-tln"], stdout=subprocess.PIPE, text=True, timeout=20).stdout
+    except (OSError, subprocess.SubprocessError):
+        return
+    listener_up = "127.0.0.1:1080" in out
+    report.fact("tunnel_listener", "up" if listener_up else "down")
+
+    exit_ip = None
+    if listener_up:
+        # One request through the phone, to a service whose only job is to
+        # echo the caller's IP. 15s cap: the wedge showed up as requests that
+        # connect then hang forever, and the watchdog must not hang with them.
+        # curl rather than urllib: stdlib has no SOCKS support without PySocks,
+        # and curl --socks5-hostname is the exact probe already proven live on
+        # this box (it is what diagnosed the 1 Sep wedge).
+        try:
+            proc = subprocess.run(
+                ["curl", "-s", "-m", "15", "--socks5-hostname", "127.0.0.1:1080",
+                 "https://api.ipify.org"],
+                stdout=subprocess.PIPE, text=True, timeout=25)
+            exit_ip = (proc.stdout or "").strip()[:45]
+        except (OSError, subprocess.SubprocessError):
+            exit_ip = ""
+        if exit_ip and exit_ip == config.VM_PUBLIC_IP:
+            report.fact("tunnel_exit_ip", exit_ip)
+            report.fact("tunnel_flow", "loop")
+            report.problem("tunnel-exit-loop",
+                           f"exit IP {exit_ip} through the tunnel is the VM's own "
+                           f"public IP -- traffic is looping, not exiting via the phone")
+            return
+        if exit_ip:
+            report.fact("tunnel_exit_ip", exit_ip)
+            report.fact("tunnel_flow", "ok")
+        else:
+            # Listener accepted but no bytes came back -- exactly the 1 Sep
+            # half-tunnel wedge. Named distinctly so the recovery email and
+            # the health page can say "restart the phone-side proxy", not
+            # "check your internet".
+            report.fact("tunnel_exit_ip", None)
+            report.fact("tunnel_flow", "dead")
+            report.problem("tunnel-wedged",
+                           "tunnel listener up but no data flows through it -- "
+                           "the phone-side proxy is wedged (the 1 Sep 2026 "
+                           "failure mode); restart the app or reboot the phone")
+            return
+    else:
+        report.fact("tunnel_flow", "n/a")
+        report.fact("tunnel_exit_ip", None)
+
+    # Trend: the last 12 five-minute samples from the watch log. The page can
+    # then show "up 12/12" vs "flapping" instead of a single boolean.
+    try:
+        log_path = Path.home() / "tunnel-watch.log"
+        tail = log_path.read_text().splitlines()[-12:]
+        ups = sum(1 for ln in tail if ln.endswith(" up"))
+        report.fact("tunnel_uptime_samples", f"{ups}/12")
+    except OSError:
+        pass
+
+    if not listener_up:
+        report.fact("tunnel_flow", "n/a")
+
+
 def _check_api(report):
     try:
         request = urllib.request.Request(f"{config.API_BASE}/health",
@@ -322,13 +401,15 @@ def run(args):
     _check_memory(report)
     _check_orphan_browsers(report)
     _check_data_freshness(report)
+    _check_tunnel(report)
     _check_api(report)
     _check_timers(report)
     _check_reboot_pending(report)
 
     all_events = ["disk-critical", "disk-low", "memory-low", "db-missing",
                   "db-unreadable", "no-data", "data-stale", "api-unhealthy",
-                  "api-unreachable", "timers-missing", "reboot-overdue"]
+                  "api-unreachable", "timers-missing", "reboot-overdue",
+                  "tunnel-wedged", "tunnel-exit-loop"]
     _save_state(report.finish(all_events))
 
     for text in report.actions:

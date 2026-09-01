@@ -442,7 +442,51 @@ export const api = {
     }),
   ppcAnalytics: () =>
     request<any>("/analytics/ppc", {}, { revalidate: 60 }),
+  // System Health page: the ops heartbeat board + pipeline freshness. Both are
+  // read-only summaries; a short revalidation window keeps a dashboard session
+  // from hammering the cold-start-prone Render API on every click.
+  opsStatus: () =>
+    request<OpsStatus>("/ops/status", {}, { revalidate: 60 }),
+  pipelines: () =>
+    request<Pipelines>("/pipelines", {}, { revalidate: 60 }),
 };
+
+// --- System Health types ---------------------------------------------------
+
+export type OpsHeartbeat = {
+  component: string;
+  status: string;
+  last_seen: string | null;
+  last_seen_ist: string;
+  age_minutes: number;
+  detail: Record<string, unknown> | null;
+};
+
+export type OpsEvent = {
+  component: string;
+  severity: "warn" | "error" | "resolved" | "info";
+  event: string;
+  message: string;
+  created_at: string | null;
+  created_at_ist: string;
+  notified_at: string | null;
+};
+
+export type OpsStatus = {
+  heartbeats: OpsHeartbeat[];
+  recent_events: OpsEvent[];
+  generated_at_ist: string;
+};
+
+export type Pipeline = {
+  last_seen: string | null;
+  age_hours: number;
+  rows: number;
+  last_pass_asins?: number;
+  targets?: number;
+};
+
+export type Pipelines = Record<string, Pipeline>;
 
 export type StorefrontSalesMetric = {
   id: number;

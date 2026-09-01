@@ -32,6 +32,11 @@ PYTHON = os.environ.get("SCOUT_PYTHON", str(HOME / "ocienv" / "bin" / "python"))
 API_BASE = os.environ.get("SCOUT_API_URL",
                           "https://scout-api-3yvy.onrender.com").rstrip("/")
 
+# The VM's own public IP, for the tunnel checks: a request that comes back
+# through the tunnel reporting this address means traffic is looping home
+# instead of exiting via the phone.
+VM_PUBLIC_IP = os.environ.get("SCOUT_VM_PUBLIC_IP", "140.245.239.162")
+
 # Every human-facing time in this project is IST. The VM runs UTC, so anything
 # written for a person to read is converted at the edge rather than leaving Ram
 # to add 5:30 in his head at the exact moment something is broken.
