@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Tilt from "@/components/3d/Tilt";
 import BrowserShowcase from "@/components/BrowserShowcase";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function Wordmark() {
   return (
@@ -64,6 +65,7 @@ export default function Landing() {
             ))}
           </nav>
           <div className="sv-header-cta">
+            <ThemeToggle />
             <Link href="/login" className="sv-btn sv-btn-ghost sv-hide-sm">Log in</Link>
             <Link href="/signup" className="sv-btn sv-btn-primary">Start free</Link>
             <button
