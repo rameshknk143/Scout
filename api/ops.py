@@ -267,50 +267,30 @@ def status():
 
 
 def tunnel_history(days: int = 7):
-    """Hourly tunnel-uptime history, parsed from the VM's tunnel-watch.log.
+    """Hourly tunnel-uptime history, computed by the VM and pushed via heartbeat.
 
-    The log is a flat list of `YYYY-MM-DD HH:MM:SSZ up|DOWN` lines written by
-    the 5-minute sampler on the VM. We bucket them by hour and report the
-    percentage of `up` samples per hour for the requested number of days. The
-    dashboard's 3D bar chart renders this as a "tunnel uptime over time" view
-    -- without it, the page is just a snapshot.
-
-    A custom 7-day window covers the longest reasonable "is the tunnel actually
-    working?" question. Capped at 30 to keep the response small. The log file
-    is read locally -- this endpoint only ever runs on the VM, never on Render.
+    The 5-minute sampler lives on the VM (~/tunnel-watch.log). The VM parses
+    its own log on each health run and ships the result through the heartbeat
+    detail. This function just reads what was last shipped -- the API never
+    touches the file. Same idempotent model as the rest of the platform: the
+    VM owns its data, the API mirrors it.
     """
-    from pathlib import Path
     cap = max(1, min(30, int(days)))
-    log_path = Path.home() / "tunnel-watch.log"
-    now = datetime.datetime.now(datetime.timezone.utc)
-    cutoff = now - datetime.timedelta(days=cap)
-    buckets: dict = {}
-    try:
-        lines = log_path.read_text(errors="replace").splitlines()[-5000:]
-    except OSError:
-        lines = []
-    for line in lines:
-        parts = line.split()
-        if len(parts) < 2:
-            continue
-        try:
-            ts = datetime.datetime.strptime(parts[0] + " " + parts[1].rstrip("Z"),
-                                            "%Y-%m-%d %H:%M:%S").replace(tzinfo=datetime.timezone.utc)
-        except ValueError:
-            continue
-        if ts < cutoff:
-            continue
-        is_up = parts[-1].lower() == "up"
-        key = ts.strftime("%Y-%m-%dT%H:00")
-        buckets.setdefault(key, []).append(is_up)
+    with db.get_conn() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                """SELECT detail
+                   FROM ops_heartbeats
+                   WHERE component = 'vm-health'
+                   ORDER BY last_seen DESC LIMIT 1""")
+            row = cur.fetchone()
     history = []
-    for key in sorted(buckets.keys()):
-        samples = buckets[key]
-        ups = sum(1 for s in samples if s)
-        history.append({"hour": key, "samples": len(samples),
-                        "up_pct": round(100.0 * ups / max(1, len(samples)), 1)})
+    if row and isinstance(row.get("detail"), dict):
+        nested = row["detail"].get("detail") or {}
+        if isinstance(nested.get("tunnel_history"), list):
+            history = nested["tunnel_history"]
     return {"history": history, "days": cap,
-            "generated_at_ist": _ist(now),
+            "generated_at_ist": _ist(datetime.datetime.now(datetime.timezone.utc)),
             "current_state": "up" if history and history[-1]["up_pct"] > 50 else "down"}
 
 

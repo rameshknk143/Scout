@@ -263,8 +263,9 @@ def _check_tunnel(report):
          the half-tunnel failure mode of 1 Sep 2026, where the SOCKS handshake
          succeeded but every byte died in the app, evaded the listener check
          for hours. Data flow is the only truth.
-      3. Trend: last 12 watch-log samples, so the page can show a flapping
-         tunnel rather than a single boolean.
+      3. Trend: hourly bucket rollup of the watch log for the dashboard's 3D
+         bar chart, shipped via heartbeat detail. The API never reads the log
+         directly -- the VM owns the file.
 
     The data-flow probe costs one small request every 15 minutes and only runs
     when the listener is up; when it is down there is nothing to probe.
@@ -319,14 +320,43 @@ def _check_tunnel(report):
         report.fact("tunnel_flow", "n/a")
         report.fact("tunnel_exit_ip", None)
 
-    # Trend: the last 12 five-minute samples from the watch log. The page can
-    # then show "up 12/12" vs "flapping" instead of a single boolean.
+    # Trend: hourly bucket rollup of the last 7 days of watch-log samples.
+    # Shipped in the heartbeat so the API's tunnel-history endpoint has data
+    # to serve. The API does not and should not read this file.
     try:
         log_path = Path.home() / "tunnel-watch.log"
-        tail = log_path.read_text().splitlines()[-12:]
-        ups = sum(1 for ln in tail if ln.endswith(" up"))
-        report.fact("tunnel_uptime_samples", f"{ups}/12")
-    except OSError:
+        # Tolerant of CRLF: splitlines handles both.
+        lines = log_path.read_text(errors="replace").splitlines()[-4000:]
+        cutoff = time.time() - 7 * 86400.0
+        buckets: dict = {}
+        for line in lines:
+            parts = line.split()
+            if len(parts) < 2:
+                continue
+            try:
+                ts = time.strptime(parts[0] + " " + parts[1].rstrip("Z"),
+                                   "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                continue
+            epoch = calendar.timegm(ts)
+            if epoch < cutoff:
+                continue
+            is_up = parts[-1].lower() == "up"
+            # bucket key: YYYY-MM-DDTHH:00
+            key = time.strftime("%Y-%m-%dT%H:00", ts)
+            buckets.setdefault(key, [0, 0])[0 if is_up else 1] += 1
+        history = []
+        for key in sorted(buckets.keys()):
+            ups, downs = buckets[key]
+            total = ups + downs
+            history.append({"hour": key, "samples": total,
+                            "up_pct": round(100.0 * ups / max(1, total), 1)})
+        # 12-sample last-hour summary for the header card (cheap and visible)
+        tail_lines = lines[-12:]
+        ups_tail = sum(1 for ln in tail_lines if ln.strip().endswith("up"))
+        report.fact("tunnel_uptime_samples", f"{ups_tail}/12")
+        report.fact("tunnel_history", history[-168:])  # 7 days * 24h
+    except (OSError, ValueError, IndexError):
         pass
 
     if not listener_up:
