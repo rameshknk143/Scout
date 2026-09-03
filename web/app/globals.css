@@ -428,7 +428,8 @@ body {
    All the public-page look lives here so it can be re-themed from one place.
    Palette leans on the app tokens above; teal is the marketing accent.
    ============================================================================ */
-:root {
+:root,
+[data-theme="light"] {
   --sv-teal: #d97706;          /* Gold marketing accent for light mode */
   --sv-teal-deep: #b45309;
   --sv-ink: #f8fafc;           /* Light Theme Background */
@@ -437,6 +438,54 @@ body {
   --sv-hair: rgba(0, 0, 0, 0.06);
   --sv-hair-strong: rgba(0, 0, 0, 0.12);
   --sv-glow-teal: rgba(217, 119, 6, 0.15);
+  --sv-header-bg: rgba(248, 250, 252, 0.7);
+  --sv-wash: rgba(219, 234, 254, 0.4);
+  --sv-grid-line: rgba(0, 0, 0, 0.02);
+  --sv-btn-ghost-bg: rgba(0, 0, 0, 0.02);
+  --sv-btn-ghost-bg-hover: rgba(0, 0, 0, 0.04);
+  --sv-glass-inset: rgba(255, 255, 255, 0.8);
+  --sv-soft-a: #ffffff;
+  --sv-soft-b: #f1f5f9;
+}
+
+[data-theme="dark"] {
+  --sv-teal: #fbbf24;          /* Brighter amber for dark contrast */
+  --sv-teal-deep: #d97706;
+  --sv-ink: #050816;           /* Dark background, matches surface-0 */
+  --sv-surface: rgba(15, 21, 48, 0.55);
+  --sv-surface-solid: #0a0f24;
+  --sv-hair: rgba(148, 163, 184, 0.12);
+  --sv-hair-strong: rgba(148, 163, 184, 0.22);
+  --sv-glow-teal: rgba(251, 191, 36, 0.22);
+  --sv-header-bg: rgba(5, 8, 22, 0.72);
+  --sv-wash: rgba(96, 165, 250, 0.06);
+  --sv-grid-line: rgba(255, 255, 255, 0.03);
+  --sv-btn-ghost-bg: rgba(255, 255, 255, 0.04);
+  --sv-btn-ghost-bg-hover: rgba(255, 255, 255, 0.08);
+  --sv-glass-inset: rgba(255, 255, 255, 0.06);
+  --sv-soft-a: #0f1530;
+  --sv-soft-b: #0a0f24;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --sv-teal: #fbbf24;
+    --sv-teal-deep: #d97706;
+    --sv-ink: #050816;
+    --sv-surface: rgba(15, 21, 48, 0.55);
+    --sv-surface-solid: #0a0f24;
+    --sv-hair: rgba(148, 163, 184, 0.12);
+    --sv-hair-strong: rgba(148, 163, 184, 0.22);
+    --sv-glow-teal: rgba(251, 191, 36, 0.22);
+    --sv-header-bg: rgba(5, 8, 22, 0.72);
+    --sv-wash: rgba(96, 165, 250, 0.06);
+    --sv-grid-line: rgba(255, 255, 255, 0.03);
+    --sv-btn-ghost-bg: rgba(255, 255, 255, 0.04);
+    --sv-btn-ghost-bg-hover: rgba(255, 255, 255, 0.08);
+    --sv-glass-inset: rgba(255, 255, 255, 0.06);
+    --sv-soft-a: #0f1530;
+    --sv-soft-b: #0a0f24;
+  }
 }
 
 /* Abstract animated background: drifting light + marketplace grid + data motes.
@@ -447,14 +496,14 @@ body {
   background:
     radial-gradient(40% 40% at 15% 15%, rgba(217, 119, 6, 0.04), transparent 70%),
     radial-gradient(45% 45% at 85% 20%, rgba(59, 130, 246, 0.05), transparent 70%),
-    radial-gradient(50% 50% at 70% 90%, rgba(219, 234, 254, 0.4), transparent 70%);
+    radial-gradient(50% 50% at 70% 90%, var(--sv-wash), transparent 70%);
   animation: sv-drift 30s ease-in-out infinite alternate;
 }
 .sv-bg::after {
   content: ""; position: absolute; inset: 0; opacity: 0.4;
   background-image:
-    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+    linear-gradient(var(--sv-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sv-grid-line) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 80%);
 }
@@ -469,7 +518,7 @@ body {
 
 /* Header */
 .sv-header { position: sticky; top: 0; z-index: 40;
-  backdrop-filter: blur(14px); background: rgba(248, 250, 252, 0.7);
+  backdrop-filter: blur(14px); background: var(--sv-header-bg);
   border-bottom: 1px solid var(--sv-hair); }
 .sv-header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 20px; }
 .sv-nav { display: flex; align-items: center; gap: 28px; }
@@ -493,14 +542,14 @@ body {
   background: linear-gradient(135deg, var(--sv-teal), var(--sv-teal-deep));
   box-shadow: 0 6px 20px -6px var(--sv-glow-teal), inset 0 1px 0 rgba(255,255,255,.25); }
 .sv-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px -6px var(--sv-glow-teal), inset 0 1px 0 rgba(255,255,255,.25); }
-.sv-btn-ghost { color: var(--text); background: rgba(0,0,0,0.02); border-color: var(--sv-hair); }
-.sv-btn-ghost:hover { border-color: var(--sv-hair-strong); background: rgba(0,0,0,0.04); }
+.sv-btn-ghost { color: var(--text); background: var(--sv-btn-ghost-bg); border-color: var(--sv-hair); }
+.sv-btn-ghost:hover { border-color: var(--sv-hair-strong); background: var(--sv-btn-ghost-bg-hover); }
 .sv-btn-lg { height: 48px; padding: 0 24px; font-size: 0.95rem; border-radius: 12px; }
 
 /* Eyebrow / pill */
 .sv-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono);
   font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sv-teal);
-  padding: 6px 12px; border: 1px solid rgba(217,119,6,0.2); border-radius: 999px; background: rgba(217,119,6,0.05); }
+  padding: 6px 12px; border: 1px solid var(--sv-glow-teal); border-radius: 999px; background: var(--sv-btn-ghost-bg); }
 
 /* Hero */
 .sv-hero { padding: 72px 0 40px; }
@@ -513,10 +562,10 @@ body {
 /* Glass surface used across public pages */
 .sv-glass { background: var(--sv-surface); backdrop-filter: blur(18px);
   border: 1px solid var(--sv-hair); border-radius: 18px;
-  box-shadow: 0 24px 50px -24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8); }
+  box-shadow: 0 24px 50px -24px rgba(0,0,0,0.08), inset 0 1px 0 var(--sv-glass-inset); }
 
 /* Neomorphic soft control (widgets, toggles) */
-.sv-soft { background: linear-gradient(145deg, #ffffff, #f1f5f9);
+.sv-soft { background: linear-gradient(145deg, var(--sv-soft-a), var(--sv-soft-b));
   border: 1px solid rgba(0,0,0,0.03); border-radius: 12px;
   box-shadow: 6px 6px 14px rgba(0,0,0,0.03), -4px -4px 12px rgba(255,255,255,0.9); }
 
