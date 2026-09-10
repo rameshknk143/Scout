@@ -1,59 +1,76 @@
 "use client";
 
-// GlassCard -- frosted-glass surface used for every panel on the System
-// Health page. Pulls together the tokens that already exist in globals.css
-// (.sv-glass, .layer-middle) so the look is consistent with the public
-// landing without copy-pasting styles.
+import { useEffect, useRef, useState } from "react";
 
-import { forwardRef } from "react";
-
-type Props = {
-  title?: string;
-  subtitle?: string;
+interface GlassCardProps {
   children: React.ReactNode;
   className?: string;
-  /** Higher = more depth. "middle" raises the card; "high" raises more. */
-  depth?: "base" | "middle" | "high" | "top";
-};
+  elevation?: "low" | "medium" | "high";
+  delay?: number;
+  style?: React.CSSProperties;
+}
 
-const DEPTH = {
-  base: "layer-base",
-  middle: "layer-middle",
-  high: "layer-high",
-  top: "layer-top",
-} as const;
+export function GlassCard({
+  children,
+  className = "",
+  elevation = "medium",
+  delay = 0,
+  style,
+}: GlassCardProps) {
+  const [visible, setVisible] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-const GlassCard = forwardRef<HTMLDivElement, Props>(function GlassCard(
-  { title, subtitle, children, className = "", depth = "middle" },
-  ref
-) {
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  const elevationStyles = {
+    low: {
+      boxShadow: "var(--shadow-sm)",
+      border: "1px solid var(--hairline)",
+    },
+    medium: {
+      boxShadow: "var(--shadow-lg)",
+      border: "1px solid var(--hairline)",
+    },
+    high: {
+      boxShadow: "var(--shadow-xl)",
+      border: "1px solid var(--accent-glow)",
+    },
+  };
+
   return (
     <div
-      ref={ref}
-      className={`sv-glass ${DEPTH[depth]} p-4 ${className}`}
+      ref={cardRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`sv-glass rounded-2xl relative overflow-hidden transition-all duration-500 ${className}`}
       style={{
-        transformStyle: "preserve-3d",
-        // perspective on the parent lets child translateZ read as depth, not
-        // as scale. The dashboard's main element has perspective too, but
-        // declaring it here makes the card survive being moved around.
-        perspective: "1200px",
+        ...elevationStyles[elevation],
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity var(--dur-slow) var(--ease-out) ${delay}ms, transform var(--dur-slow) var(--ease-out) ${delay}ms, box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out)`,
+        boxShadow: hovered
+          ? `${elevationStyles[elevation].boxShadow}, 0 0 30px -8px var(--accent-glow)`
+          : elevationStyles[elevation].boxShadow,
+        borderColor: hovered ? "var(--accent)" : "var(--hairline)",
+        transform: hovered
+          ? "translateY(-2px) translateZ(8px)"
+          : "translateY(0) translateZ(0)",
+        ...style,
       }}
     >
-      {(title || subtitle) && (
-        <div className="mb-3">
-          {title && (
-            <h2 className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-              {title}
-            </h2>
-          )}
-          {subtitle && (
-            <p className="text-[11px] text-zinc-400 mt-0.5">{subtitle}</p>
-          )}
-        </div>
-      )}
-      {children}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at 20% 20%, var(--accent-soft) 0%, transparent 70%)`,
+          opacity: hovered ? 0.8 : 0.4,
+          transition: "opacity var(--dur-base) var(--ease-out)",
+        }}
+      />
+      <div className="relative z-10">{children}</div>
     </div>
   );
-});
-
-export default GlassCard;
+}
