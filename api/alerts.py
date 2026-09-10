@@ -138,7 +138,13 @@ def _check_dropout(asin, title, category, list_type, points, latest_run_by_list)
             "asin": asin, "title": title, "category": category, "list_type": list_type,
             "alert_type": "dropped_from_list",
             "severity": "low",
-            "message": f"No longer in {label} top 30 for {category} (last seen #{last_seen['rank']})",
+            # Deliberately does not name a rank cap. It said "top 30" until
+            # 2026-09-09, when the collector started also capturing ranks 51-80
+            # (page 2 of the list; 31-50 are not server-rendered at all). The
+            # captured band is now "1-30 and 51-80", which is not a number worth
+            # putting in a user-facing sentence — and a stale "top 30" would
+            # have been a wrong value stated confidently.
+            "message": f"No longer in {label} for {category} (last seen #{last_seen['rank']})",
             "detail": {"last_rank": last_seen["rank"], "last_seen_at": last_seen["collected_at"]},
             "detected_at": latest_run,
         }]

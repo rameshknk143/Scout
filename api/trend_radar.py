@@ -58,7 +58,18 @@ def new_entrants(category=None, top_n=100, df=None):
     """ASINs whose EARLIEST snapshot ever recorded is from the most recent
     collection run — i.e. first time we've ever seen them. On a fresh DB
     (one collection run so far) this returns every product, which is the
-    expected cold-start behaviour."""
+    expected cold-start behaviour.
+
+    A SECOND cold start happens whenever the collector's visible rank band
+    widens, and one is due: from 2026-09-09 the collector also fetches page 2
+    of each list, adding ranks 51-80 (ranks 31-50 are not server-rendered, so
+    the captured band is 1-30 plus 51-80, with a hole between). Every one of
+    those rank-51-80 ASINs is genuinely first-seen on the first such run, so
+    this function will report a large one-off influx of "new entrants" that
+    are not new products — they were always there and simply out of view.
+    It self-corrects on the second run. Do not act on that first spike, and
+    do not "fix" it by suppressing entrants: the records are true, it is the
+    word "new" that is doing the misleading."""
     df = _snapshots_df() if df is None else df
     if df.empty:
         return pd.DataFrame()

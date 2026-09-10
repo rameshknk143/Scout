@@ -51,12 +51,12 @@ CATEGORY_TO_FEE_KEY = {
     "Beauty & Personal Care": "beauty_personal_care",
     "Sports & Fitness": "sports_fitness",
     "Toys & Games": "toys",
-    "Stationery/Office": "other_default",
-    "Pet Supplies": "other_default",
+    "Stationery/Office": "office",
+    "Pet Supplies": "pet_supplies",
     "Car Accessories": "automotive_parts",
-    "Garden & Outdoors": "other_default",
-    "Baby Products": "other_default",
-    "Watches & Gifting": "other_default",
+    "Garden & Outdoors": "garden",
+    "Baby Products": "baby",
+    "Watches & Gifting": "watches",
 }
 
 DEFAULT_WEIGHT_GRAMS = 300

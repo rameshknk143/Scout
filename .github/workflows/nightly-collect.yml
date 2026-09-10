@@ -9,6 +9,12 @@ on:
 jobs:
   collect:
     runs-on: ubuntu-latest
+    # The collector is by far the largest consumer of a 2,000-minute private-repo
+    # allowance, and GitHub bills each job rounded up to the whole minute. A hung
+    # run left to the 360-minute default would eat a fifth of the month in one
+    # night. ~40 min is the expected wall clock at the settings below; 75 leaves
+    # room for a slow night without leaving room for a runaway.
+    timeout-minutes: 75
     defaults:
       run:
         working-directory: scraper
@@ -25,4 +31,16 @@ jobs:
       - name: Run nightly collection
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Throughput knobs, surfaced here so a bad night can be rolled back by
+          # editing this file — no code change, no review, no redeploy.
+          #
+          # SCOUT_PAGES=1        restores the exact pre-2026-09-09 behaviour
+          #                      (top 30 only, ~124 fetches).
+          # SCOUT_FETCH_WORKERS  lower this FIRST if captchas appear. It is the
+          #                      aggregate request rate from the runner's single
+          #                      IP that gets a scraper blocked, not the depth.
+          SCOUT_PAGES: "1,2"
+          SCOUT_FETCH_WORKERS: "4"
+          SCOUT_GAP_MIN: "20"
+          SCOUT_GAP_MAX: "45"
         run: python collector.py

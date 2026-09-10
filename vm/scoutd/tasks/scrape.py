@@ -81,12 +81,32 @@ def run(args):
                            "expected -- the tunnel is optional and the VM's own "
                            "IP works when runs are spaced far enough apart."}
 
-    if proc.returncode != 0:
+    # scrape.py now exits 1 whenever it misses any target, so checking the exit
+    # code before the yield undid the whole point of this module: a pass that
+    # captured 11 of 12 was reported as scrape-crashed at error severity, and
+    # failed the systemd unit with it. Over the week to 8 Sep that fired on runs
+    # landing 11, 10 and 5 of 12 -- three errors for two good passes and one bad
+    # one. The database is the verdict, as the docstring says, so read it first
+    # and only call the run a crash when the yield is bad too.
+    landed_enough = bool(want) and got >= want / 2
+
+    if proc.returncode != 0 and not landed_enough:
         return {"ok": False, "event": "scrape-crashed", "rc": proc.returncode,
                 "landed": got, "targets": want,
                 "message": f"scrape.py exited {proc.returncode}. "
                            f"{got} of {want} targets landed. "
                            f"Last output: {output.splitlines()[-1] if output else '(none)'}"}
+
+    # Non-zero exit but the price history still got built. Worth recording so a
+    # slow drift in yield stays visible, not worth waking anyone for.
+    if proc.returncode != 0:
+        return {"ok": True, "severity": "warn", "event": "scrape-partial",
+                "rc": proc.returncode, "landed": got, "attempted": attempted,
+                "targets": want,
+                "message": f"{got} of {want} targets landed. scrape.py exited "
+                           f"{proc.returncode} because it missed the rest; the "
+                           "misses are transient route failures and the next "
+                           "run picks them up."}
 
     # Half the list is the line. Below it the pass is not producing usable price
     # history. warn, not error: the cause is almost always amazon.in refusing

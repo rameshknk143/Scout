@@ -1,49 +1,149 @@
 {
   "_meta": {
-    "last_verified": "2026-07-06",
-    "source": "Compiled from published Amazon India seller fee-update articles (March 2026 revision). NOT yet cross-checked per-ASIN against SP-API's live Product Fees API.",
-    "verify_next": "Once SP-API access is connected (BLUEPRINT.md Milestone 0), calibrate every field below against the real fee-preview response for a few actual candidate ASINs and update this file.",
-    "zero_referral_threshold_rupees": 1000,
-    "zero_referral_note": "Effective 16 Mar 2026, Amazon India waived referral fee entirely on items priced <= Rs.1000 across 1800+ categories. Closing fee and weight-handling fee still apply below this threshold."
+    "source": "https://sell.amazon.in/fees-and-pricing",
+    "last_verified": "2026-08-15",
+    "gst_on_fees_pct": 18,
+    "notes": [
+      "All Amazon.in selling fees on the official page are displayed excluding GST; Amazon then applies 18% GST on those fees (NOTE 1 on the source page).",
+      "Effective 16 Mar 2026, referral is 0% on most categories for item price <= ₹1000 (1800+ categories). Some electronics-accessory bands still charge below ₹1000 (e.g. Accessories - Electronics, PC and Wireless: 5% between ₹300 and ₹1000).",
+      "Scout 'Home & Kitchen' maps to official 'Kitchen - Other Products' (12.5% above ₹1000). Official 'Home - other products' is 18% above ₹1000 (décor / non-kitchen); use category_key home_other for that.",
+      "Scout 'Baby Products' maps to official 'Baby - Other Products' (7.5% above ₹1000), NOT 'Apparel - Baby' (7% above ₹1000).",
+      "other_default is a conservative catch-all for unmapped scout categories, NOT an Amazon fee category: 0% <= ₹1000, 12% above.",
+      "Remaining gaps: Amazon STEP program discounts are not modeled; volumetric weight (L×B×H/5000 vs actual) is not modeled (we use weight_grams only); FC closing-fee category groups (#, ##, A, B, C, D) are not published as a complete matrix; GetMyFeesEstimate / SP-API Product Fees API is not wired."
+    ],
+    "closing_fee_notes": "Amazon does not publish a complete closing-fee matrix on the public page — only worked examples plus FC group snippets. Easy Ship <=300 = ₹1 and <=500 = ₹22 are official (sandals ₹299 → ₹1, ₹450 → ₹22). Self Ship <=300 = ₹20 and <=500 = ₹26 are official (Facewash ₹299 → ₹20, Shirts ₹499 → ₹26) and match March 2026 notes. Bands above ₹500 for Easy Ship and Self Ship are undocumented approximations (₹40 to ₹1000, ₹60 above). FBA/FC closing is a documented midpoint/default across unpublished groups: <=300 ₹20 (groups are ₹13/₹20/₹26), <=500 ₹18 (groups are ₹14/₹18/₹22), <=1000 ₹40 (unverified), >1000 ₹72 (page: 'above INR 1,000, ₹72 closing fee applies to select fee categories'). Do not treat FBA closing as a precise group lookup.",
+    "weight_handling_notes": "Official Easy Ship example is ₹55 for a 350g headphone, which does not match this file's older local/regional/national 29/43/63 first-500g table. Size-guidelines example (800g regional = ₹68 = ₹51+₹17) also disagrees. The public page's zone slab card is not a complete published matrix (widgets). Existing slab numbers are kept as a pre-March-16 working approximation. Forum: ₹10 Easy Ship weight-handling reduction when sell_price <= ₹300 (easy_ship_under_300_weight_discount_rupees).",
+    "referral_amazon_categories": {
+      "electronics_accessories": "Accessories - Electronics, PC and Wireless",
+      "home_kitchen": "Kitchen - Other Products",
+      "home_other": "Home - other products",
+      "beauty_personal_care": "Beauty - Other Products",
+      "sports_fitness": "Sports - Other products",
+      "toys": "Toys - Other Products",
+      "office": "Office - Other products",
+      "pet_supplies": "Pet - Other Products",
+      "automotive_parts": "Automotive - Other products",
+      "garden": "Lawn and Garden - Other products",
+      "baby": "Baby - Other Products",
+      "watches": "Watches",
+      "grocery": "Grocery and Gourmet - Other products",
+      "fashion_apparel": "Apparel - Other Products",
+      "books": "Books",
+      "other_default": "conservative catch-all (not an Amazon category)"
+    }
   },
 
-  "referral_fee_pct_by_category": {
-    "electronics_accessories": 8,
-    "fashion_apparel": 15,
-    "home_kitchen": 13,
-    "beauty_personal_care": 6,
-    "grocery": 10,
-    "books": 5,
-    "sports_fitness": 12,
-    "toys": 10,
-    "automotive_parts": 16,
-    "other_default": 12
+  "referral_fee_by_category": {
+    "electronics_accessories": [
+      {"max_price": 300, "pct": 0},
+      {"max_price": 1000, "pct": 5},
+      {"max_price": null, "pct": 17}
+    ],
+    "home_kitchen": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 12.5}
+    ],
+    "home_other": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 18}
+    ],
+    "beauty_personal_care": [
+      {"max_price": 500, "pct": 0},
+      {"max_price": null, "pct": 9}
+    ],
+    "sports_fitness": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 13}
+    ],
+    "toys": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 11.5}
+    ],
+    "office": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 11.5}
+    ],
+    "pet_supplies": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 12}
+    ],
+    "automotive_parts": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 16}
+    ],
+    "garden": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": 15000, "pct": 10},
+      {"max_price": null, "pct": 5}
+    ],
+    "baby": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 7.5}
+    ],
+    "watches": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 15}
+    ],
+    "grocery": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 9}
+    ],
+    "fashion_apparel": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 19}
+    ],
+    "books": [
+      {"max_price": 250, "pct": 0},
+      {"max_price": 500, "pct": 2},
+      {"max_price": 1000, "pct": 4},
+      {"max_price": null, "pct": 13.5}
+    ],
+    "other_default": [
+      {"max_price": 1000, "pct": 0},
+      {"max_price": null, "pct": 12}
+    ]
   },
 
-  "closing_fee_by_price_band": [
-    { "max_price": 250, "fee": 5 },
-    { "max_price": 500, "fee": 10 },
-    { "max_price": 1000, "fee": 20 },
-    { "max_price": 5000, "fee": 40 },
-    { "max_price": null, "fee": 60 }
-  ],
+  "closing_fee_by_fulfillment": {
+    "easy_ship": [
+      {"max_price": 300, "fee": 1},
+      {"max_price": 500, "fee": 22},
+      {"max_price": 1000, "fee": 40},
+      {"max_price": null, "fee": 60}
+    ],
+    "self_ship": [
+      {"max_price": 300, "fee": 20},
+      {"max_price": 500, "fee": 26},
+      {"max_price": 1000, "fee": 40},
+      {"max_price": null, "fee": 60}
+    ],
+    "fba": [
+      {"max_price": 300, "fee": 20},
+      {"max_price": 500, "fee": 18},
+      {"max_price": 1000, "fee": 40},
+      {"max_price": null, "fee": 72}
+    ]
+  },
 
   "weight_handling_fee_easy_ship": {
-    "note": "Zone = Local (same city/state) / Regional (nearby states) / National (rest of India).",
+    "note": "Zone = Local (same city) / Regional (same region, different city) / National (cross-region). Slabs below may be pre-March-16; official public examples (₹55 for 350g headphone Easy Ship; 800g regional = ₹68) do not match. See _meta.weight_handling_notes.",
     "base_slab_upto_grams": 500,
-    "base_fee": { "local": 29, "regional": 43, "national": 63 },
+    "base_fee": {"local": 29, "regional": 43, "national": 63},
     "next_slab_upto_grams": 1000,
-    "next_slab_fee": { "local": 41, "regional": 65, "national": 97 },
-    "additional_per_500g_fee": { "local": 13, "regional": 19, "national": 31 }
+    "next_slab_fee": {"local": 41, "regional": 65, "national": 97},
+    "additional_per_500g_fee": {"local": 13, "regional": 19, "national": 31},
+    "easy_ship_under_300_weight_discount_rupees": 10
   },
 
   "fba_pick_pack_fee_rupees": {
-    "note": "Per-unit fee only. Monthly storage fee is separate and not per-unit (see fba_storage_fee_per_cuft_month) — enter your own per-unit storage estimate if you want it folded into a single product's margin.",
-    "standard": 20,
-    "oversize": 65
+    "note": "Official Pick & Pack (FC only): ₹17 standard up to 1kg, ₹5 each additional kg up to 5kg, ₹2 per additional 5kg thereafter. Heavy & Bulky ₹26 per unit. Source: sell.amazon.in/fees-and-pricing 2026-08-15.",
+    "standard_upto_1kg": 17,
+    "additional_per_kg_upto_5kg": 5,
+    "additional_per_5kg_after": 2,
+    "heavy_bulky_per_unit": 26
   },
 
-  "fba_storage_fee_per_cuft_month_rupees": 21,
+  "fba_storage_fee_per_cuft_month_rupees": 50,
 
   "gst_on_amazon_fees_pct": 18
 }
