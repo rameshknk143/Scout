@@ -192,8 +192,6 @@ export default function Landing() {
     },
   ];
 
-  if (!mounted) return null;
-
   return (
     <div className="sv-page">
       {/* Animated background grid */}
