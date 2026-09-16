@@ -46,9 +46,11 @@ export function FeatureCard3D({
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => {
+        handleMouseLeave();
+        setHovered(false);
+      }}
       className={`sv-glass p-6 rounded-2xl relative overflow-hidden transition-all duration-500 ${className}`}
       style={{
         opacity: visible ? 1 : 0,
@@ -103,8 +105,17 @@ export function FeatureCard3D({
   );
 }
 
-function Icon({ name, size = 18 }: { name: string; size?: number }) {
+function Icon({
+  name,
+  size = 18,
+  className,
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+}) {
   const common = {
+    className,
     width: size,
     height: size,
     viewBox: "0 0 24 24",

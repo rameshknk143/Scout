@@ -50,15 +50,16 @@ export function GlassCard({
       style={{
         ...elevationStyles[elevation],
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
         transition: `opacity var(--dur-slow) var(--ease-out) ${delay}ms, transform var(--dur-slow) var(--ease-out) ${delay}ms, box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out)`,
         boxShadow: hovered
           ? `${elevationStyles[elevation].boxShadow}, 0 0 30px -8px var(--accent-glow)`
           : elevationStyles[elevation].boxShadow,
         borderColor: hovered ? "var(--accent)" : "var(--hairline)",
-        transform: hovered
-          ? "translateY(-2px) translateZ(8px)"
-          : "translateY(0) translateZ(0)",
+        transform: !visible
+          ? "translateY(20px)"
+          : hovered
+            ? "translateY(-2px) translateZ(8px)"
+            : "translateY(0) translateZ(0)",
         ...style,
       }}
     >

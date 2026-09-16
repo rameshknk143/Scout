@@ -9,7 +9,7 @@
 import { useState } from "react";
 import type { OpsStatus, Pipelines, TunnelHistory } from "@/lib/api";
 import PerspectiveGrid from "@/components/3d/PerspectiveGrid";
-import GlassCard from "@/components/3d/GlassCard";
+import GlassPanel from "@/components/3d/GlassPanel";
 import TunnelRing from "@/components/3d/TunnelRing";
 import Bar3D from "@/components/3d/Bar3D";
 
@@ -72,12 +72,12 @@ export default function SystemHealthClient({
 
   if (!status) {
     return (
-      <GlassCard depth="high" className="border-red-200">
+      <GlassPanel depth="high" className="border-red-200">
         <p className="text-sm text-red-600">
           Could not load system status. The Render API may be waking up —
           refresh in a minute.
         </p>
-      </GlassCard>
+      </GlassPanel>
     );
   }
 
@@ -158,7 +158,7 @@ export default function SystemHealthClient({
           style={{ transformStyle: "preserve-3d" }}
         >
           {/* --- Phone Tunnel card --- */}
-          <GlassCard
+          <GlassPanel
             title="Phone Tunnel"
             subtitle="Residential IP — Amazon stops blocking"
             depth="high"
@@ -208,10 +208,10 @@ export default function SystemHealthClient({
               check the phone: Termux + Every Proxy (or v2 supervisor) running,
               battery unrestricted.
             </p>
-          </GlassCard>
+          </GlassPanel>
 
           {/* --- Last Scrape card --- */}
-          <GlassCard
+          <GlassPanel
             title="Last Scrape"
             subtitle="Watchlist — 12 ASINs, 2×/day"
             depth="high"
@@ -254,10 +254,10 @@ export default function SystemHealthClient({
               the VM&apos;s datacenter IP is being blocked — the phone tunnel is
               the fix.
             </p>
-          </GlassCard>
+          </GlassPanel>
 
           {/* --- VM health card --- */}
-          <GlassCard
+          <GlassPanel
             title="Scraping VM"
             subtitle="Oracle free tier (956 MB)"
             depth="high"
@@ -271,13 +271,13 @@ export default function SystemHealthClient({
             <Stat label="Mem free" value={`${memAvail ?? "—"} MB`} />
             <Stat label="Timers" value={`${timersActive ?? "—"} / 5`} />
             <Stat label="Newest data" value={dataAgeH != null ? `${dataAgeH}h` : "—"} />
-          </GlassCard>
+          </GlassPanel>
         </div>
 
         {/* --- 3D bar chart: 7-day tunnel uptime per day --- */}
         {chartData.length > 0 && (
           <div className="mt-4">
-            <GlassCard
+            <GlassPanel
               title="Tunnel Uptime — last 7 days"
               subtitle="Bars = % of 5-min samples in `up` state, per day"
               depth="middle"
@@ -296,13 +296,13 @@ export default function SystemHealthClient({
                 }
                 unit="%"
               />
-            </GlassCard>
+            </GlassPanel>
           </div>
         )}
 
         {/* --- Pipelines table --- */}
         <div className="mt-4">
-          <GlassCard
+          <GlassPanel
             title="Data Pipelines"
             subtitle="All sources feeding the product database"
             depth="middle"
@@ -367,12 +367,12 @@ export default function SystemHealthClient({
                 </tbody>
               </table>
             </div>
-          </GlassCard>
+          </GlassPanel>
         </div>
 
         {/* --- Bottom row: components + events --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <GlassCard title="Components" depth="middle">
+          <GlassPanel title="Components" depth="middle">
             <div className="divide-y divide-black/5">
               {beats.map((b) => (
                 <Stat
@@ -386,9 +386,9 @@ export default function SystemHealthClient({
             <p className="text-[11px] text-zinc-400 mt-3">
               Minutes since each component said &quot;alive&quot;.
             </p>
-          </GlassCard>
+          </GlassPanel>
 
-          <GlassCard title="Recent Events (48h)" depth="middle">
+          <GlassPanel title="Recent Events (48h)" depth="middle">
             {events.length === 0 ? (
               <p className="text-sm text-zinc-500">
                 Nothing to report — no warnings or errors in the last 48 hours.
@@ -434,7 +434,7 @@ export default function SystemHealthClient({
                 )}
               </>
             )}
-          </GlassCard>
+          </GlassPanel>
         </div>
 
         <p className="text-[11px] text-zinc-400 text-right mt-4 font-mono">

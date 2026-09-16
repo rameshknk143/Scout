@@ -6,7 +6,7 @@ import Tilt from "@/components/3d/Tilt";
 import BrowserShowcase from "@/components/BrowserShowcase";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { OpportunityDial } from "@/components/3d/OpportunityDial";
-import { PerspectiveGrid } from "@/components/3d/PerspectiveGrid";
+import PerspectiveGrid from "@/components/3d/PerspectiveGrid";
 import { GlassCard } from "@/components/3d/GlassCard";
 import { FeatureCard3D } from "@/components/3d/FeatureCard3D";
 import { TrustBadge } from "@/components/3d/TrustBadge";
@@ -60,14 +60,14 @@ export default function Landing() {
   ];
 
   // Staggered entrance animation
-  const staggerItems: StaggerItem[] = [
+  const [staggerItems, setStaggerItems] = useState<StaggerItem[]>([
     { delay: 0, visible: false },
     { delay: 100, visible: false },
     { delay: 200, visible: false },
     { delay: 300, visible: false },
     { delay: 400, visible: false },
     { delay: 500, visible: false },
-  ];
+  ]);
 
   useEffect(() => {
     setMounted(true);
@@ -87,15 +87,6 @@ export default function Landing() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const [staggerItems, setStaggerItems] = useState<StaggerItem[]>([
-    { delay: 0, visible: false },
-    { delay: 100, visible: false },
-    { delay: 200, visible: false },
-    { delay: 300, visible: false },
-    { delay: 400, visible: false },
-    { delay: 500, visible: false },
-  ]);
 
   const features = [
     {
@@ -235,7 +226,7 @@ export default function Landing() {
                   transform: staggerItems[i]?.visible
                     ? "translateY(0)"
                     : "translateY(-10px)",
-                  transition: `opacity var(--dur-base) var(--ease-out) ${item.delay}ms, transform var(--dur-base) var(--ease-out) ${item.delay}ms`,
+                  transition: `opacity var(--dur-base) var(--ease-out) ${staggerItems[i]?.delay ?? 0}ms, transform var(--dur-base) var(--ease-out) ${staggerItems[i]?.delay ?? 0}ms`,
                 }}
               >
                 {n.label}
@@ -700,7 +691,8 @@ export default function Landing() {
             ScoutVeda is an independent research platform and is not affiliated with Amazon.<br />
             © {new Date().getFullYear()} ScoutVeda. All rights reserved.
           </p>
-        </div      </footer>
+        </div>
+      </footer>
     </div>
   );
 }

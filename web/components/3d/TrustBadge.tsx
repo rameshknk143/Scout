@@ -32,8 +32,6 @@ export function TrustBadge({
       className={`p-4 rounded-xl relative overflow-hidden transition-all duration-500 ${className}`}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity var(--dur-slow) var(--ease-out) ${delay}ms, transform var(--dur-slow) var(--ease-out) ${delay}ms`,
         background: hovered
           ? "linear-gradient(145deg, var(--surface-2), var(--surface-1))"
           : "var(--surface-1)",
@@ -41,9 +39,11 @@ export function TrustBadge({
         boxShadow: hovered
           ? "var(--shadow-xl), 0 0 30px -8px var(--accent-glow)"
           : "var(--shadow-md)",
-        transform: hovered
-          ? "translateY(-4px) translateZ(10px)"
-          : "translateY(0) translateZ(0)",
+        transform: !visible
+          ? "translateY(20px)"
+          : hovered
+            ? "translateY(-4px) translateZ(10px)"
+            : "translateY(0) translateZ(0)",
         transition: "all var(--dur-base) var(--ease-spring)",
       }}
     >
