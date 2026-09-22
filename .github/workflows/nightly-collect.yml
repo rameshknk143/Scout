@@ -39,6 +39,17 @@ jobs:
           # SCOUT_FETCH_WORKERS  lower this FIRST if captchas appear. It is the
           #                      aggregate request rate from the runner's single
           #                      IP that gets a scraper blocked, not the depth.
+          # SCOUT_LIST_TYPES     unset (default) = collect all four list types,
+          #                      which is correct: Amazon's per-list rendering
+          #                      rotates night to night (verified 2026-09-22:
+          #                      a type can serve 30 on one category and 0 on
+          #                      another in the same sweep), so trimming
+          #                      silently loses the live categories' data.
+          #                      Set it to a subset — e.g.
+          #                      "bestsellers,new-releases" — ONLY to shrink
+          #                      the run; anything omitted becomes watch-only
+          #                      and the nightly liveness probe will print the
+          #                      re-enable step on the night it revives.
           SCOUT_PAGES: "1,2"
           SCOUT_FETCH_WORKERS: "4"
           SCOUT_GAP_MIN: "20"

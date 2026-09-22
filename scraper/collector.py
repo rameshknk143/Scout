@@ -137,6 +137,49 @@ PAGES = tuple(
     int(p) for p in os.environ.get("SCOUT_PAGES", "1,2").split(",") if p.strip()
 )
 
+# COLLECT_LIST_TYPES: which list types the run actually fetches, per category
+# and per page. Env-overridable for the same reason SCOUT_PAGES is: a
+# decision to trim or restore a list type is made in the workflow file, not
+# in code.
+#
+# Default 2026-09-22: collect ALL four list types. Amazon.in's server-rendering
+# of these lists is unstable — on any given night a list type serves 30 items
+# for some categories and 0 for others (verified from the VM, 8 s spacing:
+# most-gifted alive on beauty, dead on pet-supplies, in the SAME run; same for
+# most-wished-for and several new-releases categories). That rotation is why
+# the 18–22 Sep nightly totals fell from ~6,100 to ~3,500: no code bug, the
+# data source is just serving fewer lists on those nights.
+#
+# The robust answer is to KEEP collecting all four types every night so that
+# whenever Amazon serves a category on a given night we capture it, and when
+# they rotate a type back fully the run report's cross-checks call out the
+# swing. A real headless browser does not help — it renders the same empty
+# shell Amazon serves to curl; the emptiness is server-side, not JS-hydrated.
+#
+# If you want to TRIM the run (fewer fetches), set SCOUT_LIST_TYPES to a subset
+# — e.g. "bestsellers,new-releases". Anything in LIST_TYPES that you OMIT then
+# becomes watch-only: the liveness probe below fetches a few sentinels for it
+# each night and, on the night it serves full lists again, prints the one-line
+# re-enable step. The trade is deliberate: trim = cheaper nights, miss data on
+# categories that are briefly alive. Default is the opposite: capture everything.
+COLLECT_LIST_TYPES = tuple(
+    t for t in os.environ.get("SCOUT_LIST_TYPES", "").split(",") if t.strip()
+) or tuple(LIST_TYPES.keys())
+
+# Sentinels the liveness probe fetches (page 1 only) for any list type NOT in
+# COLLECT_LIST_TYPES: four well-populated categories. A live list serves a
+# full 30 items, so 30 on a sentinel is the revival signal. Sequential with
+# the normal politeness gap — deliberately NOT on the concurrent hot path,
+# because the probe is 4 x N fetches and exists to stay invisible to the
+# rate limiter.
+LIVENESS_PROBE_SENTINELS = [
+    ("Electronics Accessories", "electronics"),
+    ("Beauty & Personal Care", "beauty"),
+    ("Toys & Games", "toys"),
+    ("Home & Kitchen", "kitchen"),
+]
+LIVENESS_PROBE_MIN_ROWS = 30
+
 # FETCH_WORKERS: how many fetches are in flight at once.
 #
 # The trade, stated plainly because it is easy to get wrong: Amazon sees the
@@ -435,7 +478,7 @@ def run(categories=None, list_types=None, pages=None, dry_run=False):
     if not dry_run:
         db.init_db()
     targets = categories or CATEGORIES
-    types = list_types or list(LIST_TYPES.keys())
+    types = list_types or list(COLLECT_LIST_TYPES)
     pages = pages or PAGES
 
     jobs = [
@@ -496,6 +539,13 @@ def run(categories=None, list_types=None, pages=None, dry_run=False):
             summary[key] = {"ok": False, "error": "worker produced no result"}
             print(f"[FAIL] {key:<48} ({slug}) -> worker produced no result")
 
+    # Watch the dropped list types (sequential, polite, write-free). Skipped
+    # on dry-run: a --dry-run invocation exists to prove a change against
+    # live Amazon without side effects, and a 16-fetch watch pass is a
+    # side effect.
+    if not dry_run:
+        _run_liveness_probe(types)
+
     _print_run_report(summary, time.time() - started)
     return summary
 
@@ -530,6 +580,62 @@ def _page_of_key(key):
     (they are the original format), deeper ones end in " pN]"."""
     m = re.search(r" p(\d+)\]$", key)
     return int(m.group(1)) if m else 1
+
+
+def _run_liveness_probe(probed_types):
+    """For list types dropped out of the nightly collect, fetch a few
+    well-populated sentinels (page 1 only) and report whether Amazon has
+    brought the feature back. Sequential with the normal politeness gap so
+    the probe stays invisible to the rate limiter.
+
+    Writes nothing and records nothing in the run report: this is a
+    watchman, not a collector. When a probed type serves full lists again
+    on a MAJORITY of sentinels, this prints the one-line re-enable step
+    (add it back to SCOUT_LIST_TYPES in the workflow file). A single
+    sentinel going live is not enough — the sweep on 2026-09-22 found
+    most-gifted/most-wished-for in flux, alive on some categories and dead
+    on others, so a 1-of-4 reading is "still dying", not "revived"."""
+    dropped = [t for t in LIST_TYPES if t not in probed_types]
+    if not dropped:
+        return
+    print()
+    print(f"=== liveness probe (watching {len(dropped)} dropped list type(s): "
+          f"{', '.join(dropped)}) ===")
+    for lt in dropped:
+        live = proven = 0
+        for label, slug in LIVENESS_PROBE_SENTINELS:
+            key = _job_key(label, lt, 1)
+            try:
+                time.sleep(random.uniform(GAP_MIN_SECONDS, GAP_MAX_SECONDS))
+                rows = collect_category(label, slug, lt, 1, collected_at=None)
+                n = len(rows)
+            except (NoSuchPage, ValueError) as e:
+                # A clean fetch that parses to 0 items IS a reading (the
+                # "still dead" answer); only a failed fetch is unproven.
+                m = re.search(r"parsed only (\d+) valid products", str(e))
+                n = int(m.group(1)) if m else 0
+            except Exception as e:
+                print(f"  [probe] {key:<48} ({slug}) -> fetch error: "
+                      f"{str(e)[:70]} (unproven)")
+                continue
+            proven += 1
+            if n >= LIVENESS_PROBE_MIN_ROWS:
+                live += 1
+                print(f"  [probe] {key:<48} ({slug}) -> {n} rows  <-- REVIVED")
+            else:
+                print(f"  [probe] {key:<48} ({slug}) -> {n} rows")
+        if proven == 0:
+            print(f"  {lt}: probe inconclusive — every sentinel fetch "
+                  f"errored; re-check tomorrow's run before acting.")
+        elif live * 2 >= proven:
+            suggestion = ",".join(list(COLLECT_LIST_TYPES) + [lt])
+            print(f"  ** {lt} serving full lists on {live}/{proven} sentinel(s) "
+                  f"again. Re-enable by adding it to SCOUT_LIST_TYPES in "
+                  f".github/workflows/nightly-collect.yml, e.g. "
+                  f"SCOUT_LIST_TYPES: \"{suggestion}\"")
+        else:
+            print(f"  {lt} still serving 0 items on {proven} proven "
+                  f"sentinel(s) — Amazon has not revived it. Staying watch-only.")
 
 
 def _print_run_report(summary, elapsed_seconds):
