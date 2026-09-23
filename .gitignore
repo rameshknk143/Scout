@@ -17,3 +17,8 @@ scraper/.maxun_bridge_state.json
 # undone by hand. Real production data, and the point of them is to exist on
 # disk at the moment of the change - not to be version controlled.
 _recovery/
+
+# Data samples + security audit docs stay OUT of the repo (private data)
+audit-output/scraped-data.csv
+audit-output/network-endpoints.csv
+security-audit/
