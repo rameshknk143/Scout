@@ -193,6 +193,34 @@ FETCH_WORKERS = max(1, int(os.environ.get("SCOUT_FETCH_WORKERS", "4")))
 GAP_MIN_SECONDS = float(os.environ.get("SCOUT_GAP_MIN", "20"))
 GAP_MAX_SECONDS = float(os.environ.get("SCOUT_GAP_MAX", "45"))
 
+# --- Sub-category collection (added 2026-09-23) ---------------------------------
+# The 31 top-level CATEGORIES above give ~3,500 rows/night. Sub-categories are
+# the row-growth lever: Amazon.in serves its OWN distinct 30-item bestseller
+# (and new-releases) list for every browse-node, and we discovered 382 of them
+# live (browse_tree_full.json -> subcats.json, committed next to this module).
+#
+# All knobs are env-overridable for the same reason SCOUT_PAGES is: dial the
+# volume up or down from the workflow file with no code change, no redeploy.
+# Defaults are set to fit the 2,000-min private-repo GitHub cap (session 2 of
+# the nightly pair); raise them only once the runner is unlimited (public repo
+# or a self-hosted runner), when minutes are no longer the constraint.
+SUBCATS_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "subcats.json")
+# How many sub-categories a sub-cat run touches. 0 or missing file = disabled.
+SUBCAT_MAX = int(os.environ.get("SCOUT_SUBCAT_MAX", "60"))
+# List types the sub-cat run fetches (default the two that render reliably;
+# most-gifted / most-wished-for are volatile, see COLLECT_LIST_TYPES note).
+SUBCAT_LIST_TYPES = tuple(
+    t for t in os.environ.get("SCOUT_SUBCAT_LIST_TYPES", "bestsellers,new-releases").split(",")
+    if t.strip()
+)
+# Pages per sub-cat list. Default page 1 only: sub-node lists are short and
+# page-1 is the one that always renders, so depth buys little and costs a real
+# fetch. Enable "1,2" once a run proves sub-node depth is clean.
+SUBCAT_PAGES = tuple(
+    int(p) for p in os.environ.get("SCOUT_SUBCAT_PAGES", "1").split(",") if p.strip()
+)
+
+
 ASIN_RE = re.compile(r'data-asin="([A-Z0-9]{10})"')
 RANK_RE = re.compile(r'zg-bdg-text">#(\d+)<')
 TITLE_RE = re.compile(r'class="[^"]*p13n-sc-css-line-clamp[^"]*">([^<]+)<')
@@ -376,6 +404,53 @@ def collect_category(label, slug, list_type="bestsellers", page=1, collected_at=
             "collected_at": now,
         })
     return rows
+
+
+def load_subcats(max_count=None):
+    """Return an ordered {label: slug} dict of sub-categories, shaped exactly
+    like CATEGORIES so it can be passed straight to run(categories=...).
+
+    Read from subcats.json (committed beside this module). The compound slug
+    "electronics/1388867031" is what Amazon's /gp/bestsellers/ route accepts:
+    {list_path}/{top_slug}/{browse_node}/ -> that node's own 30-item list.
+    Truncated to max_count (default SUBCAT_MAX) so a run's fetch budget stays
+    bounded and env-tunable. Empty/absent file returns {} (mode is a no-op)."""
+    import json
+    import collections
+    try:
+        with open(SUBCATS_JSON) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        return collections.OrderedDict()
+    subs = data.get("subcategories", [])
+    limit = max_count if max_count is not None else SUBCAT_MAX
+    out = collections.OrderedDict()
+    for s in subs[:limit]:
+        out[s["label"]] = s["slug"]
+    return out
+
+
+def run_subcats(max_count=None, dry_run=False):
+    """Sub-category run: fetches Amazon's per-browse-node lists instead of the
+    31 top-level ones. Reuses run() so fetching, insertion, the liveness probe,
+    and the run report are all identical to a normal night. The category label
+    for a sub-node is "Top > Leaf", so a sub-node row and its parent top-level
+    row are distinct snapshots (and the uq_snapshots_row index keys on the
+    category string, so they never collide)."""
+    targets = load_subcats(max_count)
+    if not targets:
+        print("[subcats] no sub-categories available (missing subcats.json or "
+              "SUBCAT_MAX=0) — nothing to do.")
+        return {}
+    print(f"[subcats] {len(targets)} sub-category lists | "
+          f"types={list(SUBCAT_LIST_TYPES)} | pages={list(SUBCAT_PAGES)} "
+          f"{'| DRY RUN' if dry_run else ''}")
+    return run(
+        categories=targets,
+        list_types=list(SUBCAT_LIST_TYPES),
+        pages=SUBCAT_PAGES,
+        dry_run=dry_run,
+    )
 
 
 def _job_key(label, list_type, page):
@@ -728,6 +803,13 @@ if __name__ == "__main__":
     # argv before positional parsing so it can go anywhere on the line.
     dry = "--dry-run" in sys.argv
     sys.argv = [a for a in sys.argv if a != "--dry-run"]
+
+    # --subcats: run only the sub-category lists (browse nodes in subcats.json),
+    # a separate nightly session from the top-level run. --dry-run still works.
+    if "--subcats" in sys.argv:
+        sys.argv = [a for a in sys.argv if a != "--subcats"]
+        run_subcats(dry_run=dry)
+        sys.exit(0)
 
     if len(sys.argv) > 1:
         slug_arg = sys.argv[1]

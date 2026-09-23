@@ -1,19 +1,41 @@
 name: Scout Nightly Collector
 
+# Two nightly sessions, deliberately far apart (8-hour gap):
+#   session 1 (collect)   : the 31 top-level categories, all 4 list types
+#   session 2 (subcats)   : Amazon's per-browse-node lists, from subcats.json
+# Each starts on a FRESH GitHub runner (fresh IP + TLS + no cookies), so a
+# back-to-back burst is what gets flagged, not the gap. The 8-hour gap is
+# cheap insurance against the shared runner pool inheriting heat from a
+# concurrent run; lowering it to 30 min is safe (each run is already a new
+# "user" to Amazon) but buys almost nothing at the current volume.
+#
+# Budget (private repo, 2,000 free Actions-min/month):
+#   session 1 ~33 min + session 2 ~24 min = ~57 min/night = ~1,710 min/mo.
+# Under the cap. To grow past it, raise SCOUT_SUBCAT_MAX / SCOUT_SUBCAT_PAGES
+# in the session-2 env below, or move to a public repo / self-hosted runner
+# for unlimited minutes.
+
 on:
   schedule:
-    # 20:45 UTC = 02:15 IST — same time the old Windows Task Scheduler job used
-    - cron: "45 20 * * *"
-  workflow_dispatch: {}  # lets us trigger it manually from the GitHub UI to test
+    # 20:15 UTC = 01:45 IST — session 1
+    - cron: "15 20 * * *"
+    # 04:15 UTC = 09:45 IST — session 2 (8-hour gap)
+    - cron: "15 4 * * *"
+  workflow_dispatch:
+    inputs:
+      session:
+        description: "Which session to run: top-level categories, or sub-categories"
+        type: choice
+        options:
+          - top
+          - subcats
+        default: top
 
 jobs:
   collect:
+    if: ${{ github.event.schedule == '15 20 * * *' || github.event_name == 'workflow_dispatch' && github.event.inputs.session != 'subcats' }}
     runs-on: ubuntu-latest
-    # The collector is by far the largest consumer of a 2,000-minute private-repo
-    # allowance, and GitHub bills each job rounded up to the whole minute. A hung
-    # run left to the 360-minute default would eat a fifth of the month in one
-    # night. ~40 min is the expected wall clock at the settings below; 75 leaves
-    # room for a slow night without leaving room for a runaway.
+    # ~40 min expected; 75 leaves room for a slow night without a runaway.
     timeout-minutes: 75
     defaults:
       run:
@@ -28,30 +50,54 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run nightly collection
+      - name: Run top-level collection
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          # Throughput knobs, surfaced here so a bad night can be rolled back by
-          # editing this file — no code change, no review, no redeploy.
-          #
-          # SCOUT_PAGES=1        restores the exact pre-2026-09-09 behaviour
-          #                      (top 30 only, ~124 fetches).
-          # SCOUT_FETCH_WORKERS  lower this FIRST if captchas appear. It is the
-          #                      aggregate request rate from the runner's single
-          #                      IP that gets a scraper blocked, not the depth.
-          # SCOUT_LIST_TYPES     unset (default) = collect all four list types,
-          #                      which is correct: Amazon's per-list rendering
-          #                      rotates night to night (verified 2026-09-22:
-          #                      a type can serve 30 on one category and 0 on
-          #                      another in the same sweep), so trimming
-          #                      silently loses the live categories' data.
-          #                      Set it to a subset — e.g.
-          #                      "bestsellers,new-releases" — ONLY to shrink
-          #                      the run; anything omitted becomes watch-only
-          #                      and the nightly liveness probe will print the
-          #                      re-enable step on the night it revives.
+          # Throughput knobs — see the comments in collector.py (module header)
+          # for the full reasoning; each is env-overridable so a bad night is a
+          # one-line rollback, not a redeploy.
           SCOUT_PAGES: "1,2"
           SCOUT_FETCH_WORKERS: "4"
           SCOUT_GAP_MIN: "20"
           SCOUT_GAP_MAX: "45"
         run: python collector.py
+
+  subcats:
+    if: ${{ github.event.schedule == '15 4 * * *' || github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'subcats' }}
+    runs-on: ubuntu-latest
+    # ~30 min expected at the session-2 budget below; 45 leaves room to grow.
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: scraper
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run sub-category collection
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Sub-category knobs (all read by collector.py):
+          # SCOUT_SUBCAT_MAX=45        how many browse-node lists this session
+          #                              touches. Raise this to grow volume; it
+          #                              is the single biggest lever.
+          # SCOUT_SUBCAT_LIST_TYPES    default "bestsellers,new-releases" — the
+          #                              two that render reliably. Add the other
+          #                              two once their nightly liveness probe
+          #                              shows them serving full lists.
+          # SCOUT_SUBCAT_PAGES         default "1" (page 1 only). Sub-node lists
+          #                              are short and p1 is the reliable page.
+          #                              "1,2" doubles the volume but also the
+          #                              minutes — only on an unlimited runner.
+          SCOUT_SUBCAT_MAX: "45"
+          SCOUT_FETCH_WORKERS: "4"
+          SCOUT_GAP_MIN: "15"
+          SCOUT_GAP_MAX: "30"
+        run: python collector.py --subcats
+
