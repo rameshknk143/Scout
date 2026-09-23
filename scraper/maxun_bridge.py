@@ -81,6 +81,41 @@ FIELD_ALIASES = {
     "image_url": ("imageurl", "image", "img", "thumbnail", "imagesrc", "imglink"),
     "url": ("url", "link", "producturl", "productlink", "href"),
     "rank": ("rank", "position", "no", "sno", "serial"),
+    # Category-specific aliases for ontology-aware mapping
+    "ram": ("ram", "memory", "random access memory"),
+    "storage": ("storage", "memory storage", "internal storage"),
+    "processor": ("processor", "cpu", "chipset"),
+    "display_size": ("display size", "screen size", "display"),
+    "battery_capacity": ("battery", "battery capacity", "mAh"),
+    "material": ("material", "fabric", "construction"),
+    "weight": ("weight", "item weight", "product weight"),
+    "dimensions": ("dimensions", "product dimensions", "size"),
+    "brand": ("brand", "manufacturer", "made by"),
+}
+
+# Extended field aliases from ontology for category-specific attributes
+ONTOLOGY_FIELD_ALIASES = {
+    "Electronics": {
+        "ram": ("ram", "memory", "random access memory", "gb ram"),
+        "storage": ("storage", "memory storage", "internal storage", "gb storage"),
+        "processor": ("processor", "cpu", "chipset", "model processor"),
+        "display_size": ("display size", "screen size", "inches display"),
+        "battery_capacity": ("battery", "battery capacity", "mah battery"),
+        "cameras_rear": ("rear camera", "back camera", "primary camera"),
+        "network": ("network", "connectivity", "4g", "5g", "sim"),
+    },
+    "Fashion": {
+        "gender": ("gender", "target gender", "for"),
+        "size": ("size", "fit", "measurements"),
+        "fabric": ("fabric", "material", "composition"),
+        "pattern": ("pattern", "print", "design"),
+        "fit": ("fit", "style fit", "cut"),
+    },
+    "Grocery": {
+        "net_weight": ("net weight", "weight net", "quantity"),
+        "ingredients": ("ingredients", "component", "composition"),
+        "vegetarian": ("vegetarian", "veg", "non-veg"),
+    },
 }
 
 

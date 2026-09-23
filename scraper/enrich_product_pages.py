@@ -27,6 +27,15 @@ from pathlib import Path
 import requests
 from playwright.sync_api import sync_playwright
 
+# Import ontology for category-aware enrichment
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+try:
+    from ontology_engine import AmazonProductOntology, get_ontology
+    ONTOLOGY = get_ontology()
+except ImportError:
+    ONTOLOGY = None
+
 # Suppress Playwright warnings
 os.environ["PLAYWRIGHT_LOG_LEVEL"] = "error"
 
@@ -66,8 +75,11 @@ def fetch_with_browser(page, asin, retries=2):
     return None
 
 
-def parse_product_html(html, asin):
-    """Extract all available fields from product page HTML."""
+def parse_product_html(html, asin, category=None, subcategory=None):
+    """Extract all available fields from product page HTML.
+    
+    Uses ontology to determine which category-specific attributes to extract.
+    """
     from bs4 import BeautifulSoup
     soup = BeautifulSoup(html, "html.parser")
     
@@ -142,6 +154,86 @@ def parse_product_html(html, asin):
         m = re.search(r"(?:warranty|guarantee)[^\.]*", warranty_text, re.I)
         if m:
             data["warranty"] = m.group(0)[:100]
+    
+    # Category-specific extraction using ontology
+    if ONTOLOGY and category:
+        schema = ONTOLOGY.get_schema(category, subcategory)
+        for attr in schema.attributes:
+            if attr.name in data:
+                continue  # Already extracted
+            
+            # Try to extract based on attribute name patterns
+            if attr.name == "ram":
+                for li in details:
+                    text = li.get_text(strip=True)
+                    if "RAM" in text or "memory" in text.lower():
+                        m = re.search(r"(\d+)\s*GB", text)
+                        if m:
+                            data["ram"] = f"{m.group(1)}GB"
+                            break
+            
+            elif attr.name == "storage":
+                for li in details:
+                    text = li.get_text(strip=True)
+                    if "storage" in text.lower() or "capacity" in text.lower():
+                        m = re.search(r"(\d+)\s*(GB|TB)", text, re.I)
+                        if m:
+                            data["storage"] = f"{m.group(1)}{m.group(2)}"
+                            break
+            
+            elif attr.name == "processor":
+                for li in details:
+                    text = li.get_text(strip=True)
+                    if "processor" in text.lower() or "cpu" in text.lower():
+                        data["processor"] = text.split(":", 1)[-1].strip()[:100]
+                        break
+            
+            elif attr.name == "display_size":
+                for li in details:
+                    text = li.get_text(strip=True)
+                    if "display" in text.lower() or "screen" in text.lower():
+                        m = re.search(r"([\d.]+)\s*inch", text, re.I)
+                        if m:
+                            data["display_size"] = f"{m.group(1)} inch"
+                            break
+            
+            elif attr.name == "battery_capacity":
+                for li in details:
+                    text = li.get_text(strip=True)
+                    if "battery" in text.lower():
+                        m = re.search(r"(\d+)\s*mAh", text, re.I)
+                        if m:
+                            data["battery_capacity"] = f"{m.group(1)}mAh"
+                            break
+            
+            elif attr.name == "fabric" or attr.name == "material":
+                # Already extracted above
+                pass
+            
+            elif attr.name == "size" and subcategory:
+                # Extract size from title or details
+                for li in details:
+                    text = li.get_text(strip=True)
+                    if "size" in text.lower():
+                        data["size"] = text.split(":", 1)[-1].strip()[:50]
+                        break
+    
+    # Dynamic attribute discovery - register any new fields found
+    if ONTOLOGY:
+        for key, value in data.items():
+            if key not in ONTOLOGY.attributes and value:
+                # Auto-register new attribute
+                from ontology_engine import AttributeSpec
+                new_attr = AttributeSpec(
+                    name=key,
+                    data_type="string",
+                    description=f"Discovered field: {key}",
+                    tier=2,
+                    source="product_page",
+                    categories=[category] if category else [],
+                    is_dynamic=True
+                )
+                ONTOLOGY.register_attribute(new_attr)
     
     return data
 
@@ -242,7 +334,14 @@ def main():
                 time.sleep(random.uniform(4, 8))
                 continue
             
-            data = parse_product_html(html, asin)
+            # Parse category to get subcategory
+            subcategory = None
+            if category and " > " in category:
+                parts = category.split(" > ")
+                if len(parts) > 1:
+                    subcategory = parts[-1]
+            
+            data = parse_product_html(html, asin, category=category, subcategory=subcategory)
             if not data:
                 failed += 1
                 continue

@@ -11,7 +11,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -26,7 +26,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -41,7 +41,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -56,7 +56,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -71,7 +71,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -86,7 +86,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -101,7 +101,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -116,7 +116,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -131,7 +131,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -146,7 +146,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -161,7 +161,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -176,7 +176,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -191,7 +191,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": true,
       "validators": []
     },
@@ -206,7 +206,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -221,7 +221,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -236,7 +236,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -251,7 +251,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -266,7 +266,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.443574+00:00",
       "required": false,
       "validators": []
     },
@@ -281,7 +281,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -296,7 +296,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -311,7 +311,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -326,7 +326,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -341,7 +341,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -356,7 +356,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -371,7 +371,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -386,7 +386,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     },
@@ -401,7 +401,7 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": false,
-      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "created_at": "2026-09-23T18:57:01.444081+00:00",
       "required": false,
       "validators": []
     }
@@ -421,7 +421,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -438,7 +438,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -455,7 +455,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -472,7 +472,75 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "size_spec",
+        "data_type": "string",
+        "description": "Size specifications",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "skill_level",
+        "data_type": "string",
+        "description": "Skill level (Beginner/Intermediate/Pro)",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "gender",
+        "data_type": "string",
+        "description": "Target gender",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "warranty",
+        "data_type": "string",
+        "description": "Warranty information",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
         "required": false,
         "validators": []
       }
@@ -491,7 +559,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -508,7 +576,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -525,7 +593,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       }
@@ -544,7 +612,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -561,7 +629,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -578,7 +646,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -595,7 +663,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -612,7 +680,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -629,7 +697,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -646,7 +714,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -663,7 +731,121 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "ram",
+        "data_type": "string",
+        "description": "RAM size",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Mobiles & Tablets"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "storage",
+        "data_type": "string",
+        "description": "Storage capacity",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Mobiles & Tablets"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "cameras_rear",
+        "data_type": "string",
+        "description": "Rear camera specs",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Mobiles & Tablets"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "network",
+        "data_type": "string",
+        "description": "Network support",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Mobiles & Tablets"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "noise_cancellation",
+        "data_type": "boolean",
+        "description": "Active noise cancellation",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Headphones"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "wireless",
+        "data_type": "boolean",
+        "description": "Wireless capability",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Headphones"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
         "required": false,
         "validators": []
       }
@@ -682,7 +864,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -699,7 +881,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -716,7 +898,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -733,7 +915,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -750,7 +932,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       }
@@ -769,7 +951,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -786,7 +968,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -803,7 +985,7 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
         "required": false,
         "validators": []
       },
@@ -820,7 +1002,1812 @@
         "subcategories": [],
         "product_types": [],
         "is_dynamic": false,
-        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "created_at": "2026-09-23T18:57:01.444081+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Grocery": [
+      {
+        "name": "net_weight",
+        "data_type": "string",
+        "description": "Net weight",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Grocery"
+        ],
+        "subcategories": [
+          "Snacks & Branded Foods"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "ingredients",
+        "data_type": "string",
+        "description": "Ingredients list",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Grocery"
+        ],
+        "subcategories": [
+          "Snacks & Branded Foods"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "vegetarian",
+        "data_type": "boolean",
+        "description": "Vegetarian certified",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Grocery"
+        ],
+        "subcategories": [
+          "Snacks & Branded Foods"
+        ],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Books": [
+      {
+        "name": "isbn",
+        "data_type": "string",
+        "description": "ISBN-10 or ISBN-13",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "publisher",
+        "data_type": "string",
+        "description": "Publisher name",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "publication_date",
+        "data_type": "datetime",
+        "description": "Publication date",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "language",
+        "data_type": "string",
+        "description": "Book language",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "page_count",
+        "data_type": "number",
+        "description": "Total pages",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "binding",
+        "data_type": "string",
+        "description": "Binding type (Paperback/Hardcover)",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "author",
+        "data_type": "string",
+        "description": "Author name(s)",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "genre",
+        "data_type": "string",
+        "description": "Book genre/category",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Toys": [
+      {
+        "name": "age_range",
+        "data_type": "string",
+        "description": "Recommended age range",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Toys"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material",
+        "data_type": "string",
+        "description": "Material composition",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Toys"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "safety_standards",
+        "data_type": "string",
+        "description": "Safety certification marks",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Toys"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "number_of_pieces",
+        "data_type": "number",
+        "description": "Number of pieces in set",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Toys"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "battery_required",
+        "data_type": "boolean",
+        "description": "Batteries required",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Toys"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "assembly_required",
+        "data_type": "boolean",
+        "description": "Assembly required",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Toys"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Baby": [
+      {
+        "name": "age_range",
+        "data_type": "string",
+        "description": "Recommended age range",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Baby"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material",
+        "data_type": "string",
+        "description": "Safe materials used",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Baby"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "safety_certifications",
+        "data_type": "string",
+        "description": "Safety standards compliance",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Baby"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "weight_limit",
+        "data_type": "string",
+        "description": "Maximum weight limit",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Baby"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "assembly_required",
+        "data_type": "boolean",
+        "description": "Assembly needed",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Baby"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Automotive": [
+      {
+        "name": "vehicle_compatibility",
+        "data_type": "string",
+        "description": "Compatible vehicle models",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "part_number",
+        "data_type": "string",
+        "description": "OEM part number",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "fit_type",
+        "data_type": "string",
+        "description": "Universal/Fit-specific fit",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "warranty",
+        "data_type": "string",
+        "description": "Warranty information",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Kitchen": [
+      {
+        "name": "capacity",
+        "data_type": "string",
+        "description": "Capacity/volume",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "power_wattage",
+        "data_type": "string",
+        "description": "Power consumption (Watts)",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "voltage",
+        "data_type": "string",
+        "description": "Voltage requirement",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "dishwasher_safe",
+        "data_type": "boolean",
+        "description": "Dishwasher safe",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "microwave_safe",
+        "data_type": "boolean",
+        "description": "Microwave safe",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Home Improvement": [
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home Improvement"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "indoor_outdoor",
+        "data_type": "string",
+        "description": "Indoor/Outdoor use",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home Improvement"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "weight_spec",
+        "data_type": "string",
+        "description": "Product weight",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home Improvement"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "installation_type",
+        "data_type": "string",
+        "description": "Installation requirements",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home Improvement"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Garden": [
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Garden"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "plant_type",
+        "data_type": "string",
+        "description": "Suitable plant types",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Garden"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "weather_resistance",
+        "data_type": "string",
+        "description": "Weather resistance rating",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Garden"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Pet Supplies": [
+      {
+        "name": "pet_type",
+        "data_type": "string",
+        "description": "Suitable pet types",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Pet Supplies"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "pet_size",
+        "data_type": "string",
+        "description": "Suitable pet size",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Pet Supplies"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Pet Supplies"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Music": [
+      {
+        "name": "instrument_type",
+        "data_type": "string",
+        "description": "Instrument type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Music"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "brand_model",
+        "data_type": "string",
+        "description": "Brand and model",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Music"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Music"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "genre_suitable",
+        "data_type": "string",
+        "description": "Suitable music genres",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Music"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Dvd": [
+      {
+        "name": "format",
+        "data_type": "string",
+        "description": "Video format (DVD/Blu-ray)",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Dvd"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "runtime",
+        "data_type": "string",
+        "description": "Total runtime",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Dvd"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "language_audio",
+        "data_type": "string",
+        "description": "Audio languages available",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Dvd"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "subtitle_languages",
+        "data_type": "string",
+        "description": "Available subtitle languages",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Dvd"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Videogames": [
+      {
+        "name": "platform",
+        "data_type": "string",
+        "description": "Gaming platform",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Videogames"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "genre",
+        "data_type": "string",
+        "description": "Game genre",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Videogames"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "esrb_rating",
+        "data_type": "string",
+        "description": "ESRB content rating",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Videogames"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "number_of_players",
+        "data_type": "number",
+        "description": "Number of players supported",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Videogames"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Apparel": [
+      {
+        "name": "gender",
+        "data_type": "string",
+        "description": "Target gender",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Apparel"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "size",
+        "data_type": "string",
+        "description": "Size variant",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Apparel"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "fabric",
+        "data_type": "string",
+        "description": "Fabric composition",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Apparel"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "pattern",
+        "data_type": "string",
+        "description": "Pattern/print type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Apparel"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Shoes": [
+      {
+        "name": "gender",
+        "data_type": "string",
+        "description": "Target gender",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Shoes"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "size",
+        "data_type": "string",
+        "description": "Shoe size",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Shoes"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "upper_material",
+        "data_type": "string",
+        "description": "Upper material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Shoes"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "sole_material",
+        "data_type": "string",
+        "description": "Sole material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Shoes"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "closure_type",
+        "data_type": "string",
+        "description": "Closure type (lace-up, slip-on)",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Shoes"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "water_resistant",
+        "data_type": "boolean",
+        "description": "Water resistant",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Shoes"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Luggage": [
+      {
+        "name": "capacity",
+        "data_type": "string",
+        "description": "Capacity/literage",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Luggage"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Shell material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Luggage"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "weight_empty",
+        "data_type": "string",
+        "description": "Empty weight",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Luggage"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "wheel_type",
+        "data_type": "string",
+        "description": "Wheel configuration",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Luggage"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Jewelry": [
+      {
+        "name": "metal_type",
+        "data_type": "string",
+        "description": "Metal (Gold, Silver, Platinum)",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewelry"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "gemstone",
+        "data_type": "string",
+        "description": "Gemstone type",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewelry"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "carat_weight",
+        "data_type": "string",
+        "description": "Carat weight",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewelry"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "chain_length",
+        "data_type": "string",
+        "description": "Chain/necklace length",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewelry"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "clasp_type",
+        "data_type": "string",
+        "description": "Clasp/closure type",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewelry"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "gender",
+        "data_type": "string",
+        "description": "Target gender",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewelry"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Watches": [
+      {
+        "name": "movement_type",
+        "data_type": "string",
+        "description": "Watch movement (Quartz/Automatic)",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Watches"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "case_material",
+        "data_type": "string",
+        "description": "Case material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Watches"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "band_material",
+        "data_type": "string",
+        "description": "Band/strap material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Watches"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "water_resistance",
+        "data_type": "string",
+        "description": "Water resistance rating",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Watches"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "case_diameter",
+        "data_type": "string",
+        "description": "Case diameter",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Watches"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "gender",
+        "data_type": "string",
+        "description": "Target gender",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Watches"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Industrial": [
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Industrial"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "load_capacity",
+        "data_type": "string",
+        "description": "Load capacity rating",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Industrial"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "certifications",
+        "data_type": "string",
+        "description": "Industrial certifications",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Industrial"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Office": [
+      {
+        "name": "material_construction",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Office"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "dimensions",
+        "data_type": "string",
+        "description": "Product dimensions",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Office"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Mobile Apps": [
+      {
+        "name": "app_category",
+        "data_type": "string",
+        "description": "App category",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Mobile Apps"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "compatibility",
+        "data_type": "string",
+        "description": "OS compatibility",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Mobile Apps"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "developer",
+        "data_type": "string",
+        "description": "App developer/publisher",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Mobile Apps"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Software": [
+      {
+        "name": "software_type",
+        "data_type": "string",
+        "description": "Type of software",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "os_compatibility",
+        "data_type": "string",
+        "description": "OS compatibility",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "version",
+        "data_type": "string",
+        "description": "Software version",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "license_type",
+        "data_type": "string",
+        "description": "License type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Hpc": [
+      {
+        "name": "product_type",
+        "data_type": "string",
+        "description": "Product type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Hpc"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "active_ingredients",
+        "data_type": "string",
+        "description": "Active ingredients",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Hpc"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "usage_instructions",
+        "data_type": "string",
+        "description": "Usage instructions",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Hpc"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "shelf_life",
+        "data_type": "string",
+        "description": "Shelf life/expiry",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Hpc"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Gift Cards": [
+      {
+        "name": "denomination",
+        "data_type": "number",
+        "description": "Card value",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Gift Cards"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "merchant",
+        "data_type": "string",
+        "description": "Merchant/brand",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Gift Cards"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "expiry_period",
+        "data_type": "string",
+        "description": "Validity period",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Gift Cards"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Boost": [
+      {
+        "name": "flavour",
+        "data_type": "string",
+        "description": "Flavor variant",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Boost"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "protein_content",
+        "data_type": "string",
+        "description": "Protein per serving",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Boost"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "servings_per_container",
+        "data_type": "number",
+        "description": "Servings per container",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Boost"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-24T00:30:00+00:00",
         "required": false,
         "validators": []
       }
@@ -840,10 +2827,10 @@
       "subcategories": [],
       "product_types": [],
       "is_dynamic": true,
-      "created_at": "2026-09-23T18:44:37.731135+00:00",
+      "created_at": "2026-09-23T18:57:01.486649+00:00",
       "required": false,
       "validators": []
     }
   ],
-  "last_updated": "2026-09-23T18:44:37.732559+00:00"
+  "last_updated": "2026-09-23T18:57:01.486649+00:00"
 }
