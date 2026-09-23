@@ -37,7 +37,7 @@ from urllib.request import (
 
 import db
 from registry.attribute_registry import DataStatus, default_registry
-from registry.category_mapper import CategoryMapper, get_ontology
+from registry.category_mapper import CategoryMapper
 
 logger = logging.getLogger(__name__)
 
