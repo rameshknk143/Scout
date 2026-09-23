@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS snapshots (
     id SERIAL PRIMARY KEY,
     asin TEXT NOT NULL,
     category TEXT NOT NULL,
+    subcategory TEXT,
+    product_type TEXT,
     list_type TEXT NOT NULL,
     rank INTEGER,
     title TEXT,
@@ -87,7 +89,8 @@ def insert_snapshot_rows(rows):
                 cur,
                 """INSERT INTO snapshots
                    (asin, category, list_type, rank, title, price, rating,
-                    review_count, image_url, collected_at, brand, size_tier_hint, product_type_hint)
+                    review_count, image_url, collected_at, brand, size_tier_hint, product_type_hint,
+                    subcategory, product_type)
                    VALUES %s ON CONFLICT DO NOTHING RETURNING id""",
                 [
                     (
@@ -95,6 +98,7 @@ def insert_snapshot_rows(rows):
                         r["title"], r["price"], r["rating"], r["review_count"],
                         r["image_url"], r["collected_at"],
                         r.get("brand"), r.get("size_tier_hint"), r.get("product_type_hint"),
+                        r.get("subcategory"), r.get("product_type"),
                     )
                     for r in rows
                 ],

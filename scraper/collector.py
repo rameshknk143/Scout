@@ -64,6 +64,10 @@ from datetime import datetime, timezone
 import requests
 
 import db
+from registry.category_mapper import CategoryMapper, default_registry
+
+# Global mapper instance for the collector
+_mapper = CategoryMapper()
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -464,9 +468,15 @@ def collect_category(label, slug, list_type="bestsellers", page=1, collected_at=
     now = collected_at or datetime.now(timezone.utc).isoformat()
     rows = []
     for p in valid:
+        # Infer full category hierarchy
+        cat_label = label  # e.g. "Electronics > Headphones" or just "Electronics"
+        mapped = _mapper.map(p["asin"], title=p["title"], existing_category=cat_label)
+        
         rows.append({
             "asin": p["asin"],
-            "category": label,
+            "category": mapped.get("category", label),
+            "subcategory": mapped.get("subcategory"),
+            "product_type": mapped.get("product_type"),
             "list_type": list_type,
             "rank": p["rank"],
             "title": p["title"],

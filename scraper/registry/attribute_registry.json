@@ -1,0 +1,849 @@
+{
+  "universal_attributes": [
+    {
+      "name": "asin",
+      "data_type": "string",
+      "description": "Amazon Standard Identification Number",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "title",
+      "data_type": "string",
+      "description": "Product title/name",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "brand",
+      "data_type": "string",
+      "description": "Brand name",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "price",
+      "data_type": "number",
+      "description": "Current selling price in INR",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "mrp",
+      "data_type": "number",
+      "description": "Maximum Retail Price",
+      "tier": 2,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "discount_pct",
+      "data_type": "number",
+      "description": "Discount percentage",
+      "tier": 2,
+      "source": "derived",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "rating",
+      "data_type": "number",
+      "description": "Average customer rating",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "review_count",
+      "data_type": "number",
+      "description": "Total number of ratings",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "rank",
+      "data_type": "number",
+      "description": "Best seller rank position",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "image_url",
+      "data_type": "url",
+      "description": "Main product image URL",
+      "tier": 2,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "category",
+      "data_type": "string",
+      "description": "Amazon category path",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "list_type",
+      "data_type": "string",
+      "description": "Type of list (bestsellers/new-releases/etc)",
+      "tier": 1,
+      "source": "list_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "collected_at",
+      "data_type": "datetime",
+      "description": "Timestamp when data was collected",
+      "tier": 1,
+      "source": "system",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": true,
+      "validators": []
+    },
+    {
+      "name": "asin_url",
+      "data_type": "url",
+      "description": "Amazon product page URL",
+      "tier": 2,
+      "source": "derived",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "availability_text",
+      "data_type": "string",
+      "description": "Stock availability text",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "in_stock",
+      "data_type": "boolean",
+      "description": "Whether item is in stock",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "seller",
+      "data_type": "string",
+      "description": "Seller name",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "fulfillment",
+      "data_type": "string",
+      "description": "Fulfillment method (FBA/FBM)",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "dimensions",
+      "data_type": "string",
+      "description": "Product dimensions",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "weight",
+      "data_type": "string",
+      "description": "Item weight",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "package_dimensions",
+      "data_type": "string",
+      "description": "Package dimensions",
+      "tier": 3,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "package_weight",
+      "data_type": "string",
+      "description": "Package weight",
+      "tier": 3,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "bsr_rank",
+      "data_type": "number",
+      "description": "Best Seller Rank",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "bsr_category",
+      "data_type": "string",
+      "description": "BSR category",
+      "tier": 2,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "country_of_origin",
+      "data_type": "string",
+      "description": "Country of origin",
+      "tier": 3,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "model_number",
+      "data_type": "string",
+      "description": "Manufacturer model number",
+      "tier": 3,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    },
+    {
+      "name": "item_part_number",
+      "data_type": "string",
+      "description": "Amazon part number",
+      "tier": 3,
+      "source": "product_page",
+      "universal": true,
+      "categories": [],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": false,
+      "created_at": "2026-09-23T18:44:37.688210+00:00",
+      "required": false,
+      "validators": []
+    }
+  ],
+  "category_attributes": {
+    "Sports": [
+      {
+        "name": "material",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "sport_type",
+        "data_type": "string",
+        "description": "Target sport/activity",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "age_group",
+        "data_type": "string",
+        "description": "Recommended age group",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "weight_spec",
+        "data_type": "string",
+        "description": "Product weight spec",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Sports"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Home & Kitchen": [
+      {
+        "name": "warranty",
+        "data_type": "string",
+        "description": "Manufacturer warranty",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home & Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "capacity",
+        "data_type": "string",
+        "description": "Capacity/volume",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home & Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "color_options",
+        "data_type": "string",
+        "description": "Available colors",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Home & Kitchen"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Electronics": [
+      {
+        "name": "ram",
+        "data_type": "string",
+        "description": "RAM size",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "storage",
+        "data_type": "string",
+        "description": "Storage capacity",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "processor",
+        "data_type": "string",
+        "description": "Processor/CPU model",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "display_size",
+        "data_type": "string",
+        "description": "Display size in inches",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "battery_capacity",
+        "data_type": "string",
+        "description": "Battery capacity in mAh",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "connectivity",
+        "data_type": "string",
+        "description": "Connectivity options",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "color",
+        "data_type": "string",
+        "description": "Product color",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "special_features",
+        "data_type": "string",
+        "description": "Special features",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Fashion": [
+      {
+        "name": "size",
+        "data_type": "string",
+        "description": "Size variant",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "fabric",
+        "data_type": "string",
+        "description": "Fabric/material type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "pattern",
+        "data_type": "string",
+        "description": "Pattern/print type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "closure_type",
+        "data_type": "string",
+        "description": "Closure mechanism",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "care_instructions",
+        "data_type": "string",
+        "description": "Care directions",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      }
+    ],
+    "Beauty": [
+      {
+        "name": "volume",
+        "data_type": "string",
+        "description": "Product volume/weight",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Beauty"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "ingredients",
+        "data_type": "string",
+        "description": "Key ingredients",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Beauty"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "skin_type",
+        "data_type": "string",
+        "description": "Suitable skin type",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Beauty"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      },
+      {
+        "name": "shelf_life",
+        "data_type": "string",
+        "description": "Shelf life/expiry",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Beauty"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false,
+        "created_at": "2026-09-23T18:44:37.688210+00:00",
+        "required": false,
+        "validators": []
+      }
+    ]
+  },
+  "dynamic_attributes": [
+    {
+      "name": "npu_top_s",
+      "data_type": "number",
+      "description": "NPU performance in TOPS",
+      "tier": 2,
+      "source": "product_page",
+      "universal": false,
+      "categories": [
+        "Electronics"
+      ],
+      "subcategories": [],
+      "product_types": [],
+      "is_dynamic": true,
+      "created_at": "2026-09-23T18:44:37.731135+00:00",
+      "required": false,
+      "validators": []
+    }
+  ],
+  "last_updated": "2026-09-23T18:44:37.732559+00:00"
+}
