@@ -257,30 +257,39 @@ def _extract_brand(url):
     # Heuristic: brand is usually 1-2 capitalized words, stop at common non-brand terms
     brand_words = []
     SKIP = {'the', 'and', 'for', 'with', 'by', 'in', 'on', 'at', 'to', 'a', 'an'}
-    for w in parts[:4]:
+    for w in parts[:3]:
         # Keep if it looks like a proper noun (starts with uppercase, all alpha)
         if w[0].isupper() and w.isalpha() and len(w) >= 2 and w.lower() not in SKIP:
             brand_words.append(w)
-        elif brand_words:
-            break  # stopped at first non-brand-like word
+        else:
+            break  # stop at first non-brand-like word
     return ' '.join(brand_words) if brand_words else None
 
 
 def _detect_size_tier(title):
-    """Detect size tier hint from title. Returns 'small', 'large', or None."""
+    """Detect size tier hint from title. Returns 'small' or 'large' or None."""
     if not title:
         return None
-    m = SIZE_TIER_RE.search(title)
-    return m.group(1).lower() if m else None
+    # Use a simpler pattern that avoids alternation group issues
+    small_patterns = r'\b(small|compact|mini|micro|petite)\b'
+    large_patterns = r'\b(jumbo|large|big|standard|full-size|regular)\b'
+    m = re.search(small_patterns, title, re.I)
+    if m:
+        return m.group(1).lower()
+    m = re.search(large_patterns, title, re.I)
+    if m:
+        return m.group(1).lower()
+    return None
 
 
 def _detect_product_type(title, category):
     """Detect rough product type from title keywords. Returns None if unclear."""
     if not title:
         return None
-    m = PRODUCT_TYPE_RE.search(title)
+    # Use capture groups explicitly instead of non-capturing (?:)
+    m = re.search(r'(?:earphone|headphone|speaker|charger|cable|cover|case|watch|shirt|pant|dress|shoe|book|tablet|phone|laptop|camera|toy|bag|bottle|lamp|fan|motor|blade|pillow|blanket)', title, re.I)
     if m:
-        return m.group(1).lower()
+        return m.group(0).lower()  # group(0) is the full match
     return None
 
 
@@ -360,7 +369,7 @@ def parse_products(page_html):
         image_m = IMAGE_RE.search(block)
 
         rating = float(rating_m.group(1)) if rating_m else None
-        review_count = int(rating_m.group(2).replace(",", "")) if rating_m else None
+        review_count = int(rating_m.group(2).replace(",", "")) if rating_m and rating_m.lastindex >= 2 else None
         price = float(price_m.group(1).replace(",", "")) if price_m else None
 
         products.append({
@@ -373,7 +382,9 @@ def parse_products(page_html):
             "image_url": image_m.group(1) if image_m else None,
             # Phase 1 extras (327-framework)
             "brand": _extract_brand(block),
-            "size_tier_hint": _detect_size_tier(html.unescape(title_m.group(1).strip()) if title_m else None),
+            "size_tier_hint": _detect_size_tier(
+                html.unescape(title_m.group(1).strip()) if title_m else None
+            ),
             "product_type_hint": _detect_product_type(
                 html.unescape(title_m.group(1).strip()) if title_m else None,
                 ""
