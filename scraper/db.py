@@ -153,6 +153,75 @@ def get_all_validations_df():
         )
 
 
+def upsert_enrichment(data: dict) -> int:
+    """Update enriched fields for the latest snapshot of an ASIN.
+    
+    Returns 1 if updated, 0 if no matching row found.
+    """
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE snapshots SET
+                    title = COALESCE(%s, title),
+                    brand = COALESCE(%s, brand),
+                    price = COALESCE(%s, price),
+                    rating = COALESCE(%s, rating),
+                    review_count = COALESCE(%s, review_count),
+                    subcategory = COALESCE(%s, subcategory),
+                    product_type = COALESCE(%s, product_type),
+                    in_stock = COALESCE(%s, in_stock),
+                    availability_text = COALESCE(%s, availability_text),
+                    seller = COALESCE(%s, seller),
+                    fulfillment = COALESCE(%s, fulfillment),
+                    dimensions = COALESCE(%s, dimensions),
+                    weight = COALESCE(%s, weight),
+                    material = COALESCE(%s, material),
+                    warranty = COALESCE(%s, warranty),
+                    ram = COALESCE(%s, ram),
+                    storage = COALESCE(%s, storage),
+                    processor = COALESCE(%s, processor),
+                    display_size = COALESCE(%s, display_size),
+                    battery_capacity = COALESCE(%s, battery_capacity),
+                    fabric = COALESCE(%s, fabric),
+                    net_weight = COALESCE(%s, net_weight),
+                    ingredients = COALESCE(%s, ingredients)
+                WHERE asin = %s
+                  AND collected_at = (
+                      SELECT MAX(collected_at) FROM snapshots s2
+                      WHERE s2.asin = %s
+                  )
+            """, (
+                data.get("title"),
+                data.get("brand"),
+                data.get("price"),
+                data.get("rating"),
+                data.get("review_count"),
+                data.get("subcategory"),
+                data.get("product_type"),
+                data.get("in_stock"),
+                data.get("availability_text"),
+                data.get("seller"),
+                data.get("fulfillment"),
+                data.get("dimensions"),
+                data.get("weight"),
+                data.get("material"),
+                data.get("warranty"),
+                data.get("ram"),
+                data.get("storage"),
+                data.get("processor"),
+                data.get("display_size"),
+                data.get("battery_capacity"),
+                data.get("fabric"),
+                data.get("net_weight"),
+                data.get("ingredients"),
+                data["asin"],
+                data["asin"],
+            ))
+            affected = cur.rowcount
+            conn.commit()
+            return affected
+
+
 if __name__ == "__main__":
     init_db()
     print("Initialized Supabase Postgres schema.")
