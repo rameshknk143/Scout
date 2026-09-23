@@ -228,6 +228,61 @@ RATING_RE = re.compile(r'aria-label="([\d.]+) out of 5 stars, ([\d,]+) ratings?"
 PRICE_RE = re.compile(r'₹([\d,]+\.\d{2})')
 IMAGE_RE = re.compile(r'<img[^>]+src="([^"]+)"')
 
+# --- Additional field extractors for 327-framework Phase 1 -------------------
+# Brand: extract from URL path segment before /dp/ (e.g., "/Portronics-Earphones-.../dp/")
+BRAND_URL_RE = re.compile(r'/([A-Z][a-zA-Z]*(?:-[A-Z][a-zA-Z]*)*)/dp/')
+# Size tier hints from title (NOT_APPLICABLE if none match)
+SIZE_TIER_RE = re.compile(
+    r'\b(small|compact|mini|micro|petite)\b'
+    r'|\b(jumbo|large|big|standard|full-size|regular)\b',
+    re.I
+)
+# Product type hint: first meaningful word after brand in title
+PRODUCT_TYPE_RE = re.compile(
+    r'(?:earphone|headphone|speaker|charger|cable|cover|case|watch|shirt|pant|dress|shoe|book|tablet|phone|laptop|camera|toy|bag|bottle|lamp|fan|motor|blade|pillow|blanket)',
+    re.I
+)
+
+
+def _extract_brand(url):
+    """Extract brand from Amazon URL slug. Returns None if not found."""
+    m = BRAND_URL_RE.search(url)
+    if not m:
+        return None
+    raw = m.group(1)
+    # Take the first component before any hyphens (Amazon slugs are hyphenated)
+    parts = raw.split('-')
+    if not parts:
+        return None
+    # Heuristic: brand is usually 1-2 capitalized words, stop at common non-brand terms
+    brand_words = []
+    SKIP = {'the', 'and', 'for', 'with', 'by', 'in', 'on', 'at', 'to', 'a', 'an'}
+    for w in parts[:4]:
+        # Keep if it looks like a proper noun (starts with uppercase, all alpha)
+        if w[0].isupper() and w.isalpha() and len(w) >= 2 and w.lower() not in SKIP:
+            brand_words.append(w)
+        elif brand_words:
+            break  # stopped at first non-brand-like word
+    return ' '.join(brand_words) if brand_words else None
+
+
+def _detect_size_tier(title):
+    """Detect size tier hint from title. Returns 'small', 'large', or None."""
+    if not title:
+        return None
+    m = SIZE_TIER_RE.search(title)
+    return m.group(1).lower() if m else None
+
+
+def _detect_product_type(title, category):
+    """Detect rough product type from title keywords. Returns None if unclear."""
+    if not title:
+        return None
+    m = PRODUCT_TYPE_RE.search(title)
+    if m:
+        return m.group(1).lower()
+    return None
+
 
 MOBILE_USER_AGENT = (
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 "
@@ -316,6 +371,13 @@ def parse_products(page_html):
             "rating": rating,
             "review_count": review_count,
             "image_url": image_m.group(1) if image_m else None,
+            # Phase 1 extras (327-framework)
+            "brand": _extract_brand(block),
+            "size_tier_hint": _detect_size_tier(html.unescape(title_m.group(1).strip()) if title_m else None),
+            "product_type_hint": _detect_product_type(
+                html.unescape(title_m.group(1).strip()) if title_m else None,
+                ""
+            ),
         })
     return products
 
@@ -401,6 +463,9 @@ def collect_category(label, slug, list_type="bestsellers", page=1, collected_at=
             "rating": p["rating"],
             "review_count": p["review_count"],
             "image_url": p["image_url"],
+            "brand": p.get("brand"),
+            "size_tier_hint": p.get("size_tier_hint"),
+            "product_type_hint": p.get("product_type_hint"),
             "collected_at": now,
         })
     return rows

@@ -27,7 +27,10 @@ CREATE TABLE IF NOT EXISTS snapshots (
     rating REAL,
     review_count INTEGER,
     image_url TEXT,
-    collected_at TIMESTAMPTZ NOT NULL
+    collected_at TIMESTAMPTZ NOT NULL,
+    brand TEXT,
+    size_tier_hint TEXT,
+    product_type_hint TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_snapshots_asin ON snapshots(asin);
 CREATE INDEX IF NOT EXISTS idx_snapshots_category ON snapshots(category, list_type, collected_at);
@@ -84,13 +87,14 @@ def insert_snapshot_rows(rows):
                 cur,
                 """INSERT INTO snapshots
                    (asin, category, list_type, rank, title, price, rating,
-                    review_count, image_url, collected_at)
+                    review_count, image_url, collected_at, brand, size_tier_hint, product_type_hint)
                    VALUES %s ON CONFLICT DO NOTHING RETURNING id""",
                 [
                     (
                         r["asin"], r["category"], r["list_type"], r["rank"],
                         r["title"], r["price"], r["rating"], r["review_count"],
                         r["image_url"], r["collected_at"],
+                        r.get("brand"), r.get("size_tier_hint"), r.get("product_type_hint"),
                     )
                     for r in rows
                 ],
