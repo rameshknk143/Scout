@@ -9,13 +9,11 @@ name: Scout Nightly Collector
 # concurrent run; lowering it to 30 min is safe (each run is already a new
 # "user" to Amazon) but buys almost nothing at the current volume.
 #
-# Budget (private repo, 2,000 free Actions-min/month):
-#   session 1 ~34 min + session 2 ~25 min = ~59 min/night = ~1,770 min/mo.
-# Under the cap. The BROAD layer tops out around here on the free private
-# allowance (~8k rows/night at SCOUT_SUBCAT_MAX=90). To go past ~12k you need
-# unlimited minutes: a public repo or a self-hosted runner. Raising
-# SCOUT_SUBCAT_MAX past ~150 — or setting SCOUT_SUBCAT_PAGES=1,2 at high MAX —
-# pushes monthly minutes over the cap AND past the 45-min job timeout.
+# Budget (public repo, unlimited Actions-min/month):
+#   session 1 ~34 min + session 2 ~55 min = ~90 min/night = ~2,700 min/mo.
+# Unlimited now. BROAD layer runs full 382 sub-cats × 2 pages × 2 list types
+# = ~12,000–16,000 rows/night. To grow further, add most-gifted/most-wished-for
+# to SCOUT_SUBCAT_LIST_TYPES once their liveness probe shows them revived.
 
 on:
   schedule:
@@ -86,18 +84,18 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           # Sub-category knobs (all read by collector.py):
-          # SCOUT_SUBCAT_MAX=45        how many browse-node lists this session
-          #                              touches. Raise this to grow volume; it
-          #                              is the single biggest lever.
+          # SCOUT_SUBCAT_MAX=382        how many browse-node lists this session
+          #                              touches. Now unlimited (public repo).
           # SCOUT_SUBCAT_LIST_TYPES    default "bestsellers,new-releases" — the
           #                              two that render reliably. Add the other
           #                              two once their nightly liveness probe
           #                              shows them serving full lists.
-          # SCOUT_SUBCAT_PAGES         default "1" (page 1 only). Sub-node lists
-          #                              are short and p1 is the reliable page.
-          #                              "1,2" doubles the volume but also the
-          #                              minutes — only on an unlimited runner.
-          SCOUT_SUBCAT_MAX: "90"
+          # SCOUT_SUBCAT_PAGES         "1,2" — both pages now that minutes are
+          #                              unlimited. Each sub-cat list has two
+          #                              server-rendered pages (ranks 1-30, 51-80).
+          SCOUT_SUBCAT_MAX: "382"
+          SCOUT_SUBCAT_LIST_TYPES: "bestsellers,new-releases"
+          SCOUT_SUBCAT_PAGES: "1,2"
           SCOUT_FETCH_WORKERS: "4"
           SCOUT_GAP_MIN: "15"
           SCOUT_GAP_MAX: "30"
