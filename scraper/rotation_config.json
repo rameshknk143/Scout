@@ -1,0 +1,65 @@
+{
+  "version": "1.0",
+  "description": "Weekly Rotation Engine Configuration",
+  
+  "batch_sizing": {
+    "default_categories_per_batch": 30,
+    "min_categories": 15,
+    "max_categories": 50,
+    "target_asins_per_week": 50000,
+    "capacity_calculation": {
+      "method": "moving_average",
+      "lookback_days": 14,
+      "safety_factor": 0.8
+    }
+  },
+  
+  "tier_configuration": {
+    "tier_1_broad": {
+      "description": "Essential product data",
+      "fields": ["asin", "title", "brand", "price", "rating", "review_count", "bsr", "image"],
+      "priority": "high",
+      "refresh_interval_days": 7,
+      "allocation_percent": 70
+    },
+    "tier_2_deep": {
+      "description": "Deep intelligence including history and sentiment",
+      "fields": ["tier_1_fields", "price_history", "review_sentiment", "qa", "keywords", "competitors"],
+      "priority": "medium",
+      "refresh_interval_days": 14,
+      "allocation_percent": 25
+    },
+    "tier_3_advanced": {
+      "description": "Advanced validation and profitability",
+      "fields": ["tier_2_fields", "profitability", "ads_data", "forecasting", "supplier_info"],
+      "priority": "low",
+      "refresh_interval_days": 30,
+      "allocation_percent": 5
+    }
+  },
+  
+  "category_prioritization": {
+    "factors": {
+      "coverage_gap": 0.4,
+      "freshness": 0.3,
+      "data_quality": 0.2,
+      "popularity": 0.1
+    },
+    "freshness_decay_days": 30,
+    "minimum_coverage_threshold": 0.1
+  },
+  
+  "overflow_handling": {
+    "carry_forward": true,
+    "max_consecutive_overflow_weeks": 2,
+    "escalation_threshold": 0.8,
+    "auto_adjust_batch_size": true
+  },
+  
+  "monitoring": {
+    "health_check_interval_hours": 6,
+    "alert_on_failure_rate": 0.1,
+    "alert_on_rate_limit_events": 5,
+    "log_level": "INFO"
+  }
+}

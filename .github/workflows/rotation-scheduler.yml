@@ -1,0 +1,71 @@
+name: ScoutVeda Weekly Rotation Scheduler
+
+# Run daily at 02:00 UTC (07:30 IST) to process the current week's batch
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode'
+        required: true
+        default: 'weekly'
+        type: choice
+        options:
+          - weekly
+          - daily
+          - report
+      category:
+        description: 'Specific category (for daily mode)'
+        type: string
+        default: ''
+      week:
+        description: 'Week number (optional)'
+        type: string
+        default: ''
+      year:
+        description: 'Year (optional)'
+        type: string
+        default: ''
+
+jobs:
+  rotation-scheduler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: scraper
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run rotation scheduler
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCOUT_FETCH_WORKERS: '12'
+          SCOUT_GAP_MIN: '4'
+          SCOUT_GAP_MAX: '10'
+          SCOUT_MAX_REQUESTS_PER_WINDOW: '60'
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "report" ]; then
+            python rotation_engine.py --mode report --week ${{ github.event.inputs.week }} --year ${{ github.event.inputs.year }}
+          elif [ "${{ github.event.inputs.mode }}" = "daily" ]; then
+            python rotation_engine.py --mode daily --category "${{ github.event.inputs.category }}"
+          else
+            python rotation_engine.py --mode weekly --week ${{ github.event.inputs.week }} --year ${{ github.event.inputs.year }}
+          fi
+      
+      - name: Upload weekly report
+        if: always()
+        run: |
+          echo "## Weekly Rotation Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Mode: ${{ github.event.inputs.mode }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Week: ${{ github.event.inputs.week || 'current' }}" >> $GITHUB_STEP_SUMmary
+          echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
