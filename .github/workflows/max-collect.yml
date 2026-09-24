@@ -107,6 +107,7 @@ jobs:
       - name: Run watchlist deep scrape
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}  # residential proxy (optional)
         run: python watchlist_scrape.py
 
   health-check:

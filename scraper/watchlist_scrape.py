@@ -31,6 +31,15 @@ MAX_CONCURRENT = int(os.environ.get("WATCHLIST_CONCURRENT", "5"))
 REQUEST_TIMEOUT = int(os.environ.get("WATCHLIST_TIMEOUT", "30"))
 DELAY_BETWEEN_REQUESTS = float(os.environ.get("WATCHLIST_DELAY", "2.0"))
 
+# Optional egress proxy (same knob as collector_optimized.py). When set,
+# all watchlist fetches route through it — e.g. a residential proxy, which
+# unblocks datacenter-IP egress that Amazon bot-walls. No-op when unset.
+PROXY_URL = os.environ.get("SCOUT_PROXY", "").strip()
+def _proxies_dict():
+    if not PROXY_URL:
+        return None
+    return {"http": PROXY_URL, "https": PROXY_URL}
+
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -68,6 +77,7 @@ REVIEW_COUNT_RE = re.compile(r'([\d,]+)')
 def fetch_product_page(asin: str, retries: int = 3) -> tuple[bool, str]:
     """Fetch product page HTML with retry logic."""
     url = f"https://www.amazon.in/dp/{asin}"
+    proxies = _proxies_dict()
     
     for attempt in range(retries):
         try:
@@ -75,7 +85,8 @@ def fetch_product_page(asin: str, retries: int = 3) -> tuple[bool, str]:
                 url,
                 headers=HEADERS,
                 timeout=REQUEST_TIMEOUT,
-                allow_redirects=True
+                allow_redirects=True,
+                proxies=proxies,
             )
             
             if resp.status_code == 200 and len(resp.content) > 50000:

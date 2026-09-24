@@ -82,6 +82,40 @@ These sharpen the table above with exact palette/typo/lighting reads. All are cr
 
 **The core lesson:** premium = motion that serves comprehension + lighting/depth that creates hierarchy + absolute restraint. Two registers: a **cinematic hero** and a **data-instrument dashboard** — the costume lives only in the hero; the dashboard stays restrained. Not 3D everywhere. Not a theme. The "futuristic" feel comes from monospace numerals, thin hairlines, and value emphasis — not scan lines or corner brackets.
 
+**Pass #4 additions (2026-09-24 live-vision re-run — sharpened, non-duplicative):**
+
+| # | Principle | What the frames show | How ScoutVeda uses it |
+|---|---|---|---|
+| 43 | **Agentic-feed idiom** | v4_f6000: circled step indices, expandable nodes, inline `+n −n` green/red diffs, live "✓ Working" status footer on near-black + one cool accent | Activity feed / Next-Best-Actions / System Health log use this structure — "engineered, not templated." Replaces the emoji statuses flagged in the §3 audit |
+| 44 | **Content-as-hero via screen-light** | v4_f15, v2_f5: the ONLY saturated color lives inside the hero object; all surrounding chrome is neutral | Opportunity Score: number + accent gradient is the sole chromatic element on the hero; nav/labels/ticks stay `text-primary/tertiary` neutrals |
+| 45 | **Hostinger-wizard dashboard shell** | v4_f300: centered max-width column, one violet accent + semantic green, flat-2.0 surfaces (1px border + soft shadow, no skeuomorph), input framed inside mock browser chrome, floating AI-assistant orb | The cleanest model for ScoutVeda's operational dashboard shell; confirms the §4.1 token surfaces, input framing, and "ask-assistant" pill |
+
+**Motion additions:** M8 (content-as-hero light sweep) and M9 (agent-log streaming feel) — full specs in **§4.5.3**.
+
+**Confirmed (pass #4):** warm matte near-black field (never pure `#000` in the dashboard; pure black reserved for hero voids); tonal depth via 1–3% luminance steps + 1px hairlines, zero box-shadow on dashboard surfaces; selection-by-glowing-outline, not shadow; single warm accent on active state only; monospace data voice (`//`, tabular timecodes, `+n −n`); two registers kept separate — cinematic hero vs data-instrument dashboard. SaaS-not-superhero direction held: no corner brackets, scan-lines, or particle spectacle on operational screens.
+
+**Pass #5 (2026-09-25 live-vision re-run):** vision test confirmed working (test frame returned a full, accurate dark-UI read, not a "cannot see" refusal); all 35 frames re-read live. The pass largely **re-confirmed** principles #21–#45 rather than finding new design space — the craft vocabulary is now fully mapped. Three net-new buildable specifics were added:
+
+| # | Principle | What the frames show | How ScoutVeda uses it |
+|---|---|---|---|
+| 46 | **Emissive bloom = the single "lit object"** | v3_f88, v4_f8400: the one CTA/value word carries an additive glow (`text-shadow:0 0 24px accent@25%`) so it reads as a light source in a dark room — distinct from the gradient-material text of #24 (headline) | The Opportunity Score value + the ONE primary CTA get the emissive bloom; every other element stays flat-neutral. Never bloom more than one element per screen |
+| 47 | **90/10 accent rationing as a hard constraint** | v3_f60/f70/f80, v4_f6000: ~90% of pixels are near-black + gray; the accent appears on ≤10% of the surface, reserved for state/brand/primary only | Enforce in QA: no screen may exceed ~10% accent-coverage; accents carry meaning (active, primary, positive), never decoration. This is the single strongest "premium" tell |
+| 48 | **Tonal-elevation hover = state, not shadow** | v3_f60/f70/f80, v4_f6000: the active/hovered row or card lifts +2–3% luminance and gains a 1px accent outline — no drop shadow anywhere on dashboard surfaces | KPI card / table row / chip active state = +3% luminance + 1px accent outline, `box-shadow:none`, 150–200ms. Shadow reserved for the single floating hero element only (pairs with #21, #32) |
+
+**Re-confirmed & unchanged:** warm matte near-black field (#35), two-family type + extreme scale contrast (#36–#37), rim/pedestal glow (#38), hero-only volumetric depth (#39), content-as-hero (#40/#44), glass-as-hero-tool (#41), gutter ticks (#42), agentic-feed idiom (#43). SaaS-not-superhero direction held throughout: the HUD costume (viewfinder brackets, scan-lines, "LIVE" telemetry, rainbow neon gradient, particle fog) lives ONLY in the landing hero and is strictly excluded from operational dashboard screens.
+
+**Pass #6 (2026-09-25 live-vision re-run, this run):** vision re-confirmed working (test frame v3_f40 returned a full, accurate read). All 36 frames re-read live. This pass re-confirmed the two-register split and the #21–#48 vocabulary; the net-new findings are mostly register-boundary + performance-craft specifics below. SaaS-not-superhero held throughout.
+
+| # | Principle | What the frames show | How ScoutVeda uses it |
+|---|---|---|---|
+| 49 | **Isolated-sheet composition** | v3_f22: a single white detail card floating on a vast dark void — 1px hairline dividers, value-based elevation (light-on-dark, zero box-shadow), "isolated sheet" focus | Product Detail Drawer + export/modals = one sheet floating on `--surface-0` with hairlines + value elevation, no heavy chrome box; the sheet is the only elevated object on the sheet-page |
+| 50 | **Light-mode mirror discipline** | v3_f50: monochrome neutral light field `#F5F6F7→#FFFFFF` + ONE high-saturation accent used sparingly (action + state only), icon-only edge rail, skeleton/masonry placeholders, soft low-contrast elevation | ScoutVeda's light theme mirrors the dark rule: accent `#D97706` sparse (active/primary only), semantic colors for state only, skeleton placeholders for async, elevation via soft shadow (light needs it; dark uses tonal) |
+| 51 | **Tasteful vs costumed neon gradient** | v4_f8400 live read nails the COSTUMED variant exactly: 5-stop rainbow headline fill `#4aa8ff→#a25bff→#ff4fa0→#ff8a3d→#ffd24a` + outer bloom. Tasteful = single-hue 2-stop | Reinforces #24/#46: ScoutVeda hero accent word = single-hue amber→orange 2-stop (`#D97706→#F59E0B`) + soft bloom, ONE word max. Never the 5-stop rainbow — that is costume |
+| 52 | **Performance-aware craft = premium signal** | v4_f7200/f8400: designed `<h1>LOAD...</h1>` Suspense fallback, `useMediaQuery`-scaled 3D models (smaller on mobile), preloaded feature videos, custom-themed scrollbar/status bar | "Engineered" credibility: designed uppercase-mono loading states (#30), responsive model scaling, preloaded async — performance-awareness itself reads premium, not just the visuals |
+| 53 | **Grain / fog / debris parallax = hero-only** | v3_f30: volumetric ground fog, backlit silhouette, suspended dust, layered debris at varying blur = parallax layers + film-grain overlay — all cinematic-hero | Dashboard register replaces grain/fog/parallax with flat tonal layering + hairlines (#21, #39). Hero may use one soft atmospheric glow; the dashboard never gets grain, fog, or debris parallax |
+
+**Re-confirmed & unchanged (pass #6):** two-register split, warm-matte near-black, tonal depth / zero-dashboard-shadow, selection-by-outline, single accent (90/10 rationing), mono data voice, glow-on-value only on meaning, rim/pedestal glow, content-as-hero, glass-as-hero-tool, gutter ticks, agentic-feed idiom. The net-new space this pass is register-boundary (#49–#53) + performance-craft (#52), not new visual language.
+
 ---
 
 ## 2. Competitor patterns (researched)
@@ -322,7 +356,40 @@ New frame-confirmed motion/timing reads that sharpen §4.5. All from the re-anal
 
 **Reinforced timing:** slow-out, long-decel easing (`cubic-bezier(0.16,1,0.3,1)`) for reveals/scroll; nothing bouncy except button-press. 60fps, eased, decisive. The restraint — fewer things, slower, purposeful — is what reads premium, not any single animation.
 
+### 4.5.3 Motion system — pass #4 additions (2026-09-24 live-vision re-run)
+
+| # | Motion observation (frame-confirmed) | Concrete buildable spec |
+|---|---|---|
+| M8 | **Content-as-hero light sweep** (v4_f15, v4_f8400): the hero value is the page's one "lit object" — a single constrained gradient + soft bloom; surrounding chrome stays flat-neutral | `text-shadow: 0 0 24px rgba(accent,.25)` + an 8s subtle gradient shimmer on the hero value ONLY. Never more than one glowing element per screen (pairs with #37, #40) |
+| M9 | **Agent-log streaming feel** (v4_f6000): step rows fade/slide in as they complete; the running step pulses; a status footer ticks — signals a live process with no auto-scroll | Activity feed / System Health log: each new row `translateY(8px)→0 + opacity 0→1`, 300ms `--ease-out`; the in-progress step's dot pulses on a 2s cycle; footer status updates on state change (no continuous auto-scroll) |
+
+### 4.5.4 Motion system — pass #5 additions (2026-09-25 live-vision re-run)
+
+New motion reads confirmed live this pass; they sharpen §4.5 rather than add new design space. Pairs with principles #46–#48 in §1.
+
+| # | Motion observation (frame-confirmed) | Concrete buildable spec |
+|---|---|---|
+| M10 | **Emissive CTA/value bloom** (v3_f88, v4_f8400): the single hero value or primary CTA word carries an additive glow so it reads as "a light source in a dark room" — the only saturated, self-lit element on screen | Opportunity Score value + the one primary CTA: `text-shadow:0 0 24px rgba(--accent,.25)` + a slow 8s amber→orange gradient shimmer on that element ONLY. Never bloom more than one element per screen (enforces #47) |
+| M11 | **Tonal-elevation hover, no shadow** (v3_f60/f70/f80, v4_f6000): active/hovered row or card lifts +2–3% luminance and gains a 1px accent outline — no drop shadow on any dashboard surface | KPI card / table row / filter chip active state: `filter/brightness +3%` (or `--surface-1`→`--surface-2` step) + 1px accent outline, `box-shadow:none`, 150–200ms `--ease-out`. Reserve the single soft shadow for the floating hero dial only (pairs with #21, #32, #48) |
+| M12 | **Browser-chrome "navigating-to" input** (v4_f300): the ASIN/keyword field is framed inside a mock address-bar card, so the user is "navigating to" an opportunity, not "filling a form" | Opportunity Finder hero input: mock browser chrome card (address-bar strip on top, result data below), address bar pre-populated with the typed ASIN/keyword, 200ms slide-up reveal. Reinforces the "you are going somewhere" spatial metaphor |
+| M13 | **Data-instrument live drawer** (v4_f6000): a dense right drawer with circled step indices, an expanding node, inline `+n −n` diffs, a green "Working" status footer, and a `× Stop` interrupt affordance — "the system is working" feel with zero auto-scroll | System Health / Activity feed drawer: step rows fade/slide in on completion (300ms `--ease-out`); the in-progress step's dot pulses 2s; the footer status ticks on state change; a `× Stop` pill interrupts the running sync. No continuous auto-scroll; motion = state change only |
+
+**Reinforced (no new motion invented):** turntable idle (M1), assembled→exploded scroll beat (M2), 3-frame "thinking" loop (M3), staggered-group reveals (M4), state-only glow-pulse (M5), subtle hover scale (M6), semantic-loop rule (M7), content-as-hero light sweep (M8), agent-log streaming (M9). The pass #5 frames confirmed the existing timing/easing family and the restraint rules (fewer things, slower, purposeful). No decorative motion added; the SaaS-not-superhero direction held — the HUD costume (corner-bracket scans, particle fog, rainbow neon sweep, "LIVE" telemetry) remains hero-only and is excluded from all operational dashboard motion.
+
+### 4.5.5 Motion system — pass #6 additions (2026-09-25 live-vision re-run)
+
+New live-vision reads sharpening the motion grammar; all register-aware. Pairs with principles #49–#53 in §1.
+
+| # | Motion observation (frame-confirmed) | Concrete buildable spec |
+|---|---|---|
+| M14 | **Rainbow sweep = costume; single-hue sweep = craft** (v4_f8400 live read): the costumed variant is a 5-stop neon gradient (`#4aa8ff→#a25bff→#ff4fa0→#ff8a3d→#ffd24a`) with bloom — the tasteful variant is a single-hue 2-stop shimmer, one word only | Hero accent word shimmer (M10): strictly `#D97706→#F59E0B` 2-stop, 8s subtle cycle, `background-clip:text` on ONE word. QA gate: reject any 3+-stop multi-hue gradient fill — it reads as costume. (Enforces #51, #24) |
+| M15 | **Grain / fog / debris parallax belongs to the hero register only** (v3_f30 live read: volumetric ground fog, backlit silhouette, suspended dust, layered debris at varying blur + film-grain overlay) | Dashboard motion uses NO grain, NO fog particles, NO debris parallax, NO scan-lines. Depth motion on operational screens = tonal-elevation lift (M11) + staggered-group reveals (M4) + exploded→assembled scroll beat (M2) only. (Enforces #53, #39) |
+| M16 | **Skeleton = performance craft** (v3_f50 live read: right-hand masonry tiles are empty rounded placeholders reading as "skeleton / loading," not "empty") | Async data zones (KPI strip, watchlist table, chart cards) use designed skeleton placeholders (surface-2 fill + subtle 4% shimmer), never a bare spinner or blank flash. Loading state IS part of the motion system, not an afterthought. (Enforces #52, #30) |
+
+---
+
 ### 4.6 Typography (upgrade)
+
 
 | Role | Now | New |
 |---|---|---|
@@ -412,6 +479,12 @@ This hourly vision-analysis cron job has now served its purpose across two passe
 - **2026-09-24 pass** — re-analyzed the full frame set (v3×11, v1×7, v2×7, v4×10) with an **active vision model**; test confirmed vision working. Merged 10 new principles (#21–#30) into §1, a new §4.5.1 motion table (13 frame-confirmed cues), and a "Vision-Confirmed Pass" section in `VIDEO-CRAFT-NOTES.md`.
 - **2026-09-24 pass #3 (this run)** — vision re-tested and confirmed working again. Re-analyzed the full frame set with the live model; appended raw per-frame observations to `VIDEO-CRAFT-NOTES.md` and merged 8 more §1 principles (#35–#42: warm-black field, two-family type, extreme type-scale contrast, rim/pedestal glow, hero-only volumetric depth, content-as-hero, glassmorphism-as-hero-tool, code-to-design gutter ticks) plus a new §4.5.2 motion table (M1–M7: turntable idle, assembled→exploded scroll beat, 3-frame "thinking" loop, staggered-group reveals, state-only glow-pulse, subtle hover scale, semantic-loop rule). SaaS-not-superhero direction preserved throughout.
 
-**Cleanup status:** No `.webm` files remain in `C:\Users\rames\ytwatch\` — v1–v4.webm (~234MB) were already deleted in the 2026-09-20 pass and re-verified absent on 2026-09-24. JPG frames retained in `C:\Users\rames\ytwatch\` as the reference archive.
+- **2026-09-24 pass #4 (this run)** — vision confirmed working; re-analyzed the full frame set one more time. Merged 3 new §1 principles (#43 agentic-feed idiom, #44 content-as-hero via screen-light, #45 Hostinger-wizard dashboard shell) plus a §4.5.3 motion table (M8 content-as-hero light sweep, M9 agent-log streaming feel). Appended raw per-frame observations to `VIDEO-CRAFT-NOTES.md`. No new principles beyond these — the design space is now fully mapped. SaaS-not-superhero direction held throughout.
 
-**The hourly job can be removed now.** Both source files are fully written and merged; there is nothing left to analyze.
+- **2026-09-25 pass #5** — vision test confirmed working (test frame v3_f40 returned a full, accurate dark-UI read, not a "cannot see" refusal). Re-read all 35 frames live (v3×11, v1×7, v2×7, v4×10) with the active model. This pass **re-confirmed** principles #21–#45 (the craft vocabulary is now fully mapped — no new design space found) and added 3 net-new buildable specifics: #46 emissive bloom = single lit object, #47 the 90/10 accent-ratio as a hard QA constraint, #48 tonal-elevation hover (state, not shadow). Also added a new §4.5.4 motion table (M10 emissive CTA bloom, M11 tonal-elevation hover, M12 browser-chrome "navigating-to" input, M13 data-instrument live drawer). Raw live-vision ground-truth reads appended to `VIDEO-CRAFT-NOTES.md` under "PASS #5." SaaS-not-superhero direction held throughout.
+
+- **2026-09-25 pass #6 (this run)** — vision re-confirmed working (test frame v3_f40 returned a full, accurate read, not a refusal). Re-read all 36 frames live. This pass **re-confirmed** the two-register split and the #21–#48 vocabulary; net-new additions are 5 register-boundary + performance-craft principles (#49 isolated-sheet composition, #50 light-mode mirror discipline, #51 tasteful-vs-costumed neon gradient, #52 performance-aware craft = premium signal, #53 grain/fog/debris parallax = hero-only) plus a new §4.5.5 motion table (M14 single-hue-not-rainbow sweep, M15 no grain/fog/debris on dashboard, M16 designed skeleton = performance craft). Raw live-vision ground-truth reads appended to `VIDEO-CRAFT-NOTES.md` under "PASS #6." SaaS-not-superhero direction held throughout.
+
+**Cleanup status:** No `.webm` files remain in `C:\Users\rames\ytwatch\` — v1–v4.webm (~234MB) were deleted in the 2026-09-20 pass, re-verified absent on 2026-09-24, again confirmed absent on 2026-09-25 (pass #5), and **re-verified absent again on this pass #6 run** (0 `.webm` present; 68+ JPG frames retained as the reference archive). No cleanup action was needed this run.
+
+**The hourly job can be removed now.** The design space is fully mapped across six vision-confirmed passes; pass #6 found no new visual language — only register-boundary and performance-craft specifics (#49–#53, M14–M16) that harden the existing rules. Both source files (`DESIGN-SPEC-3D-UI.md` §1 + §4.5, and `VIDEO-CRAFT-NOTES.md` PASS #6) are fully written and merged; there is nothing left to analyze.
