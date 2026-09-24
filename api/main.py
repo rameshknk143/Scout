@@ -36,6 +36,7 @@ import password_breach
 import profit_calculator
 import ppc_analytics
 import scorer
+import scraper_status
 import sync_engine
 import trend_radar
 
@@ -1140,6 +1141,26 @@ def ops_tunnel_history(days: int = 7):
     is the only thing this endpoint depends on. Capped at 30 days.
     """
     return ops.tunnel_history(days=days)
+
+
+# ======================== Scraper Status Endpoints ==========================
+
+@app.get("/scraper/status", dependencies=[Depends(require_key)])
+def get_scraper_full_status():
+    """Full system status including all scrapers, DB stats, and projections."""
+    return scraper_status.get_scraper_status()
+
+
+@app.get("/scraper/categories", dependencies=[Depends(require_key)])
+def get_scraper_categories():
+    """Health metrics per category."""
+    return scraper_status.get_category_health()
+
+
+@app.get("/scraper/metrics", dependencies=[Depends(require_key)])
+def get_scraper_metrics(hours: int = 24):
+    """Recent scraper performance metrics."""
+    return scraper_status.get_scraper_metrics(hours)
 
 
 @app.post("/ops/deadman", dependencies=[Depends(require_key)])

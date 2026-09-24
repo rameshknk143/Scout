@@ -455,6 +455,8 @@ export const api = {
       {},
       { revalidate: 300 } // 5 min -- this powers the 3D chart, no point re-fetching more often
     ),
+  scraper_status: () =>
+    request<ScraperStatusData>("/scraper/status", {}, { revalidate: 60 }),
 };
 
 // --- System Health types ---------------------------------------------------
@@ -528,5 +530,71 @@ export type StorefrontOrder = {
   currency: string | null;
   items_count: number;
   updated_at: string;
+};
+
+// ==================== Scraper Status Types ====================
+
+export type ScraperStatusScraper = {
+  status: string;
+  schedule: string;
+  workers: number;
+  autonomous: boolean;
+  level: number;
+  issue?: string;
+  dependencies?: string[];
+};
+
+export type ScraperStatusData = {
+  timestamp: string;
+  database: {
+    total_rows: number;
+    unique_asins: number;
+    categories: number;
+    date_range: {
+      oldest: string | null;
+      newest: string | null;
+    };
+    coverage: {
+      subcategory_pct: number;
+      brand_pct: number;
+      price_pct: number;
+      rating_pct: number;
+      source_pct: number;
+    };
+  };
+  throughput: {
+    daily_average: number;
+    weekly_projected: number;
+    monthly_projected: number;
+    days_to_2m: number;
+    last_7_days: Array<{
+      date: string;
+      rows: number;
+      asins: number;
+      categories: number;
+    }>;
+  };
+  top_categories: Array<{
+    category: string;
+    rows: number;
+    asins: number;
+  }>;
+  sources: Array<{
+    source: string;
+    count: number;
+  }>;
+  scrapers: {
+    github_actions: Record<string, ScraperStatusScraper>;
+    oracle_vm: Record<string, ScraperStatusScraper>;
+    laptop: Record<string, ScraperStatusScraper>;
+  };
+  summary: {
+    total_scrapers: number;
+    active_scheduled: number;
+    fully_autonomous: number;
+    requires_intervention: number;
+    estimated_daily_growth: number;
+    health_score: string;
+  };
 };
 
