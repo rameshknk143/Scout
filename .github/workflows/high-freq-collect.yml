@@ -1,0 +1,123 @@
+name: ScoutVeda High-Frequency Collector
+
+# Run every 3 hours for maximum coverage (8x per day)
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # Every 3 hours: 00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00 UTC
+                              # = 05:30, 08:30, 11:30, 14:30, 17:30, 20:30, 23:30, 02:30 IST
+  workflow_dispatch:
+    inputs:
+      session:
+        description: 'Run type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - top-level
+          - subcategories
+          - watchlist
+      workers:
+        description: 'Concurrency workers (default: 16)'
+        type: string
+        default: '16'
+      subcat-max:
+        description: 'Max sub-categories (default: 382)'
+        type: string
+        default: '382'
+
+jobs:
+  collect-top-level:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'full' || github.event.inputs.session == 'top-level' || (github.event.schedule && contains('*/3 * * * *', github.event.schedule)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: scraper
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run top-level collection (high frequency)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCOUT_FETCH_WORKERS: '16'
+          SCOUT_GAP_MIN: '6'
+          SCOUT_GAP_MAX: '14'
+          SCOUT_PAGES: '1,2'
+          SCOUT_LIST_TYPES: 'bestsellers,new-releases,most-wished-for,most-gifted'
+          SCOUT_MAX_RETRIES: '3'
+          SCOUT_REQUEST_TIMEOUT: '30'
+        run: python collector_optimized.py
+
+  collect-subcategories:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'full' || github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'subcategories' || (github.event.schedule && contains('*/3 * * * *', github.event.schedule)) }}
+    runs-on: ubuntu-latest
+    needs: collect-top-level
+    timeout-minutes: 70
+    defaults:
+      run:
+        working-directory: scraper
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run subcategory collection (high frequency)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCOUT_SUBCAT_MAX: ${{ github.event.inputs.subcat-max || '382' }}
+          SCOUT_SUBCAT_LIST_TYPES: 'bestsellers,new-releases'
+          SCOUT_SUBCAT_PAGES: '1,2'
+          SCOUT_FETCH_WORKERS: '16'
+          SCOUT_GAP_MIN: '6'
+          SCOUT_GAP_MAX: '14'
+        run: python collector_optimized.py --subcats
+
+  collect-watchlist:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'watchlist' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: scraper
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run watchlist deep scrape
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python watchlist_scrape.py
+
+  health-check:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [collect-top-level, collect-subcategories]
+    steps:
+      - name: Collection summary
+        run: |
+          echo "## ScoutVeda High-Frequency Collection Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Top-level collection: ${{ needs.collect-top-level.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Subcategory collection: ${{ needs.collect-subcategories.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Schedule:** Every 3 hours (8x daily)" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** 50,000+ rows/day" >> $GITHUB_STEP_SUMMARY

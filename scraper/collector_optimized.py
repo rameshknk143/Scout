@@ -347,6 +347,46 @@ def _extract_brand(url: str) -> Optional[str]:
             break
     return ' '.join(brand_words) if brand_words else None
 
+def _extract_brand_from_title(title: str) -> Optional[str]:
+    """Extract brand from product title using known brand patterns."""
+    if not title:
+        return None
+    
+    # Common Indian brands (prioritized)
+    KNOWN_BRANDS = [
+        'boAt', 'Noise', 'Portronics', 'Porter', 'Philips', 'Sony', 'Samsung',
+        'LG', 'Apple', 'Xiaomi', 'Realme', 'OnePlus', 'Poco', 'Redmi',
+        'Nike', 'Adidas', 'Puma', 'US Polo', 'Allen Solly', 'Roadster',
+        'Only', 'Van Heusen', 'Arrow', 'H&M', 'Zara', 'Levi\'s', 'Wrangler',
+        'Nivea', 'Dove', 'Lakme', 'Maybelline', 'The Body Shop',
+        'Bajaj', 'Whirlpool', 'Godrej', 'IFB', 'Haier', 'Morphy Richards',
+        'Milton', 'Havells', 'Brompton', 'Amaron', 'Kent', 'Eureka Forbes',
+        'Prestige', 'Butterfly', 'AGARO', 'Wakefit', 'Sleepwell', 'Duroflex',
+        'Campus', 'Reebok', 'Fila', 'Sparx', 'Crocs', 'Bata', 'Clarks',
+        'Titan', 'Tanishq', 'CaratLane', 'Malabar', 'Kalyan',
+        'Amul', 'Nestle', 'Cadbury', 'Parle', 'Britannia',
+        'Horlicks', 'Boost', 'Bournvita', 'Vimal', 'Fortune', 'Saffola',
+        'TATA', 'Colgate', 'Patanjali', 'Dabur', 'Himalaya',
+        'Curology', 'Minimalist', 'The Ordinary', 'Plum', 'Biotique',
+        'Ugaoo', 'Mamaearth', 'Wow Skin Science', 'Fixderma',
+        'Dr. Sheths', 'Dot & Key', 'Neutrogena', 'Garnier',
+    ]
+    
+    title_lower = title.lower()
+    for brand in KNOWN_BRANDS:
+        if brand.lower() in title_lower:
+            return brand
+    
+    # Fallback: first capitalized word
+    words = title.split()
+    if words:
+        first = words[0]
+        if first[0].isupper() and len(first) > 2 and first.isalpha():
+            if first.lower() not in ('The', 'New', 'Best', 'Premium', 'Original'):
+                return first
+    
+    return None
+
 def _detect_size_tier(title: str) -> Optional[str]:
     """Detect size tier hint from title."""
     if not title:
@@ -416,7 +456,7 @@ def parse_product_card(html: str, rank: int, category: str, list_type: str) -> O
         "subcategory": mapped.get("subcategory"),
         "product_type": mapped.get("product_type"),
         "list_type": list_type,
-        "brand": _extract_brand(f"https://www.amazon.in/dp/{asin}"),
+        "brand": _extract_brand_from_title(title) or _extract_brand(f"https://www.amazon.in/dp/{asin}"),
         "size_tier_hint": _detect_size_tier(title),
         "product_type_hint": _detect_product_type(title, category),
     }

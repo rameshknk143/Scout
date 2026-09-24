@@ -1,5 +1,5 @@
 # ScoutVeda UI/UX Redesign — Complete Strategy & Design Spec
-**Date:** 2026-09-02 · **Status:** Draft v1 (video-frame analysis pending — will refine when vision returns)
+**Date:** 2026-09-20 · **Status:** Draft v2 (video-frame analysis complete — 38+ frames across 4 videos)
 
 ---
 
@@ -17,18 +17,34 @@ The reference videos are a **craft benchmark only**: cinematic lighting, motion 
 
 ## 1. What the reference videos teach (design principles, not themes)
 
-From the videos' documented methods (v2's narration describes its technique precisely; v3's frames pending vision):
+Analyzed 35+ frames across 4 videos (v1: 3D sites, v2: Apple-style product, v3: Iron Man scrolling UI, v4: GSAP course). Full notes: `VIDEO-CRAFT-NOTES.md`.
 
-| Principle | What the videos do | How ScoutVeda uses it |
-|---|---|---|
-| **Hero product render** | One premium 3D product shot, studio-lit, horizontal, hero-scale | Landing hero: a data-visualization "product" — an animated opportunity-score render, not a headphone |
-| **Cinematic motion** | Slow eased animations, never linear; things assemble/explode on scroll | Section reveals, KPI count-ups, chart draw-in — 600–900ms, cubic-bezier(0.16,1,0.3,1) |
-| **Depth via layers** | Foreground/mid/background separation, parallax on scroll | Layered cards (translateZ), sticky-scroll feature sections, subtle parallax — not gimmicky |
-| **HUD-style data polish** | Futuristic readouts: glowing values, monospace numbers, scan effects | Number typography (mono, tabular), status glows, live-updating tickers — the *finish*, without sci-fi chrome |
-| **Restraint** | Few elements, executed precisely; dark/neutral field; one accent | Neutral surfaces, one accent (amber), semantic tokens, no decoration for its own sake |
-| **Frame-perfect sequencing** | Every animation lands on a beat | Orchestrated page-load sequence (nav → KPIs → chart → table) |
+**Updated from 2026-09-23 analysis:**
 
-**The core lesson:** premium = motion that serves comprehension + lighting/depth that creates hierarchy + absolute restraint. Not 3D everywhere. Not a theme.
+|| # | Principle | What the videos do | How ScoutVeda uses it |
+||---|---|---|---|
+|| 1 | **Hero product render** | One premium 3D product shot, studio-lit, horizontal, hero-scale. Black field with rim light, controlled reflections on glossy surfaces | Landing hero: animated "Opportunity Score" dial — same lighting treatment, but the "product" is data visualization, not a physical good |
+|| 2 | **Cinematic motion** | Slow eased animations (600–900ms), never linear; scroll-triggered assembly; numbers count up not snap | Section reveals (translateY 12px→0, 700ms), KPI count-ups (900ms), chart draw-in — all using cubic-bezier(0.16,1,0.3,1) |
+|| 3 | **Depth via layers** | Three distinct layers: warm black field (background), slightly lighter surface (cards), full luminance content (text/icons). Subtle parallax (2–4px shift) | Layered cards (translateZ), sticky-scroll feature sections, System Health 3D grid — field must be warm black (#0D1117), not clinical blue-gray |
+|| 4 | **HUD-style data polish** | Monospace numerals + thin hairline separators + values that glow slightly brighter than labels. Status dots (3px colored circle + mono label). Sparklines (24px high, 1px stroke) | Number typography (JetBrains Mono, tabular-nums everywhere), semantic color chips, sparklines in watchlist table rows |
+|| 5 | **Restraint** | Max 2 animated things per screen. One accent hue used consistently. Semantic colors reserved for meaning only (green=good, red=critical) | One accent (amber #D97706), semantic tokens, no decoration for its own sake |
+|| 6 | **Frame-perfect sequencing** | Orchestrated page-load: nav fades first, content follows in 80–160ms staggered groups | Page load choreography: nav(0ms) → KPI strip(80ms apart) → charts(240ms) → tables(400ms) |
+|| 7 | **Gradient falloff** | Background is never flat — subtle gradient from center (slightly lifted) to edges (deeper black). Creates "vignette" depth without UI chrome | `--surface-0` should use radial or vertical gradient, not solid color. Test `#0D1117` (warm) vs current `#0B0F17` (blue-shifted) |
+|| 8 | **Glass only where needed** | Frosted glass (`backdrop-filter: blur(12px)`) reserved for nav bar and modals. Data tables use solid surfaces | Extend glass to nav and drawers only; never on tables or KPI strips |
+|| 9 | **Rim light on cards** | Cards have 1px top/left border slightly lighter than card surface — creates edge definition without full border | Add `border-top` and `border-left` at 5% higher luminance on `--surface-1` cards for depth without chrome |
+|| 10 | **Strategic color highlighting** | One word or number in accent color (e.g., v1_f17: "power" in green) — draws eye without overwhelming | Use accent color only for: (a) delta arrows showing positive movement, (b) KPI values that are "in policy", (c) primary CTAs. Never for decoration |
+|| 11 | **Product-as-artifact composition** | v4_f15: MacBook screen RAISED above black background, thin border framing content | Hero sections should feel like "displayed objects" not flat layouts — elevate with shadow + gradient field |
+|| 12 | **Grid patterns as texture** | v4_f1800: subtle grid in code editor top-left corner adds technical texture without distraction | Consider faint 1px grid on System Health 3D canvas for spatial grounding, but not on data tables |
+|| 13 | **Center-out underline animation** | v1: navbar items underline from center-out on hover (not left-to-right) | Apply to sidebar nav items — creates feeling of "anchoring" rather than "sweeping" |
+|| 14 | **Floating product illusion** | v2_f180: headphones appear to float on dark field with soft even lighting | Opportunity Score dial should have similar floating treatment — subtle shadow beneath, no visible support |
+|| 15 | **Screen-within-screen composition** | v3_f80: text box + video player at balanced asymmetry (25%/50%) with drop shadows | Dashboard can use this pattern: KPI strip top, main content area, sidebar panel — each with elevation |
+|| 16 | **Value emphasis hierarchy** | Key number is 2–3x larger than its label; labels in muted color (text-secondary/tertiary) | KPI cards: number 32–40px, label 11px uppercase; ensure 3:1 size ratio minimum |
+|| 17 | **Semantic motion purpose** | Every animation answers "why does the user need to see this move?" — no decorative motion | Motion serves comprehension: reveal hierarchy, indicate state change, guide attention. Delete any animation that doesn't pass this test |
+|| 18 | **OLED void backgrounds** | v4_f8400: pure #000000 black specific to Apple Pro lines conveys sophistication | Test pure black backgrounds for hero sections; reserve for premium product displays |
+|| 19 | **Atmospheric scattering** | v3_f2, v3_f8: volumetric fog/atmosphere creating depth layers behind subjects | Add subtle atmospheric glow behind hero elements for depth without UI chrome |
+|| 20 | **Exploded view storytelling** | v2_f360: product disassembles into component parts revealing internal complexity | Consider for System Health page — show infrastructure components connecting |
+
+**The core lesson:** premium = motion that serves comprehension + lighting/depth that creates hierarchy + absolute restraint. Not 3D everywhere. Not a theme. The "futuristic" feel comes from monospace numerals, thin hairlines, and value emphasis — not scan lines or corner brackets.
 
 ---
 
@@ -195,16 +211,37 @@ Keep the sv- system (it's the strongest part) with these changes:
 
 ### 4.5 Motion & micro-interactions system (the "cinematic" layer)
 
-| Interaction | Spec |
-|---|---|
-| Page load | Staggered: nav(0ms) → KPI strip(80ms apart) → charts(240ms) → tables(400ms), each translateY 12px→0 + fade, 700ms ease-out |
-| KPI numbers | Count-up over 900ms, mono font, tabular-nums; delta arrow fades in after |
-| Card hover | border-color→hairline-strong + shadow-card-hover + translateY(-2px), 300ms (already half-implemented on .bento-card) |
-| Button press | scale(0.98) → 1, 150ms |
-| Drawer (product detail) | Backdrop fade 200ms; panel slide 320ms ease-out; content stagger 60ms/row |
-| Toasts | Slide-up + fade; auto-dismiss 4s; severity-colored left rail |
-| Chart interaction | Crosshair hairline + tooltip card; series emphasis dims others to 40% opacity |
-| Reduced motion | `@media (prefers-reduced-motion: reduce)` → all of the above collapse to opacity-only or none |
+**Duration scale (from video analysis):**
+- Micro-interactions (hover, click): 150–200ms
+- Component reveal: 300–400ms
+- Section scroll reveal: 600–700ms
+- Hero/number animations: 900–1200ms
+- Page transitions (if any): 400ms
+
+**Easing curve family:**
+```css
+--ease-out: cubic-bezier(0.16, 1, 0.3, 1);      /* snappy start, soft landing — primary */
+--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);   /* balanced — transitions */
+--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* subtle overshoot — buttons only */
+```
+
+||| Interaction | Spec | Video Reference |
+||---|---|---|
+||| Page load | Staggered: nav(0ms) → KPI strip(80ms apart) → charts(240ms) → tables(400ms), each translateY 12px→0 + fade, 700ms ease-out | v3 scroll-triggered grouping; v1 section sequencing |
+||| KPI numbers | Count-up over 900ms, mono font (JetBrains Mono), tabular-nums; delta arrow fades in 200ms after count completes | v3 HUD numerals counting up |
+||| Card hover | border-color→hairline-strong + shadow-card-hover + translateY(-2px), 300ms ease-out | v1 card lift effect |
+||| Button press | scale(0.98) → 1, 150ms using --ease-spring | v1 CTA press feedback |
+||| Button hover | Subtle gradient overlay (accent-light to accent), 200ms | v4 blue CTA hover |
+||| Drawer (product detail) | Backdrop fade 200ms; panel slide 320ms ease-out; content stagger 60ms/row | v3 modal patterns |
+||| Toasts | Slide-up + fade; auto-dismiss 4s; severity-colored left rail (3px) | Standard pattern |
+||| Chart interaction | Crosshair hairline + tooltip card (surface-2 bg); series emphasis dims others to 40% opacity, 200ms | v3 data highlighting |
+||| Nav item hover | Underline animates from center-out (not left-to-right), 200ms | v1 navbar pattern |
+||| Scroll reveal | IntersectionObserver triggers translateY(24px)→0 + opacity 0→1, 700ms ease-out, 80ms stagger per sibling group | v3 scroll-driven sequencing |
+||| Reduced motion | @media (prefers-reduced-motion: reduce) → all transforms collapse to opacity-only, counts snap instantly | Accessibility requirement |
+
+**Motion purpose rule:** Every animation must answer "why does the user need to see this move?" Delete any animation that doesn't serve comprehension, state indication, or attention guidance.
+
+**Restraint rule:** Max 2 animated elements per viewport at once. Nothing moves faster than 150ms (micro) or slower than 700ms (macro). This discipline is what creates the premium feel — not the specific animation chosen.
 
 **Rationale:** every timing above comes from the video references' feel (slow, eased, decisive) — motion serves hierarchy and comprehension. The restraint is the premium part.
 
@@ -249,6 +286,42 @@ Each step ships, deploys, and is verifiable — no long-lived redesign branch.
 
 ---
 
-## 5. What the pending video analysis will add
+## 5. Video analysis completed — key additions to the spec
 
-When vision returns (hourly job armed): exact color-grading reads (dominant hues, contrast ratios), specific motion beats (what transitions at which scroll %), HUD overlay anatomy (what specifically reads as "futuristic data" vs costume), and lighting direction (rim/key/fill) — all folded into §1's principle table and §4.5's motion specs as refinements, **not** direction changes. The direction is locked here: premium SaaS, amber accent, dark-first option, restrained cinematic motion.
+The hourly cron job ran on 2026-09-20 and analyzed 38+ frames across all 4 reference videos. Below is what was added beyond the original spec:
+
+### New design principles added to §1 (principles 9–15):
+- **#9 Rim light on cards**: 1px top/left border at 5% higher luminance than card surface — creates edge definition without chrome borders
+- **#10 Strategic color highlighting**: One word/number in accent color draws the eye (v1_f17: "power" in green). For ScoutVeda: use accent only for delta arrows (positive), in-policy KPIs, and primary CTAs — never decoration
+- **#11 Product-as-artifact composition**: v4_f15 shows MacBook screen RAISED above black field with thin framing border. Hero sections should feel like displayed objects, not flat layouts — elevate with shadow + gradient field
+- **#12 Grid patterns as texture**: v4_f1800 uses subtle grid in code editor corner for technical texture. Apply faint 1px grid on System Health 3D canvas only — never on data tables
+- **#13 Center-out underline animation**: v1 navbar underlines from center (not left-to-right). Apply to sidebar nav items for "anchoring" feel vs "sweeping"
+- **#14 Floating product illusion**: v2_f180 headphones appear to float on dark field with soft even lighting. Opportunity Score dial gets same treatment — subtle shadow beneath, no visible support
+- **#15 Screen-within-screen composition**: v3_f80 shows balanced asymmetry (25%/50%) with drop shadows. Dashboard layout: KPI strip (top) → main content (center) → sidebar panel (right), each with elevation
+
+### Color grading correction:
+- Current `--surface-0: #0B0F17` is too blue-shifted. Reference videos lean warm: test `#0D1117` or `#0F1419` (amber undertone) for premium dark field
+- Accent strategy: one dominant accent hue per screen, semantic colors reserved for meaning only
+
+### Motion choreography refinements (from v3 scroll-driven sequencing):
+- Stagger groups at 80ms intervals (group A → B → C)
+- Numbers count up over 900ms with fast-start/slow-decel easing
+- Background parallax is 2–4px shift (subtle, not dramatic)
+- v2 Apple-style: hero product responds to scroll position (not auto-spin); text fades from below as product scrolls out
+
+### HUD anatomy — what reads "futuristic data" tastefully:
+- Monospace numerals (JetBrains Mono, tabular-nums) ✓
+- Thin hairline separators (1px, rgba(241,245,249,.08)) ✓
+- Value glow: key number slightly brighter than label ✓
+- Status dots: 3px colored circle + mono label ✓
+- Sparklines: 24px high, 1px stroke, no grid ✓
+- **AVOID**: cyan glow on everything, scan-lines, pulsing borders, corner brackets, projected-text drop-shadow
+
+### Full frame notes:
+See `VIDEO-CRAFT-NOTES.md` for detailed per-frame observations (38+ frames analyzed).
+
+---
+
+## 6. Hourly job decommission note
+
+This hourly vision-analysis cron job served its purpose — all 4 reference videos have been fully analyzed and findings merged into the spec. The job can be removed. Video files (v1–v4.webm, ~234MB) were deleted; jpg frames retained in `C:\Users\rames\ytwatch\` as reference archive.

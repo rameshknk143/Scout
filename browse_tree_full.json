@@ -1,0 +1,3374 @@
+{
+  "name": "root",
+  "slug": "",
+  "node": null,
+  "children": [
+    {
+      "name": "Electronics",
+      "slug": "electronics",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/electronics",
+      "children": [
+        {
+          "name": "Accessories",
+          "slug": "electronics",
+          "node": "1388867031",
+          "url": "https://www.amazon.in/gp/bestsellers/electronics/1388867031/ref=zg_bs_nav_electronics_1",
+          "children": [
+            {
+              "name": "Cameras & Photography",
+              "slug": "electronics",
+              "node": "1388977031",
+              "url": "https://www.amazon.in/gp/bestsellers/electronics/1388977031/ref=zg_bs_nav_electronics_1",
+              "children": [
+                {
+                  "name": "Car & Vehicle Electronics",
+                  "slug": "electronics",
+                  "node": "1389221031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389221031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Computers & Accessories",
+                  "slug": "electronics",
+                  "node": "1458204031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1458204031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "GPS & Accessories",
+                  "slug": "electronics",
+                  "node": "1389315031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389315031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Headphones",
+                  "slug": "electronics",
+                  "node": "1388921031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1388921031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Hi-Fi & Home Audio",
+                  "slug": "electronics",
+                  "node": "1389335031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389335031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Home Theatre, TV & Video",
+                  "slug": "electronics",
+                  "node": "1389375031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389375031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Mobiles & Tablets",
+                  "slug": "electronics",
+                  "node": "92071051031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/92071051031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Portable Media Players",
+                  "slug": "electronics",
+                  "node": "1389433031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389433031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Radio Communication",
+                  "slug": "electronics",
+                  "node": "1389462031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389462031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Telephones & Accessories",
+                  "slug": "electronics",
+                  "node": "1389481031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389481031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Warranties",
+                  "slug": "electronics",
+                  "node": "1389493031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389493031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "Wearable Technology",
+                  "slug": "electronics",
+                  "node": "11599648031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/11599648031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                },
+                {
+                  "name": "eBook Readers & Accessories",
+                  "slug": "electronics",
+                  "node": "1389494031",
+                  "url": "https://www.amazon.in/gp/bestsellers/electronics/1389494031/ref=zg_bs_nav_electronics_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kitchen",
+      "slug": "kitchen",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/kitchen",
+      "children": [
+        {
+          "name": "Coffee, Tea & Espresso",
+          "slug": "kitchen",
+          "node": "1379960031",
+          "url": "https://www.amazon.in/gp/bestsellers/kitchen/1379960031/ref=zg_bs_nav_kitchen_1",
+          "children": [
+            {
+              "name": "Cookware",
+              "slug": "kitchen",
+              "node": "1380015031",
+              "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380015031/ref=zg_bs_nav_kitchen_1",
+              "children": [
+                {
+                  "name": "Craft Materials",
+                  "slug": "kitchen",
+                  "node": "10743065031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/10743065031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Fresh Flowers",
+                  "slug": "kitchen",
+                  "node": "4297304031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/4297304031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Furniture",
+                  "slug": "kitchen",
+                  "node": "1380441031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380441031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Heating & Cooling",
+                  "slug": "kitchen",
+                  "node": "2083423031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/2083423031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Home & D\u00e9cor",
+                  "slug": "kitchen",
+                  "node": "1380374031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380374031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Home Furnishing",
+                  "slug": "kitchen",
+                  "node": "1380442031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380442031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Home Improvement",
+                  "slug": "kitchen",
+                  "node": "4286640031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/4286640031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Home Storage & Organization",
+                  "slug": "kitchen",
+                  "node": "1380510031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380510031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Indoor Lighting",
+                  "slug": "kitchen",
+                  "node": "1380485031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380485031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Kitchen & Dining",
+                  "slug": "kitchen",
+                  "node": "5925789031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/5925789031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Kitchen Storage & Containers",
+                  "slug": "kitchen",
+                  "node": "1379989031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1379989031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Kitchen Tools",
+                  "slug": "kitchen",
+                  "node": "1380181031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380181031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Large Appliances",
+                  "slug": "kitchen",
+                  "node": "1380263031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380263031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Sewing & Embroidery Machines",
+                  "slug": "kitchen",
+                  "node": "2083428031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/2083428031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Small Kitchen Appliances",
+                  "slug": "kitchen",
+                  "node": "1380045031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380045031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Tableware",
+                  "slug": "kitchen",
+                  "node": "1380098031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380098031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Vacuum, Cleaning & Ironing",
+                  "slug": "kitchen",
+                  "node": "1380565031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380565031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                },
+                {
+                  "name": "Water Purifiers & Accessories",
+                  "slug": "kitchen",
+                  "node": "1380259031",
+                  "url": "https://www.amazon.in/gp/bestsellers/kitchen/1380259031/ref=zg_bs_nav_kitchen_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Beauty",
+      "slug": "beauty",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/beauty",
+      "children": [
+        {
+          "name": "Bath & Shower",
+          "slug": "beauty",
+          "node": "1374276031",
+          "url": "https://www.amazon.in/gp/bestsellers/beauty/1374276031/ref=zg_bs_nav_beauty_1",
+          "children": [
+            {
+              "name": "Fragrance",
+              "slug": "beauty",
+              "node": "1374298031",
+              "url": "https://www.amazon.in/gp/bestsellers/beauty/1374298031/ref=zg_bs_nav_beauty_1",
+              "children": [
+                {
+                  "name": "Hair Care",
+                  "slug": "beauty",
+                  "node": "9851597031",
+                  "url": "https://www.amazon.in/gp/bestsellers/beauty/9851597031/ref=zg_bs_nav_beauty_1",
+                  "children": []
+                },
+                {
+                  "name": "Make-up",
+                  "slug": "beauty",
+                  "node": "1374357031",
+                  "url": "https://www.amazon.in/gp/bestsellers/beauty/1374357031/ref=zg_bs_nav_beauty_1",
+                  "children": []
+                },
+                {
+                  "name": "Manicure & Pedicure",
+                  "slug": "beauty",
+                  "node": "27983606031",
+                  "url": "https://www.amazon.in/gp/bestsellers/beauty/27983606031/ref=zg_bs_nav_beauty_1",
+                  "children": []
+                },
+                {
+                  "name": "Skin Care",
+                  "slug": "beauty",
+                  "node": "1374407031",
+                  "url": "https://www.amazon.in/gp/bestsellers/beauty/1374407031/ref=zg_bs_nav_beauty_1",
+                  "children": []
+                },
+                {
+                  "name": "Tools & Accessories",
+                  "slug": "beauty",
+                  "node": "1374450031",
+                  "url": "https://www.amazon.in/gp/bestsellers/beauty/1374450031/ref=zg_bs_nav_beauty_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sports",
+      "slug": "sports",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/sports",
+      "children": [
+        {
+          "name": "Airsoft",
+          "slug": "sports",
+          "node": "3403615031",
+          "url": "https://www.amazon.in/gp/bestsellers/sports/3403615031/ref=zg_bs_nav_sports_1",
+          "children": [
+            {
+              "name": "American Football",
+              "slug": "sports",
+              "node": "3403616031",
+              "url": "https://www.amazon.in/gp/bestsellers/sports/3403616031/ref=zg_bs_nav_sports_1",
+              "children": [
+                {
+                  "name": "American Handball",
+                  "slug": "sports",
+                  "node": "3403617031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403617031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Archery",
+                  "slug": "sports",
+                  "node": "3403618031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403618031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Badminton",
+                  "slug": "sports",
+                  "node": "3403619031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403619031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Baseball",
+                  "slug": "sports",
+                  "node": "3403620031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403620031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Basketball",
+                  "slug": "sports",
+                  "node": "3403621031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403621031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Billiards",
+                  "slug": "sports",
+                  "node": "3403622031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403622031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Bowling",
+                  "slug": "sports",
+                  "node": "3403623031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403623031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Boxing",
+                  "slug": "sports",
+                  "node": "3403624031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403624031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Cheerleading",
+                  "slug": "sports",
+                  "node": "3403626031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403626031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Cricket",
+                  "slug": "sports",
+                  "node": "3403628031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403628031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Cycling",
+                  "slug": "sports",
+                  "node": "3403629031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403629031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Dance",
+                  "slug": "sports",
+                  "node": "3403630031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403630031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Darts & Dartboards",
+                  "slug": "sports",
+                  "node": "3403631031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403631031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Disc Sports",
+                  "slug": "sports",
+                  "node": "3403632031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403632031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Equestrian Sports",
+                  "slug": "sports",
+                  "node": "3403634031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403634031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Exercise & Fitness",
+                  "slug": "sports",
+                  "node": "3403635031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403635031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Fencing",
+                  "slug": "sports",
+                  "node": "3403637031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403637031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Field Hockey",
+                  "slug": "sports",
+                  "node": "3403638031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403638031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Fishing",
+                  "slug": "sports",
+                  "node": "3403639031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403639031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Football",
+                  "slug": "sports",
+                  "node": "3403640031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403640031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Footwear",
+                  "slug": "sports",
+                  "node": "3403641031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403641031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Futsal",
+                  "slug": "sports",
+                  "node": "3403643031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403643031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Golf",
+                  "slug": "sports",
+                  "node": "3403644031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403644031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Gymnastics",
+                  "slug": "sports",
+                  "node": "3403646031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403646031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Hunting",
+                  "slug": "sports",
+                  "node": "3403647031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403647031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Lacrosse",
+                  "slug": "sports",
+                  "node": "3403649031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403649031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Martial Arts",
+                  "slug": "sports",
+                  "node": "3403650031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403650031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Netball",
+                  "slug": "sports",
+                  "node": "3403651031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403651031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Outdoor Recreation",
+                  "slug": "sports",
+                  "node": "26063869031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/26063869031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Paddle Tennis",
+                  "slug": "sports",
+                  "node": "3403652031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403652031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Polo Equipment",
+                  "slug": "sports",
+                  "node": "3403654031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403654031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Racquetball",
+                  "slug": "sports",
+                  "node": "3403655031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403655031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Rodeo",
+                  "slug": "sports",
+                  "node": "3403656031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403656031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Roller Hockey",
+                  "slug": "sports",
+                  "node": "3403657031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403657031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Rugby",
+                  "slug": "sports",
+                  "node": "3403658031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403658031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Running",
+                  "slug": "sports",
+                  "node": "3403659031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403659031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Skates, Skateboards & Scooters",
+                  "slug": "sports",
+                  "node": "13831602031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/13831602031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Snooker",
+                  "slug": "sports",
+                  "node": "3403663031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403663031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Soft Tennis",
+                  "slug": "sports",
+                  "node": "3403664031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403664031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Softball",
+                  "slug": "sports",
+                  "node": "3403665031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403665031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports",
+                  "slug": "sports",
+                  "node": "100140618031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/100140618031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports & Outdoor Recreation Accessories",
+                  "slug": "sports",
+                  "node": "12780048031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/12780048031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports Clothing",
+                  "slug": "sports",
+                  "node": "3403666031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403666031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports Gadgets",
+                  "slug": "sports",
+                  "node": "3403633031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403633031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Squash",
+                  "slug": "sports",
+                  "node": "3403667031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403667031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Supporters' Gear",
+                  "slug": "sports",
+                  "node": "3403636031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403636031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Table Tennis",
+                  "slug": "sports",
+                  "node": "3403668031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403668031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Team Handball",
+                  "slug": "sports",
+                  "node": "3403669031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403669031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Tennis",
+                  "slug": "sports",
+                  "node": "3403670031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403670031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Track & Field",
+                  "slug": "sports",
+                  "node": "3403671031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403671031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Triathlon",
+                  "slug": "sports",
+                  "node": "3403672031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403672031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Trophies, Medals & Awards",
+                  "slug": "sports",
+                  "node": "3403673031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403673031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Volleyball",
+                  "slug": "sports",
+                  "node": "3403674031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403674031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Water Sports",
+                  "slug": "sports",
+                  "node": "3403675031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403675031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Winter Sports",
+                  "slug": "sports",
+                  "node": "3403676031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403676031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                },
+                {
+                  "name": "Wrestling",
+                  "slug": "sports",
+                  "node": "3403677031",
+                  "url": "https://www.amazon.in/gp/bestsellers/sports/3403677031/ref=zg_bs_nav_sports_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Toys",
+      "slug": "toys",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/toys",
+      "children": [
+        {
+          "name": "Arts & Crafts",
+          "slug": "toys",
+          "node": "1378132031",
+          "url": "https://www.amazon.in/gp/bestsellers/toys/1378132031/ref=zg_bs_nav_toys_1",
+          "children": []
+        },
+        {
+          "name": "Baby & Toddler Toys",
+          "slug": "toys",
+          "node": "1378175031",
+          "url": "https://www.amazon.in/gp/bestsellers/toys/1378175031/ref=zg_bs_nav_toys_1",
+          "children": [
+            {
+              "name": "Bikes, Trikes & Ride-Ons",
+              "slug": "toys",
+              "node": "1378198031",
+              "url": "https://www.amazon.in/gp/bestsellers/toys/1378198031/ref=zg_bs_nav_toys_1",
+              "children": [
+                {
+                  "name": "Building & Construction Toys",
+                  "slug": "toys",
+                  "node": "1378216031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378216031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Collectible Trading Cards & Accessories",
+                  "slug": "toys",
+                  "node": "1378225031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378225031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Cooking Appliances",
+                  "slug": "toys",
+                  "node": "1378489031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378489031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Dolls & Accessories",
+                  "slug": "toys",
+                  "node": "1378260031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378260031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Dress-Up Accessories",
+                  "slug": "toys",
+                  "node": "1378233031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378233031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Dressing Up & Costumes",
+                  "slug": "toys",
+                  "node": "1378272031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378272031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Electronic Toys",
+                  "slug": "toys",
+                  "node": "1378290031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378290031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Games",
+                  "slug": "toys",
+                  "node": "1378311031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378311031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Learning & Education",
+                  "slug": "toys",
+                  "node": "1378342031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378342031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Model Building Kits",
+                  "slug": "toys",
+                  "node": "1378364031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378364031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Model Trains & Railway Sets",
+                  "slug": "toys",
+                  "node": "1378384031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378384031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Musical Toy Instruments",
+                  "slug": "toys",
+                  "node": "1378411031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378411031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Novelty & Gag Toys",
+                  "slug": "toys",
+                  "node": "1378417031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378417031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Pretend Play",
+                  "slug": "toys",
+                  "node": "1378451031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378451031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Puppets & Puppet Theatres",
+                  "slug": "toys",
+                  "node": "1378463031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378463031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Puzzles",
+                  "slug": "toys",
+                  "node": "1378470031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378470031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Remote & App-Controlled Toys",
+                  "slug": "toys",
+                  "node": "1378480031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378480031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "School Supplies",
+                  "slug": "toys",
+                  "node": "1378490031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378490031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Soft Toys",
+                  "slug": "toys",
+                  "node": "1378445031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378445031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Sport & Outdoor",
+                  "slug": "toys",
+                  "node": "1378509031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378509031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Toy Figures & Playsets",
+                  "slug": "toys",
+                  "node": "1378568031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378568031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                },
+                {
+                  "name": "Toy Vehicles",
+                  "slug": "toys",
+                  "node": "1378242031",
+                  "url": "https://www.amazon.in/gp/bestsellers/toys/1378242031/ref=zg_bs_nav_toys_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Office",
+      "slug": "office",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/office",
+      "children": [
+        {
+          "name": "Calendars, Planners & Personal Organisers",
+          "slug": "office",
+          "node": "3591015031",
+          "url": "https://www.amazon.in/gp/bestsellers/office/3591015031/ref=zg_bs_nav_office_1",
+          "children": [
+            {
+              "name": "Office Electronics",
+              "slug": "office",
+              "node": "3591018031",
+              "url": "https://www.amazon.in/gp/bestsellers/office/3591018031/ref=zg_bs_nav_office_1",
+              "children": [
+                {
+                  "name": "Office Paper Products",
+                  "slug": "office",
+                  "node": "3591019031",
+                  "url": "https://www.amazon.in/gp/bestsellers/office/3591019031/ref=zg_bs_nav_office_1",
+                  "children": []
+                },
+                {
+                  "name": "Office Supplies",
+                  "slug": "office",
+                  "node": "3591020031",
+                  "url": "https://www.amazon.in/gp/bestsellers/office/3591020031/ref=zg_bs_nav_office_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pet Supplies",
+      "slug": "pet-supplies",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/pet-supplies",
+      "children": [
+        {
+          "name": "Birds",
+          "slug": "pet-supplies",
+          "node": "4771340031",
+          "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771340031/ref=zg_bs_nav_pet-supplies_1",
+          "children": [
+            {
+              "name": "Cats",
+              "slug": "pet-supplies",
+              "node": "4771341031",
+              "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771341031/ref=zg_bs_nav_pet-supplies_1",
+              "children": [
+                {
+                  "name": "Dogs",
+                  "slug": "pet-supplies",
+                  "node": "4771342031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771342031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                },
+                {
+                  "name": "Fish & Aquatics",
+                  "slug": "pet-supplies",
+                  "node": "4771339031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771339031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                },
+                {
+                  "name": "Horses",
+                  "slug": "pet-supplies",
+                  "node": "4771343031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771343031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                },
+                {
+                  "name": "Insects",
+                  "slug": "pet-supplies",
+                  "node": "4771344031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771344031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                },
+                {
+                  "name": "Live Animals",
+                  "slug": "pet-supplies",
+                  "node": "4771345031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771345031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                },
+                {
+                  "name": "Reptiles & Amphibians",
+                  "slug": "pet-supplies",
+                  "node": "4771346031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771346031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                },
+                {
+                  "name": "Small Animals",
+                  "slug": "pet-supplies",
+                  "node": "4771347031",
+                  "url": "https://www.amazon.in/gp/bestsellers/pet-supplies/4771347031/ref=zg_bs_nav_pet-supplies_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Automotive",
+      "slug": "automotive",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/automotive",
+      "children": [
+        {
+          "name": "Car & Motorbike Care",
+          "slug": "automotive",
+          "node": "5257472031",
+          "url": "https://www.amazon.in/gp/bestsellers/automotive/5257472031/ref=zg_bs_nav_automotive_1",
+          "children": [
+            {
+              "name": "Car & Vehicle Electronics",
+              "slug": "automotive",
+              "node": "5257473031",
+              "url": "https://www.amazon.in/gp/bestsellers/automotive/5257473031/ref=zg_bs_nav_automotive_1",
+              "children": [
+                {
+                  "name": "Car Accessories",
+                  "slug": "automotive",
+                  "node": "5257474031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257474031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Car Parts",
+                  "slug": "automotive",
+                  "node": "5257475031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257475031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Car Tyres & Rims",
+                  "slug": "automotive",
+                  "node": "5257476031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257476031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Gifts & Merchandise",
+                  "slug": "automotive",
+                  "node": "5257477031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257477031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Motorbikes, Accessories & Parts",
+                  "slug": "automotive",
+                  "node": "5257478031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257478031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Motorhome Parts & Accessories",
+                  "slug": "automotive",
+                  "node": "5257479031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257479031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Navigation Devices",
+                  "slug": "automotive",
+                  "node": "5257480031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257480031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Oils & Fluids",
+                  "slug": "automotive",
+                  "node": "5257481031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257481031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Paintwork",
+                  "slug": "automotive",
+                  "node": "5257482031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257482031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Tools & Equipment",
+                  "slug": "automotive",
+                  "node": "5257483031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257483031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                },
+                {
+                  "name": "Transporting & Storage",
+                  "slug": "automotive",
+                  "node": "5257484031",
+                  "url": "https://www.amazon.in/gp/bestsellers/automotive/5257484031/ref=zg_bs_nav_automotive_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Garden",
+      "slug": "garden",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/garden",
+      "children": [
+        {
+          "name": "Backyard Birding & Wildlife",
+          "slug": "garden",
+          "node": "3638771031",
+          "url": "https://www.amazon.in/gp/bestsellers/garden/3638771031/ref=zg_bs_nav_garden_1",
+          "children": [
+            {
+              "name": "Backyard Birding Supplies",
+              "slug": "garden",
+              "node": "3638784031",
+              "url": "https://www.amazon.in/gp/bestsellers/garden/3638784031/ref=zg_bs_nav_garden_1",
+              "children": [
+                {
+                  "name": "Backyard Livestock & Bee Care",
+                  "slug": "garden",
+                  "node": "3638772031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638772031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Barbecue & Outdoor Dining",
+                  "slug": "garden",
+                  "node": "3638773031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638773031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Beekeeping Equipment",
+                  "slug": "garden",
+                  "node": "3638788031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638788031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Garden & Outdoor Furniture",
+                  "slug": "garden",
+                  "node": "3638780031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638780031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Gardening",
+                  "slug": "garden",
+                  "node": "3638775031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638775031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Heavy Equipment & Agricultural Supplies",
+                  "slug": "garden",
+                  "node": "10448916031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/10448916031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Mowers & Outdoor Power Tools",
+                  "slug": "garden",
+                  "node": "3638776031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638776031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Outdoor D\u00e9cor",
+                  "slug": "garden",
+                  "node": "3638777031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638777031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Outdoor Heaters & Fire Pits",
+                  "slug": "garden",
+                  "node": "3638778031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638778031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Outdoor Storage & Housing",
+                  "slug": "garden",
+                  "node": "3638779031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638779031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Pest Control",
+                  "slug": "garden",
+                  "node": "3638816031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638816031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Plants, Seeds & Bulbs",
+                  "slug": "garden",
+                  "node": "3638817031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638817031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Pools, Hot Tubs & Supplies",
+                  "slug": "garden",
+                  "node": "3638781031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638781031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Snow Removal",
+                  "slug": "garden",
+                  "node": "3638782031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3638782031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                },
+                {
+                  "name": "Solar & Wind Power",
+                  "slug": "garden",
+                  "node": "3639116031",
+                  "url": "https://www.amazon.in/gp/bestsellers/garden/3639116031/ref=zg_bs_nav_garden_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Baby",
+      "slug": "baby",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/baby",
+      "children": [
+        {
+          "name": "Activity & Entertainment",
+          "slug": "baby",
+          "node": "1953106031",
+          "url": "https://www.amazon.in/gp/bestsellers/baby/1953106031/ref=zg_bs_nav_baby_1",
+          "children": [
+            {
+              "name": "Baby Care",
+              "slug": "baby",
+              "node": "1953111031",
+              "url": "https://www.amazon.in/gp/bestsellers/baby/1953111031/ref=zg_bs_nav_baby_1",
+              "children": []
+            },
+            {
+              "name": "Baby Carriers",
+              "slug": "baby",
+              "node": "1953143031",
+              "url": "https://www.amazon.in/gp/bestsellers/baby/1953143031/ref=zg_bs_nav_baby_1",
+              "children": [
+                {
+                  "name": "Baby Shoes",
+                  "slug": "baby",
+                  "node": "1953272031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953272031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Car Seats & Accessories",
+                  "slug": "baby",
+                  "node": "1953279031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953279031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Maternity",
+                  "slug": "baby",
+                  "node": "1953294031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953294031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Nappy Changing",
+                  "slug": "baby",
+                  "node": "1953345031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953345031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Nursery",
+                  "slug": "baby",
+                  "node": "1953359031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953359031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Nursing & Feeding",
+                  "slug": "baby",
+                  "node": "1953448031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953448031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Potty Training & Step Stools",
+                  "slug": "baby",
+                  "node": "1953474031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953474031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Safety Equipment",
+                  "slug": "baby",
+                  "node": "1953501031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953501031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Soothers & Teethers",
+                  "slug": "baby",
+                  "node": "1953514031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953514031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Strollers & Prams",
+                  "slug": "baby",
+                  "node": "1953480031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953480031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                },
+                {
+                  "name": "Trailers",
+                  "slug": "baby",
+                  "node": "1953519031",
+                  "url": "https://www.amazon.in/gp/bestsellers/baby/1953519031/ref=zg_bs_nav_baby_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Watches",
+      "slug": "watches",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/watches",
+      "children": [
+        {
+          "name": "Accessories",
+          "slug": "watches",
+          "node": "1375486031",
+          "url": "https://www.amazon.in/gp/bestsellers/watches/1375486031/ref=zg_bs_nav_watches_1",
+          "children": [
+            {
+              "name": "Boys",
+              "slug": "watches",
+              "node": "2563506031",
+              "url": "https://www.amazon.in/gp/bestsellers/watches/2563506031/ref=zg_bs_nav_watches_1",
+              "children": [
+                {
+                  "name": "Girls",
+                  "slug": "watches",
+                  "node": "5518819031",
+                  "url": "https://www.amazon.in/gp/bestsellers/watches/5518819031/ref=zg_bs_nav_watches_1",
+                  "children": []
+                },
+                {
+                  "name": "Men",
+                  "slug": "watches",
+                  "node": "2563504031",
+                  "url": "https://www.amazon.in/gp/bestsellers/watches/2563504031/ref=zg_bs_nav_watches_1",
+                  "children": []
+                },
+                {
+                  "name": "Women",
+                  "slug": "watches",
+                  "node": "2563505031",
+                  "url": "https://www.amazon.in/gp/bestsellers/watches/2563505031/ref=zg_bs_nav_watches_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Apparel",
+      "slug": "apparel",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/apparel",
+      "children": [
+        {
+          "name": "Baby",
+          "slug": "apparel",
+          "node": "1953148031",
+          "url": "https://www.amazon.in/gp/bestsellers/apparel/1953148031/ref=zg_bs_nav_apparel_1",
+          "children": [
+            {
+              "name": "Boys",
+              "slug": "apparel",
+              "node": "1967851031",
+              "url": "https://www.amazon.in/gp/bestsellers/apparel/1967851031/ref=zg_bs_nav_apparel_1",
+              "children": [
+                {
+                  "name": "Girls",
+                  "slug": "apparel",
+                  "node": "1967936031",
+                  "url": "https://www.amazon.in/gp/bestsellers/apparel/1967936031/ref=zg_bs_nav_apparel_1",
+                  "children": []
+                },
+                {
+                  "name": "Men",
+                  "slug": "apparel",
+                  "node": "1968024031",
+                  "url": "https://www.amazon.in/gp/bestsellers/apparel/1968024031/ref=zg_bs_nav_apparel_1",
+                  "children": []
+                },
+                {
+                  "name": "Sport Specific Clothing",
+                  "slug": "apparel",
+                  "node": "26978634031",
+                  "url": "https://www.amazon.in/gp/bestsellers/apparel/26978634031/ref=zg_bs_nav_apparel_1",
+                  "children": []
+                },
+                {
+                  "name": "Women",
+                  "slug": "apparel",
+                  "node": "1953602031",
+                  "url": "https://www.amazon.in/gp/bestsellers/apparel/1953602031/ref=zg_bs_nav_apparel_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Boost",
+      "slug": "boost",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/boost",
+      "children": [
+        {
+          "name": "Body",
+          "slug": "boost",
+          "node": "10894224031",
+          "url": "https://www.amazon.in/gp/bestsellers/boost/10894224031/ref=zg_bs_nav_boost_1",
+          "children": [
+            {
+              "name": "Collections",
+              "slug": "boost",
+              "node": "10894251031",
+              "url": "https://www.amazon.in/gp/bestsellers/boost/10894251031/ref=zg_bs_nav_boost_1",
+              "children": [
+                {
+                  "name": "Electronics",
+                  "slug": "boost",
+                  "node": "10894234031",
+                  "url": "https://www.amazon.in/gp/bestsellers/boost/10894234031/ref=zg_bs_nav_boost_1",
+                  "children": []
+                },
+                {
+                  "name": "Fashion Accessories",
+                  "slug": "boost",
+                  "node": "17161295031",
+                  "url": "https://www.amazon.in/gp/bestsellers/boost/17161295031/ref=zg_bs_nav_boost_1",
+                  "children": []
+                },
+                {
+                  "name": "Food",
+                  "slug": "boost",
+                  "node": "10894230031",
+                  "url": "https://www.amazon.in/gp/bestsellers/boost/10894230031/ref=zg_bs_nav_boost_1",
+                  "children": []
+                },
+                {
+                  "name": "Home",
+                  "slug": "boost",
+                  "node": "10894243031",
+                  "url": "https://www.amazon.in/gp/bestsellers/boost/10894243031/ref=zg_bs_nav_boost_1",
+                  "children": []
+                },
+                {
+                  "name": "Toys & Baby",
+                  "slug": "boost",
+                  "node": "14091152031",
+                  "url": "https://www.amazon.in/gp/bestsellers/boost/14091152031/ref=zg_bs_nav_boost_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Amazon Renewed",
+      "slug": "amazon-renewed",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/amazon-renewed",
+      "children": []
+    },
+    {
+      "name": "Mobile Apps",
+      "slug": "mobile-apps",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/mobile-apps",
+      "children": [
+        {
+          "name": "Books & Comics",
+          "slug": "mobile-apps",
+          "node": "9385384031",
+          "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385384031/ref=zg_bs_nav_mobile-apps_1",
+          "children": [
+            {
+              "name": "Business",
+              "slug": "mobile-apps",
+              "node": "9385388031",
+              "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385388031/ref=zg_bs_nav_mobile-apps_1",
+              "children": [
+                {
+                  "name": "Communication",
+                  "slug": "mobile-apps",
+                  "node": "9385396031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385396031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Customization",
+                  "slug": "mobile-apps",
+                  "node": "9385397031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385397031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Education",
+                  "slug": "mobile-apps",
+                  "node": "9385404031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385404031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Finance",
+                  "slug": "mobile-apps",
+                  "node": "9385405031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385405031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Food & Drink",
+                  "slug": "mobile-apps",
+                  "node": "9385416031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385416031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Games",
+                  "slug": "mobile-apps",
+                  "node": "9385421031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385421031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Health & Fitness",
+                  "slug": "mobile-apps",
+                  "node": "9385470031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385470031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Kids",
+                  "slug": "mobile-apps",
+                  "node": "9385481031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385481031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Lifestyle",
+                  "slug": "mobile-apps",
+                  "node": "9385601031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385601031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Local",
+                  "slug": "mobile-apps",
+                  "node": "9385632031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385632031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Magazines",
+                  "slug": "mobile-apps",
+                  "node": "9385640031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385640031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Medical",
+                  "slug": "mobile-apps",
+                  "node": "9385680031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385680031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Movies & TV",
+                  "slug": "mobile-apps",
+                  "node": "9385685031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385685031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Music & Audio",
+                  "slug": "mobile-apps",
+                  "node": "9385691031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385691031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "News",
+                  "slug": "mobile-apps",
+                  "node": "9385705031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385705031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Novelty",
+                  "slug": "mobile-apps",
+                  "node": "9385712031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385712031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Photo & Video",
+                  "slug": "mobile-apps",
+                  "node": "9385735031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385735031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Productivity",
+                  "slug": "mobile-apps",
+                  "node": "9385736031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385736031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Reference",
+                  "slug": "mobile-apps",
+                  "node": "9385744031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385744031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Shopping",
+                  "slug": "mobile-apps",
+                  "node": "9385760031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385760031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Social",
+                  "slug": "mobile-apps",
+                  "node": "9385761031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385761031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports",
+                  "slug": "mobile-apps",
+                  "node": "9385773031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385773031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Transportation",
+                  "slug": "mobile-apps",
+                  "node": "9385808031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385808031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Travel",
+                  "slug": "mobile-apps",
+                  "node": "9385813031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385813031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Utilities",
+                  "slug": "mobile-apps",
+                  "node": "9385820031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385820031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                },
+                {
+                  "name": "Weather",
+                  "slug": "mobile-apps",
+                  "node": "9385853031",
+                  "url": "https://www.amazon.in/gp/bestsellers/mobile-apps/9385853031/ref=zg_bs_nav_mobile-apps_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Luggage",
+      "slug": "luggage",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/luggage",
+      "children": [
+        {
+          "name": "Backpacks",
+          "slug": "luggage",
+          "node": "2917430031",
+          "url": "https://www.amazon.in/gp/bestsellers/luggage/2917430031/ref=zg_bs_nav_luggage_1",
+          "children": [
+            {
+              "name": "Bags & Briefcases",
+              "slug": "luggage",
+              "node": "2917431031",
+              "url": "https://www.amazon.in/gp/bestsellers/luggage/2917431031/ref=zg_bs_nav_luggage_1",
+              "children": [
+                {
+                  "name": "Luggage",
+                  "slug": "luggage",
+                  "node": "2917432031",
+                  "url": "https://www.amazon.in/gp/bestsellers/luggage/2917432031/ref=zg_bs_nav_luggage_1",
+                  "children": []
+                },
+                {
+                  "name": "Shopping Bags & Baskets",
+                  "slug": "luggage",
+                  "node": "2917433031",
+                  "url": "https://www.amazon.in/gp/bestsellers/luggage/2917433031/ref=zg_bs_nav_luggage_1",
+                  "children": []
+                },
+                {
+                  "name": "Travel Accessories",
+                  "slug": "luggage",
+                  "node": "2917434031",
+                  "url": "https://www.amazon.in/gp/bestsellers/luggage/2917434031/ref=zg_bs_nav_luggage_1",
+                  "children": []
+                },
+                {
+                  "name": "Wallets, Card Cases & Money Organizers",
+                  "slug": "luggage",
+                  "node": "2917484031",
+                  "url": "https://www.amazon.in/gp/bestsellers/luggage/2917484031/ref=zg_bs_nav_luggage_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "slug": "books",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/books",
+      "children": [
+        {
+          "name": "Action & Adventure",
+          "slug": "books",
+          "node": "1318158031",
+          "url": "https://www.amazon.in/gp/bestsellers/books/1318158031/ref=zg_bs_nav_books_1",
+          "children": [
+            {
+              "name": "Arts, Film & Photography",
+              "slug": "books",
+              "node": "1318052031",
+              "url": "https://www.amazon.in/gp/bestsellers/books/1318052031/ref=zg_bs_nav_books_1",
+              "children": [
+                {
+                  "name": "Biographies, Diaries & True Accounts",
+                  "slug": "books",
+                  "node": "1318064031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318064031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Business & Economics",
+                  "slug": "books",
+                  "node": "1318068031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318068031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Children's Books",
+                  "slug": "books",
+                  "node": "64619755031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/64619755031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Comics & Mangas",
+                  "slug": "books",
+                  "node": "1318104031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318104031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Computing, Internet & Digital Media",
+                  "slug": "books",
+                  "node": "1318105031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318105031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Crafts, Home & Lifestyle",
+                  "slug": "books",
+                  "node": "1318118031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318118031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Crime, Thriller & Mystery",
+                  "slug": "books",
+                  "node": "1318161031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318161031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Engineering",
+                  "slug": "books",
+                  "node": "22960344031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/22960344031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Exam Preparation",
+                  "slug": "books",
+                  "node": "4149751031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149751031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Fantasy, Horror & Science Fiction",
+                  "slug": "books",
+                  "node": "1402038031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1402038031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Health, Family & Personal Development",
+                  "slug": "books",
+                  "node": "1318128031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318128031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Health, Fitness & Nutrition",
+                  "slug": "books",
+                  "node": "23033693031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/23033693031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Higher Education Textbooks",
+                  "slug": "books",
+                  "node": "4149418031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149418031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Historical Fiction",
+                  "slug": "books",
+                  "node": "1318164031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318164031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "History",
+                  "slug": "books",
+                  "node": "4149493031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149493031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Humour",
+                  "slug": "books",
+                  "node": "1318143031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318143031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Language, Linguistics & Writing",
+                  "slug": "books",
+                  "node": "1318144031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318144031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Law",
+                  "slug": "books",
+                  "node": "4149542031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149542031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Literature & Fiction",
+                  "slug": "books",
+                  "node": "1318157031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318157031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Maps & Atlases",
+                  "slug": "books",
+                  "node": "1318298031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318298031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Medicine & Health Sciences",
+                  "slug": "books",
+                  "node": "4149549031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149549031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Politics",
+                  "slug": "books",
+                  "node": "1318176031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318176031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Reference",
+                  "slug": "books",
+                  "node": "1318185031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318185031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Religion",
+                  "slug": "books",
+                  "node": "1318188031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318188031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Romance",
+                  "slug": "books",
+                  "node": "1318168031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318168031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "School Books",
+                  "slug": "books",
+                  "node": "4149807031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149807031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Science & Mathematics",
+                  "slug": "books",
+                  "node": "4149708031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/4149708031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Sciences, Technology & Medicine",
+                  "slug": "books",
+                  "node": "1318203031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318203031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Society & Social Sciences",
+                  "slug": "books",
+                  "node": "1318216031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318216031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports",
+                  "slug": "books",
+                  "node": "1318224031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318224031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Teen & Young Adult",
+                  "slug": "books",
+                  "node": "64619754031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/64619754031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Textbooks & Study Guides",
+                  "slug": "books",
+                  "node": "15417300031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/15417300031/ref=zg_bs_nav_books_1",
+                  "children": []
+                },
+                {
+                  "name": "Travel",
+                  "slug": "books",
+                  "node": "1318295031",
+                  "url": "https://www.amazon.in/gp/bestsellers/books/1318295031/ref=zg_bs_nav_books_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Computers",
+      "slug": "computers",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/computers",
+      "children": []
+    },
+    {
+      "name": "Gift Cards",
+      "slug": "gift-cards",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/gift-cards",
+      "children": [
+        {
+          "name": "Anniversary",
+          "slug": "gift-cards",
+          "node": "92070986031",
+          "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070986031/ref=zg_bs_nav_gift-cards_1",
+          "children": [
+            {
+              "name": "Baby & Expecting",
+              "slug": "gift-cards",
+              "node": "92070988031",
+              "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070988031/ref=zg_bs_nav_gift-cards_1",
+              "children": [
+                {
+                  "name": "Birthday",
+                  "slug": "gift-cards",
+                  "node": "92070984031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070984031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Congratulations",
+                  "slug": "gift-cards",
+                  "node": "92070987031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070987031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "For Occasions",
+                  "slug": "gift-cards",
+                  "node": "92070989031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070989031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Friendship",
+                  "slug": "gift-cards",
+                  "node": "92070985031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070985031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Get Well",
+                  "slug": "gift-cards",
+                  "node": "92070981031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070981031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Gift Cards & Certificates",
+                  "slug": "gift-cards",
+                  "node": "4048867031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/4048867031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Housewarming",
+                  "slug": "gift-cards",
+                  "node": "92070982031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070982031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Love",
+                  "slug": "gift-cards",
+                  "node": "92070980031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070980031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Thank You & Appreciation",
+                  "slug": "gift-cards",
+                  "node": "92070979031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070979031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                },
+                {
+                  "name": "Wedding & Engagement",
+                  "slug": "gift-cards",
+                  "node": "92070983031",
+                  "url": "https://www.amazon.in/gp/bestsellers/gift-cards/92070983031/ref=zg_bs_nav_gift-cards_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Grocery",
+      "slug": "grocery",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/grocery",
+      "children": [
+        {
+          "name": "Bakery",
+          "slug": "grocery",
+          "node": "4859474031",
+          "url": "https://www.amazon.in/gp/bestsellers/grocery/4859474031/ref=zg_bs_nav_grocery_1",
+          "children": [
+            {
+              "name": "Breakfast Cereal",
+              "slug": "grocery",
+              "node": "88365844031",
+              "url": "https://www.amazon.in/gp/bestsellers/grocery/88365844031/ref=zg_bs_nav_grocery_1",
+              "children": [
+                {
+                  "name": "Canned & Jarred Food",
+                  "slug": "grocery",
+                  "node": "4859476031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859476031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Coffee, Tea & Beverages",
+                  "slug": "grocery",
+                  "node": "4859478031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859478031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Cooking & Baking Supplies",
+                  "slug": "grocery",
+                  "node": "4859479031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859479031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Dried Fruits, Nuts & Seeds",
+                  "slug": "grocery",
+                  "node": "4859481031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859481031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Frozen",
+                  "slug": "grocery",
+                  "node": "4859484031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859484031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Hampers & Gourmet Gifts",
+                  "slug": "grocery",
+                  "node": "4859485031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859485031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Jams, Honey & Spreads",
+                  "slug": "grocery",
+                  "node": "4859489031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859489031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Meat Subsitutes",
+                  "slug": "grocery",
+                  "node": "4859677031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859677031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Meat, Poultry & Seafood",
+                  "slug": "grocery",
+                  "node": "4859490031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859490031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Pasta & Noodles",
+                  "slug": "grocery",
+                  "node": "4859494031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859494031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Pickles",
+                  "slug": "grocery",
+                  "node": "4859492031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859492031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Ready To Eat & Cook",
+                  "slug": "grocery",
+                  "node": "4859493031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859493031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Rice, Flour & Pulses",
+                  "slug": "grocery",
+                  "node": "4859482031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/4859482031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                },
+                {
+                  "name": "Snacks & Sweets",
+                  "slug": "grocery",
+                  "node": "27966993031",
+                  "url": "https://www.amazon.in/gp/bestsellers/grocery/27966993031/ref=zg_bs_nav_grocery_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hpc",
+      "slug": "hpc",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/hpc",
+      "children": [
+        {
+          "name": "Diet & Nutrition",
+          "slug": "hpc",
+          "node": "1374489031",
+          "url": "https://www.amazon.in/gp/bestsellers/hpc/1374489031/ref=zg_bs_nav_hpc_1",
+          "children": [
+            {
+              "name": "Health Care",
+              "slug": "hpc",
+              "node": "1374494031",
+              "url": "https://www.amazon.in/gp/bestsellers/hpc/1374494031/ref=zg_bs_nav_hpc_1",
+              "children": [
+                {
+                  "name": "Home Medical Supplies & Equipment",
+                  "slug": "hpc",
+                  "node": "1374593031",
+                  "url": "https://www.amazon.in/gp/bestsellers/hpc/1374593031/ref=zg_bs_nav_hpc_1",
+                  "children": []
+                },
+                {
+                  "name": "Household Supplies",
+                  "slug": "hpc",
+                  "node": "1374515031",
+                  "url": "https://www.amazon.in/gp/bestsellers/hpc/1374515031/ref=zg_bs_nav_hpc_1",
+                  "children": []
+                },
+                {
+                  "name": "Oral Care",
+                  "slug": "hpc",
+                  "node": "1374620031",
+                  "url": "https://www.amazon.in/gp/bestsellers/hpc/1374620031/ref=zg_bs_nav_hpc_1",
+                  "children": []
+                },
+                {
+                  "name": "Personal Care",
+                  "slug": "hpc",
+                  "node": "1374594031",
+                  "url": "https://www.amazon.in/gp/bestsellers/hpc/1374594031/ref=zg_bs_nav_hpc_1",
+                  "children": []
+                },
+                {
+                  "name": "Personal Care & Health Appliances",
+                  "slug": "hpc",
+                  "node": "3150026031",
+                  "url": "https://www.amazon.in/gp/bestsellers/hpc/3150026031/ref=zg_bs_nav_hpc_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Home Improvement",
+      "slug": "home-improvement",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/home-improvement",
+      "children": [
+        {
+          "name": "Building Supplies",
+          "slug": "home-improvement",
+          "node": "10615970031",
+          "url": "https://www.amazon.in/gp/bestsellers/home-improvement/10615970031/ref=zg_bs_nav_home-improvement_1",
+          "children": [
+            {
+              "name": "Cleaning Supplies",
+              "slug": "home-improvement",
+              "node": "2083408031",
+              "url": "https://www.amazon.in/gp/bestsellers/home-improvement/2083408031/ref=zg_bs_nav_home-improvement_1",
+              "children": [
+                {
+                  "name": "Electrical",
+                  "slug": "home-improvement",
+                  "node": "4286641031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/4286641031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Fireplaces & Gas Stoves",
+                  "slug": "home-improvement",
+                  "node": "10616369031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/10616369031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Garage Storage & Organization",
+                  "slug": "home-improvement",
+                  "node": "29594128031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/29594128031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Hardware",
+                  "slug": "home-improvement",
+                  "node": "4286642031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/4286642031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Kitchen & Bath Fixtures",
+                  "slug": "home-improvement",
+                  "node": "4286643031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/4286643031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Lighting Fixtures",
+                  "slug": "home-improvement",
+                  "node": "202449866031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/202449866031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Painting Supplies, Tools & Wall Treatments",
+                  "slug": "home-improvement",
+                  "node": "5745030031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/5745030031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Plumbing",
+                  "slug": "home-improvement",
+                  "node": "10615921031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/10615921031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Power & Hand Tools",
+                  "slug": "home-improvement",
+                  "node": "4286644031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/4286644031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                },
+                {
+                  "name": "Safety & Security",
+                  "slug": "home-improvement",
+                  "node": "4286645031",
+                  "url": "https://www.amazon.in/gp/bestsellers/home-improvement/4286645031/ref=zg_bs_nav_home-improvement_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Industrial",
+      "slug": "industrial",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/industrial",
+      "children": [
+        {
+          "name": "Abrasive & Finishing Products",
+          "slug": "industrial",
+          "node": "6410388031",
+          "url": "https://www.amazon.in/gp/bestsellers/industrial/6410388031/ref=zg_bs_nav_industrial_1",
+          "children": [
+            {
+              "name": "Additive Manufacturing Products",
+              "slug": "industrial",
+              "node": "10616676031",
+              "url": "https://www.amazon.in/gp/bestsellers/industrial/10616676031/ref=zg_bs_nav_industrial_1",
+              "children": [
+                {
+                  "name": "Adhesives, Sealants and Lubricants",
+                  "slug": "industrial",
+                  "node": "206246516031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/206246516031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Agricultural Equipment & Supplies",
+                  "slug": "industrial",
+                  "node": "28179059031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/28179059031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Commercial Door Products",
+                  "slug": "industrial",
+                  "node": "6306105031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6306105031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Commercial Lighting",
+                  "slug": "industrial",
+                  "node": "206246518031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/206246518031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Cutting Tools",
+                  "slug": "industrial",
+                  "node": "6409856031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6409856031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Digital Signage",
+                  "slug": "industrial",
+                  "node": "206246517031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/206246517031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Education Supplies",
+                  "slug": "industrial",
+                  "node": "206246515031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/206246515031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Fasteners",
+                  "slug": "industrial",
+                  "node": "6761648031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6761648031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Filtration",
+                  "slug": "industrial",
+                  "node": "6410258031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6410258031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Food Service Equipment & Supplies",
+                  "slug": "industrial",
+                  "node": "7110888031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7110888031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Hydraulics, Pneumatics & Plumbing",
+                  "slug": "industrial",
+                  "node": "7355394031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7355394031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Industrial Electrical",
+                  "slug": "industrial",
+                  "node": "7355875031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7355875031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Industrial Hardware",
+                  "slug": "industrial",
+                  "node": "7355311031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7355311031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Janitorial & Sanitation Supplies",
+                  "slug": "industrial",
+                  "node": "6563520031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6563520031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Lab & Scientific Products",
+                  "slug": "industrial",
+                  "node": "6409335031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6409335031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Material Handling Products",
+                  "slug": "industrial",
+                  "node": "7110103031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7110103031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Occupational Health & Safety Products",
+                  "slug": "industrial",
+                  "node": "7110334031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7110334031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Packaging & Shipping Supplies",
+                  "slug": "industrial",
+                  "node": "11029528031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/11029528031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Power & Hand Tools",
+                  "slug": "industrial",
+                  "node": "7355544031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7355544031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Power Transmission Products",
+                  "slug": "industrial",
+                  "node": "6395139031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6395139031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Professional Dental Supplies",
+                  "slug": "industrial",
+                  "node": "6410660031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6410660031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Professional Medical Supplies",
+                  "slug": "industrial",
+                  "node": "6395532031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6395532031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Raw Materials",
+                  "slug": "industrial",
+                  "node": "206246514031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/206246514031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Retail Store Fixtures & Equipment",
+                  "slug": "industrial",
+                  "node": "22955924031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/22955924031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Robotics",
+                  "slug": "industrial",
+                  "node": "10572875031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/10572875031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Science Education",
+                  "slug": "industrial",
+                  "node": "6409937031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6409937031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Tapes, Adhesives & Sealers",
+                  "slug": "industrial",
+                  "node": "7124091031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/7124091031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                },
+                {
+                  "name": "Test, Measure & Inspect",
+                  "slug": "industrial",
+                  "node": "6395912031",
+                  "url": "https://www.amazon.in/gp/bestsellers/industrial/6395912031/ref=zg_bs_nav_industrial_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Jewelry",
+      "slug": "jewelry",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/jewelry",
+      "children": [
+        {
+          "name": "Boys",
+          "slug": "jewelry",
+          "node": "7124360031",
+          "url": "https://www.amazon.in/gp/bestsellers/jewelry/7124360031/ref=zg_bs_nav_jewelry_1",
+          "children": [
+            {
+              "name": "Girls",
+              "slug": "jewelry",
+              "node": "7124361031",
+              "url": "https://www.amazon.in/gp/bestsellers/jewelry/7124361031/ref=zg_bs_nav_jewelry_1",
+              "children": [
+                {
+                  "name": "Men",
+                  "slug": "jewelry",
+                  "node": "7124359031",
+                  "url": "https://www.amazon.in/gp/bestsellers/jewelry/7124359031/ref=zg_bs_nav_jewelry_1",
+                  "children": []
+                },
+                {
+                  "name": "Women",
+                  "slug": "jewelry",
+                  "node": "7124358031",
+                  "url": "https://www.amazon.in/gp/bestsellers/jewelry/7124358031/ref=zg_bs_nav_jewelry_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Digital Text",
+      "slug": "digital-text",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/digital-text",
+      "children": []
+    },
+    {
+      "name": "Dvd",
+      "slug": "dvd",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/dvd",
+      "children": [
+        {
+          "name": "Action & Adventure",
+          "slug": "dvd",
+          "node": "21360334031",
+          "url": "https://www.amazon.in/gp/bestsellers/dvd/21360334031/ref=zg_bs_nav_dvd_1",
+          "children": [
+            {
+              "name": "Animation",
+              "slug": "dvd",
+              "node": "21360335031",
+              "url": "https://www.amazon.in/gp/bestsellers/dvd/21360335031/ref=zg_bs_nav_dvd_1",
+              "children": []
+            },
+            {
+              "name": "Comedy",
+              "slug": "dvd",
+              "node": "21360336031",
+              "url": "https://www.amazon.in/gp/bestsellers/dvd/21360336031/ref=zg_bs_nav_dvd_1",
+              "children": [
+                {
+                  "name": "Crime & Thriller",
+                  "slug": "dvd",
+                  "node": "21360337031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360337031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Documentary",
+                  "slug": "dvd",
+                  "node": "21360338031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360338031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Drama",
+                  "slug": "dvd",
+                  "node": "21360339031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360339031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Fantasy",
+                  "slug": "dvd",
+                  "node": "21360343031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360343031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Fitness & Wellness",
+                  "slug": "dvd",
+                  "node": "21360344031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360344031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Horror",
+                  "slug": "dvd",
+                  "node": "21360345031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360345031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Kids & Family",
+                  "slug": "dvd",
+                  "node": "21360346031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360346031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Military & War",
+                  "slug": "dvd",
+                  "node": "21360347031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360347031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Music & Concerts",
+                  "slug": "dvd",
+                  "node": "21360348031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360348031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Musicals",
+                  "slug": "dvd",
+                  "node": "21360349031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360349031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Romance",
+                  "slug": "dvd",
+                  "node": "21360352031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360352031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Science Fiction",
+                  "slug": "dvd",
+                  "node": "21360353031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360353031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Special Interest",
+                  "slug": "dvd",
+                  "node": "21360355031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360355031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Sports",
+                  "slug": "dvd",
+                  "node": "21360356031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360356031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                },
+                {
+                  "name": "Western",
+                  "slug": "dvd",
+                  "node": "21360360031",
+                  "url": "https://www.amazon.in/gp/bestsellers/dvd/21360360031/ref=zg_bs_nav_dvd_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Music",
+      "slug": "music",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/music",
+      "children": [
+        {
+          "name": "Alternative & Indie",
+          "slug": "music",
+          "node": "1375694031",
+          "url": "https://www.amazon.in/gp/bestsellers/music/1375694031/ref=zg_bs_nav_music_1",
+          "children": [
+            {
+              "name": "Bhangra",
+              "slug": "music",
+              "node": "1375855031",
+              "url": "https://www.amazon.in/gp/bestsellers/music/1375855031/ref=zg_bs_nav_music_1",
+              "children": [
+                {
+                  "name": "Blues",
+                  "slug": "music",
+                  "node": "1375706031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375706031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Comedy & Spoken Word",
+                  "slug": "music",
+                  "node": "1375721031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375721031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Country",
+                  "slug": "music",
+                  "node": "1375724031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375724031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Dance & Electronic",
+                  "slug": "music",
+                  "node": "1375734031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375734031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Devotional & Spiritual",
+                  "slug": "music",
+                  "node": "1375846031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375846031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Easy Listening",
+                  "slug": "music",
+                  "node": "1375742031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375742031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Film Songs",
+                  "slug": "music",
+                  "node": "1375845031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375845031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Folk & Songwriter",
+                  "slug": "music",
+                  "node": "1375745031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375745031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Ghazals",
+                  "slug": "music",
+                  "node": "1375847031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375847031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Gospel",
+                  "slug": "music",
+                  "node": "1375758031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375758031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Hard Rock & Metal",
+                  "slug": "music",
+                  "node": "1375759031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375759031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Indi Pop",
+                  "slug": "music",
+                  "node": "1375856031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375856031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Indian Classical",
+                  "slug": "music",
+                  "node": "1375848031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375848031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "International Music",
+                  "slug": "music",
+                  "node": "1375844031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375844031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Jazz",
+                  "slug": "music",
+                  "node": "1375774031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375774031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Kids' Music & Radio Plays",
+                  "slug": "music",
+                  "node": "1375787031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375787031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Lounge & Fusion",
+                  "slug": "music",
+                  "node": "1375853031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375853031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "New Age",
+                  "slug": "music",
+                  "node": "1375795031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375795031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Pop",
+                  "slug": "music",
+                  "node": "1375796031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375796031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "R&B & Soul",
+                  "slug": "music",
+                  "node": "1375807031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375807031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Rap & Hip-Hop",
+                  "slug": "music",
+                  "node": "1375814031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375814031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Reggae",
+                  "slug": "music",
+                  "node": "1375821031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375821031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Rock",
+                  "slug": "music",
+                  "node": "1375826031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375826031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Sound Effects & Nature",
+                  "slug": "music",
+                  "node": "1375837031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375837031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Soundtracks & Musicals",
+                  "slug": "music",
+                  "node": "1375838031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375838031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Sufi & Qawwali",
+                  "slug": "music",
+                  "node": "1375854031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375854031/ref=zg_bs_nav_music_1",
+                  "children": []
+                },
+                {
+                  "name": "Western Classical",
+                  "slug": "music",
+                  "node": "1375716031",
+                  "url": "https://www.amazon.in/gp/bestsellers/music/1375716031/ref=zg_bs_nav_music_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Musical Instruments",
+      "slug": "musical-instruments",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/musical-instruments",
+      "children": [
+        {
+          "name": "DJ & VJ Equipment",
+          "slug": "musical-instruments",
+          "node": "4654316031",
+          "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654316031/ref=zg_bs_nav_musical-instruments_1",
+          "children": [
+            {
+              "name": "Drums & Percussion",
+              "slug": "musical-instruments",
+              "node": "4654317031",
+              "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654317031/ref=zg_bs_nav_musical-instruments_1",
+              "children": [
+                {
+                  "name": "General Music-Making Accessories",
+                  "slug": "musical-instruments",
+                  "node": "4654318031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654318031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Guitars, Basses & Gear",
+                  "slug": "musical-instruments",
+                  "node": "22162674031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/22162674031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Karaoke Equipment",
+                  "slug": "musical-instruments",
+                  "node": "4654320031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654320031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Microphones",
+                  "slug": "musical-instruments",
+                  "node": "4654321031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654321031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "PA & Stage",
+                  "slug": "musical-instruments",
+                  "node": "4654322031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654322031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Piano & Keyboard",
+                  "slug": "musical-instruments",
+                  "node": "4654323031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654323031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Recording & Computer",
+                  "slug": "musical-instruments",
+                  "node": "4654324031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654324031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "String Instruments",
+                  "slug": "musical-instruments",
+                  "node": "4654325031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654325031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Synthesisers, Samplers & Digital Instruments",
+                  "slug": "musical-instruments",
+                  "node": "4654326031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654326031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                },
+                {
+                  "name": "Wind Instruments",
+                  "slug": "musical-instruments",
+                  "node": "4654327031",
+                  "url": "https://www.amazon.in/gp/bestsellers/musical-instruments/4654327031/ref=zg_bs_nav_musical-instruments_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shoes",
+      "slug": "shoes",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/shoes",
+      "children": [
+        {
+          "name": "Handbags, Purses & Clutches",
+          "slug": "shoes",
+          "node": "1983338031",
+          "url": "https://www.amazon.in/gp/bestsellers/shoes/1983338031/ref=zg_bs_nav_shoes_1",
+          "children": [
+            {
+              "name": "Shoe Care & Accessories",
+              "slug": "shoes",
+              "node": "1983320031",
+              "url": "https://www.amazon.in/gp/bestsellers/shoes/1983320031/ref=zg_bs_nav_shoes_1",
+              "children": [
+                {
+                  "name": "Shoes",
+                  "slug": "shoes",
+                  "node": "1983396031",
+                  "url": "https://www.amazon.in/gp/bestsellers/shoes/1983396031/ref=zg_bs_nav_shoes_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Software",
+      "slug": "software",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/software",
+      "children": [
+        {
+          "name": "Accounting & Finance",
+          "slug": "software",
+          "node": "5490080031",
+          "url": "https://www.amazon.in/gp/bestsellers/software/5490080031/ref=zg_bs_nav_software_1",
+          "children": [
+            {
+              "name": "Antivirus & Security",
+              "slug": "software",
+              "node": "5490081031",
+              "url": "https://www.amazon.in/gp/bestsellers/software/5490081031/ref=zg_bs_nav_software_1",
+              "children": [
+                {
+                  "name": "Business & Office",
+                  "slug": "software",
+                  "node": "5490082031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490082031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Children's Software",
+                  "slug": "software",
+                  "node": "5490083031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490083031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Education & Reference",
+                  "slug": "software",
+                  "node": "5490084031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490084031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Language & Travel",
+                  "slug": "software",
+                  "node": "5490088031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490088031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Lifestyle & Hobbies",
+                  "slug": "software",
+                  "node": "5490087031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490087031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Music",
+                  "slug": "software",
+                  "node": "5490175031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490175031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Networking & Servers",
+                  "slug": "software",
+                  "node": "5490090031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490090031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Operating Systems",
+                  "slug": "software",
+                  "node": "5490091031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490091031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Photography & Graphic Design",
+                  "slug": "software",
+                  "node": "5490086031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490086031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Programming & Web Development",
+                  "slug": "software",
+                  "node": "5490093031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490093031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "System Utility Software",
+                  "slug": "software",
+                  "node": "5490094031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490094031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Tax Preparation",
+                  "slug": "software",
+                  "node": "5490095031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490095031/ref=zg_bs_nav_software_1",
+                  "children": []
+                },
+                {
+                  "name": "Video",
+                  "slug": "software",
+                  "node": "5490176031",
+                  "url": "https://www.amazon.in/gp/bestsellers/software/5490176031/ref=zg_bs_nav_software_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Videogames",
+      "slug": "videogames",
+      "node": null,
+      "url": "https://www.amazon.in/gp/bestsellers/videogames",
+      "children": [
+        {
+          "name": "Handheld Game Systems",
+          "slug": "videogames",
+          "node": "92555865031",
+          "url": "https://www.amazon.in/gp/bestsellers/videogames/92555865031/ref=zg_bs_nav_videogames_1",
+          "children": [
+            {
+              "name": "Legacy Systems",
+              "slug": "videogames",
+              "node": "22713806031",
+              "url": "https://www.amazon.in/gp/bestsellers/videogames/22713806031/ref=zg_bs_nav_videogames_1",
+              "children": [
+                {
+                  "name": "Mac",
+                  "slug": "videogames",
+                  "node": "14152496031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/14152496031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "Nintendo Switch",
+                  "slug": "videogames",
+                  "node": "13995115031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/13995115031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "Nintendo Switch 2",
+                  "slug": "videogames",
+                  "node": "206234396031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/206234396031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "Online Game Services",
+                  "slug": "videogames",
+                  "node": "14152570031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/14152570031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "PC Games",
+                  "slug": "videogames",
+                  "node": "1376518031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/1376518031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "PlayStation 4",
+                  "slug": "videogames",
+                  "node": "2591138031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/2591138031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "PlayStation 5",
+                  "slug": "videogames",
+                  "node": "20904621031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/20904621031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "Xbox One",
+                  "slug": "videogames",
+                  "node": "2785596031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/2785596031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                },
+                {
+                  "name": "Xbox Series X & S",
+                  "slug": "videogames",
+                  "node": "20904638031",
+                  "url": "https://www.amazon.in/gp/bestsellers/videogames/20904638031/ref=zg_bs_nav_videogames_1",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
