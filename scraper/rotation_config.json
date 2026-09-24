@@ -20,21 +20,21 @@
       "fields": ["asin", "title", "brand", "price", "rating", "review_count", "bsr", "image"],
       "priority": "high",
       "refresh_interval_days": 7,
-      "allocation_percent": 70
+      "allocation_percent": 0.70
     },
     "tier_2_deep": {
       "description": "Deep intelligence including history and sentiment",
       "fields": ["tier_1_fields", "price_history", "review_sentiment", "qa", "keywords", "competitors"],
       "priority": "medium",
       "refresh_interval_days": 14,
-      "allocation_percent": 25
+      "allocation_percent": 0.25
     },
     "tier_3_advanced": {
       "description": "Advanced validation and profitability",
       "fields": ["tier_2_fields", "profitability", "ads_data", "forecasting", "supplier_info"],
       "priority": "low",
       "refresh_interval_days": 30,
-      "allocation_percent": 5
+      "allocation_percent": 0.05
     }
   },
   
