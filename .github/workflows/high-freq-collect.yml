@@ -1,10 +1,10 @@
 name: ScoutVeda High-Frequency Collector
 
-# Run every 3 hours for maximum coverage (8x per day)
+# Run every 2 hours for maximum coverage (12x per day)
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Every 3 hours: 00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00 UTC
-                              # = 05:30, 08:30, 11:30, 14:30, 17:30, 20:30, 23:30, 02:30 IST
+    - cron: '0 */2 * * *'  # Every 2 hours: 00:00, 02:00, 04:00...22:00 UTC
+                              # = 05:30, 07:30, 09:30, 11:30, 13:30, 15:30, 17:30, 19:30, 21:30, 23:30, 01:30, 03:30 IST
   workflow_dispatch:
     inputs:
       session:
@@ -18,9 +18,9 @@ on:
           - subcategories
           - watchlist
       workers:
-        description: 'Concurrency workers (default: 16)'
+        description: 'Concurrency workers (default: 12)'
         type: string
-        default: '16'
+        default: '12'
       subcat-max:
         description: 'Max sub-categories (default: 382)'
         type: string
@@ -47,9 +47,9 @@ jobs:
       - name: Run top-level collection (high frequency)
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SCOUT_FETCH_WORKERS: '16'
-          SCOUT_GAP_MIN: '6'
-          SCOUT_GAP_MAX: '14'
+          SCOUT_FETCH_WORKERS: '12'
+          SCOUT_GAP_MIN: '3'
+          SCOUT_GAP_MAX: '8'
           SCOUT_PAGES: '1,2'
           SCOUT_LIST_TYPES: 'bestsellers,new-releases,most-wished-for,most-gifted'
           SCOUT_MAX_RETRIES: '3'
@@ -80,9 +80,9 @@ jobs:
           SCOUT_SUBCAT_MAX: ${{ github.event.inputs.subcat-max || '382' }}
           SCOUT_SUBCAT_LIST_TYPES: 'bestsellers,new-releases'
           SCOUT_SUBCAT_PAGES: '1,2'
-          SCOUT_FETCH_WORKERS: '16'
-          SCOUT_GAP_MIN: '6'
-          SCOUT_GAP_MAX: '14'
+          SCOUT_FETCH_WORKERS: '12'
+          SCOUT_GAP_MIN: '3'
+          SCOUT_GAP_MAX: '8'
         run: python collector_optimized.py --subcats
 
   collect-watchlist:
