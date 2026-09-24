@@ -31,6 +31,7 @@ from urllib.parse import quote, urlencode
 from urllib.request import (
     HTTPCookieProcessor,
     HTTPSHandler,
+    ProxyHandler,
     Request,
     build_opener,
 )
@@ -77,6 +78,20 @@ REQUEST_TIMEOUT = int(os.environ.get("SCOUT_REQUEST_TIMEOUT", "30"))
 MIN_REQUEST_INTERVAL = float(os.environ.get("SCOUT_MIN_INTERVAL", "0.8"))
 RATE_LIMIT_WINDOW = int(os.environ.get("SCOUT_RATE_LIMIT_WINDOW", "60"))
 MAX_REQUESTS_PER_WINDOW = int(os.environ.get("SCOUT_MAX_REQUESTS_PER_WINDOW", "60"))  # SAFE: 1 req/sec
+
+# Residential / SOCKS proxy — routes the (datacenter) GitHub/VM egress IP through
+# a residential address so Amazon serves real product HTML instead of the empty
+# bot-walled page. This is what removes the laptop dependency: the laptop works
+# today ONLY because its home IP is residential. With SCOUT_PROXY set, the cloud
+# collector gets the same advantage without the laptop being on.
+#
+# Supported forms (all read from the env below, injected by the workflow secrets):
+#   http://host:port                      (residential HTTP/HTTPS proxy)
+#   https://user:pass@host:port          (authenticated)
+#   socks5://host:port  /  socks5h://…   (SOCKS; needs PySocks, else falls back to
+#                                          raw urllib which does NOT speak SOCKS —
+#                                          use an HTTP proxy for the collector)
+PROXY_URL = os.environ.get("SCOUT_PROXY", "").strip()
 
 # ============================================================
 # RATE LIMITER — Token bucket algorithm
@@ -164,8 +179,20 @@ def _build_opener():
     """Build HTTP opener with cookies and proper handling."""
     cookie_jar = http.cookiejar.CookieJar()
     cookie_processor = HTTPCookieProcessor(cookie_jar)
-    handler = HTTPSHandler()
-    return build_opener(handler, cookie_processor)
+    handlers = [HTTPSHandler()]
+    if PROXY_URL:
+        # HTTP(S) proxies work with the stdlib; SOCKS would need PySocks and
+        # the collector is deliberately dependency-light, so warn if given.
+        if PROXY_URL.lower().startswith("socks"):
+            logger.warning("[collector] SCOUT_PROXY is SOCKS (%s…) — stdlib urllib "
+                           "cannot speak SOCKS; using the direct connection. "
+                           "Set an http:// proxy to route egress.", PROXY_URL[:20])
+        else:
+            proxy_handler = ProxyHandler({"http": PROXY_URL, "https": PROXY_URL})
+            handlers.append(proxy_handler)
+            logger.info("[collector] routing egress through proxy %s", PROXY_URL[:40])
+    handlers.append(cookie_processor)
+    return build_opener(*handlers)
 
 _opener = _build_opener()
 
@@ -585,13 +612,30 @@ def run_collection(clear_db: bool = False) -> dict:
     # Summary
     stats["end_time"] = datetime.now(timezone.utc)
     stats["duration_seconds"] = (stats["end_time"] - stats["start_time"]).total_seconds()
-    
+
+    # Bot-wall detection: if almost every fetch "succeeded" (HTTP 200) but
+    # essentially nothing parsed into rows, Amazon is serving the empty
+    # bot-walled page, not a clean 403. Today this shows up as a green
+    # "success" run with 0 rows — exactly the trap that hid the GitHub drop.
+    # Flag it so the caller (workflow) can exit non-zero and alert.
+    s_fetches = stats["successful_fetches"]
+    suspected_wall = (
+        s_fetches > 0 and
+        stats["rows_inserted"] == 0 and
+        stats["rows_skipped_dupe"] == 0  # not a clean dedup — genuinely empty
+    )
+    stats["suspected_bot_wall"] = suspected_wall
+
     print(f"\n{'='*60}")
     print(f"[collector] Collection complete!")
     print(f"[collector] Duration: {stats['duration_seconds']:.1f}s")
     print(f"[collector] Requests: {stats['total_requests']} (success: {stats['successful_fetches']}, fail: {stats['failed_fetches']})")
     print(f"[collector] Rows inserted: {stats['rows_inserted']}")
     print(f"[collector] Dupe skips: {stats['rows_skipped_dupe']}")
+    if suspected_wall:
+        print(f"[collector] !! SUSPECTED BOT-WALL: {s_fetches} successful fetches but 0 rows parsed.")
+        print(f"[collector] !! Amazon is serving empty/captcha pages to this egress IP.")
+        print(f"[collector] !! Fix: set SCOUT_PROXY to a residential proxy, or rotate the source IP.")
     print(f"{'='*60}")
     
     return stats
@@ -689,11 +733,22 @@ def run_subcats(max_count=None, dry_run=False) -> dict:
     
     stats["end_time"] = datetime.now(timezone.utc)
     stats["duration_seconds"] = (stats["end_time"] - stats["start_time"]).total_seconds()
-    
+
+    # Same bot-wall signal as run_collection: all fetches 200 but nothing parsed.
+    suspected_wall = (
+        stats["successful_fetches"] > 0
+        and stats["rows_inserted"] == 0
+        and stats.get("rows_skipped_dupe", 0) == 0
+    )
+    stats["suspected_bot_wall"] = suspected_wall
+
     print(f"\n{'='*60}")
     print(f"[subcats] Complete! {stats['rows_inserted']} rows in {stats['duration_seconds']:.1f}s")
+    if suspected_wall:
+        print(f"[subcats] !! SUSPECTED BOT-WALL: {stats['successful_fetches']} fetches, 0 rows parsed.")
+        print(f"[subcats] !! Set SCOUT_PROXY to a residential proxy to unblock.")
     print(f"{'='*60}")
-    
+
     return stats
 
 # ============================================================
@@ -726,6 +781,14 @@ if __name__ == "__main__":
         GAP_MAX_SECONDS = args.gap_max
     
     if args.subcats:
-        run_subcats(max_count=args.max, dry_run=args.dry_run)
+        stats = run_subcats(max_count=args.max, dry_run=args.dry_run)
     else:
-        run_collection()
+        stats = run_collection()
+
+    # A run where every fetch "succeeded" but 0 rows parsed means Amazon is
+    # bot-walling the egress IP — not a dedup, not a code bug. Exit 3 (distinct
+    # from the usual 1) so the workflow can alert and the log says WHY, instead
+    # of showing a green "success" that hides the drop.
+    if not args.dry_run and stats and stats.get("suspected_bot_wall"):
+        print("\n[collector] EXIT 3: suspected bot-wall (fetches succeeded, 0 rows parsed).", file=sys.stderr)
+        sys.exit(3)

@@ -54,6 +54,7 @@ jobs:
           SCOUT_LIST_TYPES: 'bestsellers,new-releases,most-wished-for,most-gifted'
           SCOUT_MAX_RETRIES: '3'
           SCOUT_REQUEST_TIMEOUT: '30'
+          SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}  # residential proxy (optional; unblocks bot-walled datacenter IPs)
         run: python collector_optimized.py
 
   collect-subcategories:
@@ -83,6 +84,7 @@ jobs:
           SCOUT_FETCH_WORKERS: '12'
           SCOUT_GAP_MIN: '8'
           SCOUT_GAP_MAX: '18'
+          SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}  # residential proxy (optional)
         run: python collector_optimized.py --subcats
 
   collect-watchlist:
