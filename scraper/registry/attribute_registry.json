@@ -5,405 +5,1155 @@
       "data_type": "string",
       "description": "Amazon Standard Identification Number",
       "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
+      "source": "list_page"
     },
     {
       "name": "title",
       "data_type": "string",
-      "description": "Product title/name",
+      "description": "Product title",
       "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
+      "source": "list_page"
     },
     {
       "name": "brand",
       "data_type": "string",
       "description": "Brand name",
       "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "source": "list_page"
     },
     {
-      "name": "price",
-      "data_type": "number",
-      "description": "Current selling price in INR",
-      "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
-    },
-    {
-      "name": "mrp",
-      "data_type": "number",
-      "description": "Maximum Retail Price",
+      "name": "manufacturer",
+      "data_type": "string",
+      "description": "Manufacturer name",
       "tier": 2,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
     },
     {
-      "name": "discount_pct",
-      "data_type": "number",
-      "description": "Discount percentage",
+      "name": "parent_asin",
+      "data_type": "string",
+      "description": "Parent ASIN for variations",
       "tier": 2,
-      "source": "derived",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
-    },
-    {
-      "name": "rating",
-      "data_type": "number",
-      "description": "Average customer rating",
-      "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
-    },
-    {
-      "name": "review_count",
-      "data_type": "number",
-      "description": "Total number of ratings",
-      "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
-    },
-    {
-      "name": "rank",
-      "data_type": "number",
-      "description": "Best seller rank position",
-      "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
-    },
-    {
-      "name": "image_url",
-      "data_type": "url",
-      "description": "Main product image URL",
-      "tier": 2,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
     },
     {
       "name": "category",
       "data_type": "string",
       "description": "Amazon category path",
       "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
+      "source": "list_page"
     },
     {
-      "name": "list_type",
+      "name": "subcategory",
       "data_type": "string",
-      "description": "Type of list (bestsellers/new-releases/etc)",
+      "description": "Subcategory/browse node",
       "tier": 1,
-      "source": "list_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
+      "source": "list_page"
     },
     {
-      "name": "collected_at",
-      "data_type": "datetime",
-      "description": "Timestamp when data was collected",
-      "tier": 1,
-      "source": "system",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": true,
-      "validators": []
+      "name": "product_type",
+      "data_type": "string",
+      "description": "Product type classification",
+      "tier": 2,
+      "source": "inferred"
     },
     {
-      "name": "asin_url",
+      "name": "upc_ean",
+      "data_type": "string",
+      "description": "UPC/EAN barcode",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "model_number",
+      "data_type": "string",
+      "description": "Model/SKU number",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "first_available",
+      "data_type": "date",
+      "description": "First available on Amazon",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "product_url",
       "data_type": "url",
-      "description": "Amazon product page URL",
-      "tier": 2,
-      "source": "derived",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "description": "Full product URL",
+      "tier": 1,
+      "source": "list_page"
     },
     {
-      "name": "availability_text",
-      "data_type": "string",
-      "description": "Stock availability text",
-      "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "name": "price",
+      "data_type": "number",
+      "description": "Current selling price",
+      "tier": 1,
+      "source": "list_page"
     },
     {
-      "name": "in_stock",
+      "name": "mrp",
+      "data_type": "number",
+      "description": "Maximum Retail Price",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "discount_pct",
+      "data_type": "number",
+      "description": "Discount percentage",
+      "tier": 1,
+      "source": "derived"
+    },
+    {
+      "name": "unit_price",
+      "data_type": "number",
+      "description": "Price per unit",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "buy_box_price",
+      "data_type": "number",
+      "description": "Buy Box price",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "shipping_cost",
+      "data_type": "number",
+      "description": "Shipping cost",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "prime_eligible",
       "data_type": "boolean",
-      "description": "Whether item is in stock",
-      "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "description": "Prime eligible",
+      "tier": 1,
+      "source": "list_page"
     },
     {
-      "name": "seller",
-      "data_type": "string",
-      "description": "Seller name",
-      "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "name": "price_history_30d",
+      "data_type": "json",
+      "description": "30-day price history",
+      "tier": 3,
+      "source": "api"
     },
     {
-      "name": "fulfillment",
-      "data_type": "string",
-      "description": "Fulfillment method (FBA/FBM)",
+      "name": "price_history_90d",
+      "data_type": "json",
+      "description": "90-day price history",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "price_volatility",
+      "data_type": "number",
+      "description": "Price volatility score",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "variation_prices",
+      "data_type": "json",
+      "description": "Color/Size variation prices",
       "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.443574+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
+    },
+    {
+      "name": "competitor_prices",
+      "data_type": "json",
+      "description": "Competitor offer prices",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "bsr_main",
+      "data_type": "number",
+      "description": "Main category BSR",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "bsr_percentile",
+      "data_type": "number",
+      "description": "BSR percentile rank",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "bsr_30d_avg",
+      "data_type": "number",
+      "description": "30-day average BSR",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "bsr_90d_avg",
+      "data_type": "number",
+      "description": "90-day average BSR",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "bsr_all_time",
+      "data_type": "number",
+      "description": "All-time best BSR",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "est_monthly_sales",
+      "data_type": "number",
+      "description": "Estimated monthly units sold",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "est_daily_sales",
+      "data_type": "number",
+      "description": "Estimated daily units sold",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "est_monthly_revenue",
+      "data_type": "number",
+      "description": "Estimated monthly revenue",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "sales_velocity",
+      "data_type": "number",
+      "description": "Sales velocity index",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "seasonality_score",
+      "data_type": "number",
+      "description": "Seasonality pattern score",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "peak_months",
+      "data_type": "json",
+      "description": "Peak sales months",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "yoy_growth",
+      "data_type": "number",
+      "description": "Year-over-year growth",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "rating",
+      "data_type": "number",
+      "description": "Average customer rating",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "review_count",
+      "data_type": "number",
+      "description": "Total number of reviews",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "rating_5_star",
+      "data_type": "number",
+      "description": "5-star review percentage",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "rating_4_star",
+      "data_type": "number",
+      "description": "4-star review percentage",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "rating_3_star",
+      "data_type": "number",
+      "description": "3-star review percentage",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "rating_2_star",
+      "data_type": "number",
+      "description": "2-star review percentage",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "rating_1_star",
+      "data_type": "number",
+      "description": "1-star review percentage",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "review_trend_30d",
+      "data_type": "number",
+      "description": "Review velocity last 30 days",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "verified_purchase_pct",
+      "data_type": "number",
+      "description": "Verified purchase percentage",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "review_keywords_pos",
+      "data_type": "json",
+      "description": "Positive sentiment keywords",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "review_keywords_neg",
+      "data_type": "json",
+      "description": "Negative sentiment keywords",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "pain_points",
+      "data_type": "json",
+      "description": "Common pain points from reviews",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "quality_mentions",
+      "data_type": "json",
+      "description": "Quality/durability mentions",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "return_rate",
+      "data_type": "number",
+      "description": "Return rate percentage",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "od_r",
+      "data_type": "number",
+      "description": "Order Defect Rate",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "qa_total_questions",
+      "data_type": "number",
+      "description": "Total questions asked",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "qa_total_answers",
+      "data_type": "number",
+      "description": "Total answers provided",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "qa_upvotes",
+      "data_type": "number",
+      "description": "Total question upvotes",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "qa_common_inquiries",
+      "data_type": "json",
+      "description": "Common customer inquiries",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "qa_sizing_questions",
+      "data_type": "json",
+      "description": "Sizing/fit questions",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "qa_compatibility",
+      "data_type": "json",
+      "description": "Compatibility questions",
+      "tier": 3,
+      "source": "ai_analysis"
     },
     {
       "name": "dimensions",
       "data_type": "string",
       "description": "Product dimensions",
       "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
     },
     {
       "name": "weight",
       "data_type": "string",
       "description": "Item weight",
       "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
     },
     {
       "name": "package_dimensions",
       "data_type": "string",
       "description": "Package dimensions",
-      "tier": 3,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "tier": 2,
+      "source": "product_page"
     },
     {
       "name": "package_weight",
       "data_type": "string",
       "description": "Package weight",
-      "tier": 3,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
-    },
-    {
-      "name": "bsr_rank",
-      "data_type": "number",
-      "description": "Best Seller Rank",
       "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
     },
     {
-      "name": "bsr_category",
+      "name": "item_size_tier",
       "data_type": "string",
-      "description": "BSR category",
+      "description": "Size tier (Small/Medium/Large)",
       "tier": 2,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "source": "inferred"
+    },
+    {
+      "name": "colors",
+      "data_type": "json",
+      "description": "Available colors",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "sizes",
+      "data_type": "json",
+      "description": "Available sizes",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "materials",
+      "data_type": "json",
+      "description": "Material composition",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "pack_size",
+      "data_type": "number",
+      "description": "Number of items in pack",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "short_description",
+      "data_type": "string",
+      "description": "Bullet points/short description",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "long_description",
+      "data_type": "text",
+      "description": "Full product description",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "key_features",
+      "data_type": "json",
+      "description": "Key features list",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "tech_specs",
+      "data_type": "json",
+      "description": "Technical specifications",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "ingredients",
+      "data_type": "string",
+      "description": "Ingredients/components",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "care_instructions",
+      "data_type": "string",
+      "description": "Care/maintenance instructions",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "warranty",
+      "data_type": "string",
+      "description": "Warranty information",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "certifications",
+      "data_type": "json",
+      "description": "Quality certifications",
+      "tier": 3,
+      "source": "product_page"
     },
     {
       "name": "country_of_origin",
       "data_type": "string",
-      "description": "Country of origin",
-      "tier": 3,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "description": "Country of manufacture",
+      "tier": 2,
+      "source": "product_page"
     },
     {
-      "name": "model_number",
-      "data_type": "string",
-      "description": "Manufacturer model number",
-      "tier": 3,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "name": "main_image",
+      "data_type": "url",
+      "description": "Main product image URL",
+      "tier": 1,
+      "source": "list_page"
     },
     {
-      "name": "item_part_number",
-      "data_type": "string",
-      "description": "Amazon part number",
+      "name": "image_urls",
+      "data_type": "json",
+      "description": "All product image URLs",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "image_count",
+      "data_type": "number",
+      "description": "Total number of images",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "has_video",
+      "data_type": "boolean",
+      "description": "Has product video",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "video_url",
+      "data_type": "url",
+      "description": "Product video URL",
       "tier": 3,
-      "source": "product_page",
-      "universal": true,
-      "categories": [],
-      "subcategories": [],
-      "product_types": [],
-      "is_dynamic": false,
-      "created_at": "2026-09-23T18:57:01.444081+00:00",
-      "required": false,
-      "validators": []
+      "source": "product_page"
+    },
+    {
+      "name": "customer_images",
+      "data_type": "json",
+      "description": "Customer uploaded images",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "a_plus_content",
+      "data_type": "boolean",
+      "description": "Has A+ Content",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "infographic_present",
+      "data_type": "boolean",
+      "description": "Has infographic images",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "title_keywords",
+      "data_type": "json",
+      "description": "Keywords extracted from title",
+      "tier": 2,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "bullet_keywords",
+      "data_type": "json",
+      "description": "Keywords from bullet points",
+      "tier": 2,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "backend_search_terms",
+      "data_type": "string",
+      "description": "Backend search terms",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "indexed_keywords",
+      "data_type": "json",
+      "description": "Indexed search keywords",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "organic_rank",
+      "data_type": "number",
+      "description": "Organic search rank",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "sponsored_rank",
+      "data_type": "number",
+      "description": "Sponsored search rank",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "search_volume",
+      "data_type": "number",
+      "description": "Search volume for main keyword",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "keyword_difficulty",
+      "data_type": "number",
+      "description": "Keyword difficulty score",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "click_share",
+      "data_type": "number",
+      "description": "Click share percentage",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "conversion_share",
+      "data_type": "number",
+      "description": "Conversion share percentage",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "top_competitors",
+      "data_type": "json",
+      "description": "Top 10 competing ASINs",
+      "tier": 2,
+      "source": "api"
+    },
+    {
+      "name": "avg_competitor_price",
+      "data_type": "number",
+      "description": "Average competitor price",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "price_vs_competitors",
+      "data_type": "number",
+      "description": "Price vs competitor average",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "competition_level",
+      "data_type": "string",
+      "description": "Competition level (Low/Med/High)",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "market_share",
+      "data_type": "number",
+      "description": "Estimated market share",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "saturation_score",
+      "data_type": "number",
+      "description": "Market saturation score",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "competitor_review_count",
+      "data_type": "json",
+      "description": "Competitor review counts",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "competitor_rating_avg",
+      "data_type": "number",
+      "description": "Average competitor rating",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "direct_competitor_count",
+      "data_type": "number",
+      "description": "Number of direct competitors",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "ad_intensity",
+      "data_type": "number",
+      "description": "Advertising intensity score",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "seller_name",
+      "data_type": "string",
+      "description": "Seller name",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "seller_rating",
+      "data_type": "number",
+      "description": "Seller feedback rating",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "fulfillment_method",
+      "data_type": "string",
+      "description": "FBA or FBM",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "stock_status",
+      "data_type": "string",
+      "description": "In stock/out of stock",
+      "tier": 1,
+      "source": "list_page"
+    },
+    {
+      "name": "availability_text",
+      "data_type": "string",
+      "description": "Availability message",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "inventory_estimate",
+      "data_type": "number",
+      "description": "Estimated inventory count",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "in_stock_rate",
+      "data_type": "number",
+      "description": "In-stock rate over time",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "restock_date",
+      "data_type": "date",
+      "description": "Next restock date estimate",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "is_lightning_deal",
+      "data_type": "boolean",
+      "description": "Is Lightning Deal",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "is_coupon",
+      "data_type": "boolean",
+      "description": "Has coupon available",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "coupon_discount",
+      "data_type": "number",
+      "description": "Coupon discount amount",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "subscribe_save_pct",
+      "data_type": "number",
+      "description": "Subscribe & Save discount",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "prime_day_deal",
+      "data_type": "boolean",
+      "description": "Prime Day deal status",
+      "tier": 3,
+      "source": "list_page"
+    },
+    {
+      "name": "deal_end_date",
+      "data_type": "date",
+      "description": "Deal end date",
+      "tier": 3,
+      "source": "list_page"
+    },
+    {
+      "name": "frequently_bought_together",
+      "data_type": "json",
+      "description": "Frequently bought together ASINs",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "customers_also_viewed",
+      "data_type": "json",
+      "description": "Customers also viewed ASINs",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "customers_also_bought",
+      "data_type": "json",
+      "description": "Customers also bought ASINs",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "sponsored_products",
+      "data_type": "json",
+      "description": "Sponsored product placements",
+      "tier": 3,
+      "source": "product_page"
+    },
+    {
+      "name": "listing_quality_score",
+      "data_type": "number",
+      "description": "Listing Quality Score (0-100)",
+      "tier": 2,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "title_length",
+      "data_type": "number",
+      "description": "Title character count",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "bullet_count",
+      "data_type": "number",
+      "description": "Number of bullet points",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "has_a_plus_content",
+      "data_type": "boolean",
+      "description": "Has A+ Content",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "has_amazon_choice",
+      "data_type": "boolean",
+      "description": "Amazon Choice badge",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "has_best_seller",
+      "data_type": "boolean",
+      "description": "Best Seller badge",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "conversion_rate",
+      "data_type": "number",
+      "description": "Unit session percentage",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "click_through_rate",
+      "data_type": "number",
+      "description": "CTR for listings",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "referral_fee",
+      "data_type": "number",
+      "description": "Amazon referral fee",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "fba_fulfillment_fee",
+      "data_type": "number",
+      "description": "FBA fulfillment fee",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "storage_fee",
+      "data_type": "number",
+      "description": "Monthly storage fee",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "supplier_cost",
+      "data_type": "number",
+      "description": "Supplier cost per unit",
+      "tier": 3,
+      "source": "external"
+    },
+    {
+      "name": "gross_profit",
+      "data_type": "number",
+      "description": "Gross profit per unit",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "net_profit",
+      "data_type": "number",
+      "description": "Net profit per unit",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "profit_margin_pct",
+      "data_type": "number",
+      "description": "Net profit margin %",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "roi_pct",
+      "data_type": "number",
+      "description": "Return on investment %",
+      "tier": 2,
+      "source": "derived"
+    },
+    {
+      "name": "break_even_price",
+      "data_type": "number",
+      "description": "Break-even selling price",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "monthly_profit_potential",
+      "data_type": "number",
+      "description": "Monthly profit potential",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "annual_revenue_projection",
+      "data_type": "number",
+      "description": "Annual revenue projection",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "total_cost_per_unit",
+      "data_type": "number",
+      "description": "Total landed cost per unit",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "acos",
+      "data_type": "number",
+      "description": "Advertising Cost of Sales",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "tacos",
+      "data_type": "number",
+      "description": "Total Advertising Cost of Sales",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "ad_spend",
+      "data_type": "number",
+      "description": "Monthly ad spend",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "sponsored_visibility",
+      "data_type": "number",
+      "description": "Sponsored product visibility score",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "avg_cpc",
+      "data_type": "number",
+      "description": "Average cost per click",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "customer_acquisition_cost",
+      "data_type": "number",
+      "description": "Customer acquisition cost",
+      "tier": 3,
+      "source": "derived"
+    },
+    {
+      "name": "repeat_purchase_rate",
+      "data_type": "number",
+      "description": "Repeat purchase rate",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "first_time_buyer_pct",
+      "data_type": "number",
+      "description": "First-time buyer percentage",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "avg_order_value",
+      "data_type": "number",
+      "description": "Average order value",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "customer_lifetime_value",
+      "data_type": "number",
+      "description": "Estimated LTV",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "prime_member_pct",
+      "data_type": "number",
+      "description": "Prime member purchase %",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "demographic_data",
+      "data_type": "json",
+      "description": "Age/gender/income demographics",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "ip_alert",
+      "data_type": "boolean",
+      "description": "IP complaint status",
+      "tier": 2,
+      "source": "external"
+    },
+    {
+      "name": "restricted_product",
+      "data_type": "boolean",
+      "description": "Restricted product flag",
+      "tier": 2,
+      "source": "list_page"
+    },
+    {
+      "name": "counterfeit_risk",
+      "data_type": "string",
+      "description": "Counterfeit risk level",
+      "tier": 3,
+      "source": "external"
+    },
+    {
+      "name": "hazmat_flag",
+      "data_type": "boolean",
+      "description": "Hazardous material flag",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "fragility_flag",
+      "data_type": "boolean",
+      "description": "Fragile item flag",
+      "tier": 2,
+      "source": "product_page"
+    },
+    {
+      "name": "return_issues",
+      "data_type": "json",
+      "description": "Common return reasons",
+      "tier": 3,
+      "source": "ai_analysis"
+    },
+    {
+      "name": "ipi_score",
+      "data_type": "number",
+      "description": "Inventory Performance Index",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "sell_through_rate",
+      "data_type": "number",
+      "description": "FBA sell-through rate",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "excess_inventory_pct",
+      "data_type": "number",
+      "description": "Excess inventory percentage",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "days_of_supply",
+      "data_type": "number",
+      "description": "Days of inventory supply",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "turnover_ratio",
+      "data_type": "number",
+      "description": "Inventory turnover ratio",
+      "tier": 3,
+      "source": "api"
+    },
+    {
+      "name": "stranded_units",
+      "data_type": "number",
+      "description": "Stranded inventory units",
+      "tier": 3,
+      "source": "api"
     }
   ],
   "category_attributes": {
@@ -3370,5 +4120,5 @@
       "validators": []
     }
   ],
-  "last_updated": "2026-09-24T02:47:31.676381+00:00"
+  "last_updated": "2026-09-24T02:56:53.505358+00:00"
 }
