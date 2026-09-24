@@ -90,7 +90,7 @@ def insert_snapshot_rows(rows):
                 """INSERT INTO snapshots
                    (asin, category, list_type, rank, title, price, rating,
                     review_count, image_url, collected_at, brand, size_tier_hint, product_type_hint,
-                    subcategory, product_type)
+                    subcategory, product_type, source)
                    VALUES %s ON CONFLICT DO NOTHING RETURNING id""",
                 [
                     (
@@ -99,6 +99,7 @@ def insert_snapshot_rows(rows):
                         r["image_url"], r["collected_at"],
                         r.get("brand"), r.get("size_tier_hint"), r.get("product_type_hint"),
                         r.get("subcategory"), r.get("product_type"),
+                        r.get("source", "collector"),
                     )
                     for r in rows
                 ],

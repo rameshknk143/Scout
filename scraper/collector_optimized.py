@@ -461,6 +461,7 @@ def parse_product_card(html: str, rank: int, category: str, list_type: str) -> O
         "brand": _extract_brand_from_title(title) or _extract_brand(f"https://www.amazon.in/dp/{asin}"),
         "size_tier_hint": _detect_size_tier(title),
         "product_type_hint": _detect_product_type(title, category),
+        "source": "collector",
     }
 
 # ============================================================
