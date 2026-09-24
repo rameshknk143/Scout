@@ -2811,6 +2811,470 @@
         "required": false,
         "validators": []
       }
+    ],
+    "Health": [
+      {
+        "name": "active_ingredients",
+        "data_type": "string",
+        "description": "Active pharmaceutical ingredients",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Health"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "dosage_form",
+        "data_type": "string",
+        "description": "Tablet/capsule/liquid form",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Health"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "shelf_life",
+        "data_type": "string",
+        "description": "Expiration period",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Health"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "prescription_required",
+        "data_type": "boolean",
+        "description": "Needs prescription",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Health"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Clothing": [
+      {
+        "name": "gender",
+        "data_type": "string",
+        "description": "Men/Women/Unisex",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [
+          "Clothing"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "size_range",
+        "data_type": "string",
+        "description": "S/M/L/XL etc",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [
+          "Clothing"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "fabric_composition",
+        "data_type": "string",
+        "description": "Cotton/Polyester blend",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [
+          "Clothing"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "care_instructions",
+        "data_type": "string",
+        "description": "Wash/dry instructions",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Fashion"
+        ],
+        "subcategories": [
+          "Clothing"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Computers": [
+      {
+        "name": "ram",
+        "data_type": "string",
+        "description": "RAM size (4GB/8GB/16GB)",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Computers"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "storage",
+        "data_type": "string",
+        "description": "SSD/HDD capacity",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Computers"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "processor",
+        "data_type": "string",
+        "description": "CPU model",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Computers"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "display_size",
+        "data_type": "string",
+        "description": "Screen size in inches",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Electronics"
+        ],
+        "subcategories": [
+          "Computers"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Jewellery": [
+      {
+        "name": "metal_type",
+        "data_type": "string",
+        "description": "Gold/Silver/platinum",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewellery"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "gemstone",
+        "data_type": "string",
+        "description": "Diamond/pearl/etc",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewellery"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "carat_weight",
+        "data_type": "number",
+        "description": "Gemstone weight",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewellery"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "chain_length",
+        "data_type": "string",
+        "description": "Necklace chain length",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Jewellery"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Movies": [
+      {
+        "name": "format",
+        "data_type": "string",
+        "description": "DVD/Blu-ray/Digital",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Entertainment"
+        ],
+        "subcategories": [
+          "Movies"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "runtime",
+        "data_type": "string",
+        "description": "Movie duration",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Entertainment"
+        ],
+        "subcategories": [
+          "Movies"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "language",
+        "data_type": "string",
+        "description": "Audio language",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Entertainment"
+        ],
+        "subcategories": [
+          "Movies"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "subtitle",
+        "data_type": "string",
+        "description": "Available subtitles",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Entertainment"
+        ],
+        "subcategories": [
+          "Movies"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Car Accessories": [
+      {
+        "name": "vehicle_compatibility",
+        "data_type": "string",
+        "description": "Fits which cars",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [
+          "Accessories"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "part_number",
+        "data_type": "string",
+        "description": "OEM/part number",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [
+          "Accessories"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "material",
+        "data_type": "string",
+        "description": "Construction material",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Automotive"
+        ],
+        "subcategories": [
+          "Accessories"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Kindle": [
+      {
+        "name": "file_format",
+        "data_type": "string",
+        "description": "Kindle format type",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [
+          "Kindle eBooks"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "page_count",
+        "data_type": "number",
+        "description": "Number of pages",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [
+          "Kindle eBooks"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "publication_date",
+        "data_type": "string",
+        "description": "Kindle publication date",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Books"
+        ],
+        "subcategories": [
+          "Kindle eBooks"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Apps Games": [
+      {
+        "name": "app_category",
+        "data_type": "string",
+        "description": "Game/app category",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [
+          "Mobile Apps"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "developer",
+        "data_type": "string",
+        "description": "App developer name",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [
+          "Mobile Apps"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "compatibility",
+        "data_type": "string",
+        "description": "iOS/Android support",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Software"
+        ],
+        "subcategories": [
+          "Mobile Apps"
+        ],
+        "product_types": [],
+        "is_dynamic": false
+      }
     ]
   },
   "dynamic_attributes": [
@@ -2832,5 +3296,5 @@
       "validators": []
     }
   ],
-  "last_updated": "2026-09-23T18:57:01.486649+00:00"
+  "last_updated": "2026-09-24T02:46:09.861661+00:00"
 }
