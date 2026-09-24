@@ -78,6 +78,10 @@ class CategoryMapper:
         
         # Books
         "book": re.compile(r'\b(book|novel|paperback|hardcover)\b', re.I),
+        
+        # Apps & Games
+        "app": re.compile(r'\b(app|game|mobile\s+game|android\s+app)\b', re.I),
+        "license": re.compile(r'\b(license|licenced|subscription)\b', re.I),
     }
     
     SIZE_TIER_PATTERNS = {
@@ -212,6 +216,8 @@ class CategoryMapper:
                     cat = "Sports"
                 elif "book" in attr_name:
                     cat = "Books"
+                elif "app" in attr_name or "license" in attr_name:
+                    cat = "Software"
                 else:
                     cat = "General"
 
@@ -278,6 +284,10 @@ class CategoryMapper:
                 "bat": "Cricket",
                 "ball": "Cricket",
                 "mat": "Fitness",
+            },
+            "Software": {
+                "app": "Mobile Apps",
+                "game": "Mobile Apps",
             },
         }
         

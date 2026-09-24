@@ -3275,6 +3275,80 @@
         "product_types": [],
         "is_dynamic": false
       }
+    ],
+    "Amazon Launchpad": [
+      {
+        "name": "startup_name",
+        "data_type": "string",
+        "description": "Startup company name",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Amazon Launchpad"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "innovation_score",
+        "data_type": "number",
+        "description": "Innovation rating",
+        "tier": 3,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Amazon Launchpad"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      }
+    ],
+    "Amazon Renewed": [
+      {
+        "name": "condition",
+        "data_type": "string",
+        "description": "Refurbished condition grade",
+        "tier": 1,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Amazon Renewed"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "warranty_remaining",
+        "data_type": "string",
+        "description": "Remaining warranty period",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Amazon Renewed"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      },
+      {
+        "name": "seller_type",
+        "data_type": "string",
+        "description": "Amazon certified seller",
+        "tier": 2,
+        "source": "product_page",
+        "universal": false,
+        "categories": [
+          "Amazon Renewed"
+        ],
+        "subcategories": [],
+        "product_types": [],
+        "is_dynamic": false
+      }
     ]
   },
   "dynamic_attributes": [
@@ -3296,5 +3370,5 @@
       "validators": []
     }
   ],
-  "last_updated": "2026-09-24T02:46:09.861661+00:00"
+  "last_updated": "2026-09-24T02:47:31.676381+00:00"
 }
