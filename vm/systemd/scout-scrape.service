@@ -16,7 +16,7 @@ WorkingDirectory=/home/ubuntu/scoutd
 Environment=PYTHONPATH=/home/ubuntu/scoutd
 Environment=PYTHONUNBUFFERED=1
 EnvironmentFile=-/home/ubuntu/.config/scoutd/env
-ExecStart=/usr/bin/python3 -m scoutd.run scrape
+ExecStart=/usr/bin/python3 /home/ubuntu/scoutd/tunnel_scrape.py
 
 # A full pass over 15 targets takes ~20 minutes including backoff. 45 minutes is
 # past any legitimate run, so anything that reaches this limit is hung, not slow.
