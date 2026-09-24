@@ -175,10 +175,11 @@ def cmd_finances(args):
     r = _sp_call("GET", "/finance/2020-04-30/financialEvents", mktpl, at,
                  {"PostedAfter": start, "MarketplaceId": mktpl})
     if r.status_code == 403:
-        sys.exit("⚠️  403: Amazon Finance (GET) role NOT authorized for this SP-API app.\n"
-                 "   Fix (one-time, ~2 min): SP-API Developer Portal → your app →\n"
-                 "   'Authorize roles' → add 'Amazon Finance (GET)' → confirm.\n"
-                 "   The app was connected 2026-07-17 with Orders + Sales only.")
+        sys.exit("⚠️  403: Amazon Finance (GET) role NOT active on this seller authorization yet.\n"
+                 "   The refresh token IS live (`who` above = 200), so this is a server-side\n"
+                 "   permission-boundary error, not a code/token bug. A re-consent / re-authorization\n"
+                 "   that carries the Finance (GET) grant is required (Amazon-side, in progress).\n"
+                 "   Re-run this command once Amazon grants the role — no code change needed.")
     if r.status_code != 200:
         sys.exit(f"financialEvents failed ({r.status_code}): {r.text[:300]}")
     rows = r.json().get("FinancialEvents", [])
