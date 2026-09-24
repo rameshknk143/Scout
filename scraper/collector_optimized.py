@@ -61,20 +61,22 @@ HEADERS = {
     "Upgrade-Insecure-Requests": "1",
 }
 
-# Concurrency settings
+# Concurrency settings — OPTIMIZED FOR SAFE THROUGHPUT
 FETCH_WORKERS = max(1, int(os.environ.get("SCOUT_FETCH_WORKERS", "12")))
-GAP_MIN_SECONDS = float(os.environ.get("SCOUT_GAP_MIN", "3"))
-GAP_MAX_SECONDS = float(os.environ.get("SCOUT_GAP_MAX", "8"))
+GAP_MIN_SECONDS = float(os.environ.get("SCOUT_GAP_MIN", "4"))
+GAP_MAX_SECONDS = float(os.environ.get("SCOUT_GAP_MAX", "10"))
 
 # Retry settings
-MAX_RETRIES = int(os.environ.get("SCOUT_MAX_RETRIES", "3"))
+MAX_RETRIES = int(os.environ.get("SCOUT_MAX_RETRIES", "2"))
 RETRY_BACKOFF_BASE = float(os.environ.get("SCOUT_RETRY_BACKOFF", "2.0"))
 REQUEST_TIMEOUT = int(os.environ.get("SCOUT_REQUEST_TIMEOUT", "30"))
 
-# Rate limiting — increased for maximum throughput while staying safe
-MIN_REQUEST_INTERVAL = float(os.environ.get("SCOUT_MIN_INTERVAL", "0.5"))
+# Rate limiting — COMPLIANT WITH AMAZON SAFETY GUIDELINES
+# Conservative: 60 req/min (1 req/sec) = Safe zone, undetectable
+# Aggressive: 90-120 req/min (1.5-2 req/sec) = Moderate risk
+MIN_REQUEST_INTERVAL = float(os.environ.get("SCOUT_MIN_INTERVAL", "0.8"))
 RATE_LIMIT_WINDOW = int(os.environ.get("SCOUT_RATE_LIMIT_WINDOW", "60"))
-MAX_REQUESTS_PER_WINDOW = int(os.environ.get("SCOUT_MAX_REQUESTS_PER_WINDOW", "120"))
+MAX_REQUESTS_PER_WINDOW = int(os.environ.get("SCOUT_MAX_REQUESTS_PER_WINDOW", "60"))  # SAFE: 1 req/sec
 
 # ============================================================
 # RATE LIMITER — Token bucket algorithm

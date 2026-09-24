@@ -48,8 +48,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SCOUT_FETCH_WORKERS: '12'
-          SCOUT_GAP_MIN: '3'
-          SCOUT_GAP_MAX: '8'
+          SCOUT_GAP_MIN: '4'
+          SCOUT_GAP_MAX: '10'
+          SCOUT_MAX_REQUESTS_PER_WINDOW: '60'  # SAFE: 1 req/sec
           SCOUT_PAGES: '1,2'
           SCOUT_LIST_TYPES: 'bestsellers,new-releases,most-wished-for,most-gifted'
           SCOUT_MAX_RETRIES: '3'
@@ -81,8 +82,9 @@ jobs:
           SCOUT_SUBCAT_LIST_TYPES: 'bestsellers,new-releases'
           SCOUT_SUBCAT_PAGES: '1,2'
           SCOUT_FETCH_WORKERS: '12'
-          SCOUT_GAP_MIN: '3'
-          SCOUT_GAP_MAX: '8'
+          SCOUT_GAP_MIN: '4'
+          SCOUT_GAP_MAX: '10'
+          SCOUT_MAX_REQUESTS_PER_WINDOW: '60'  # SAFE: 1 req/sec
         run: python collector_optimized.py --subcats
 
   collect-watchlist:
