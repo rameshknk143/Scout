@@ -43,6 +43,26 @@ from pathlib import Path
 
 import requests
 
+# --- laptop.env loader -----------------------------------------------------
+# The Maxun stack lives on this laptop and keeps its config in scraper/laptop.env.
+# Load it into the environment WITHOUT overriding variables that are already set,
+# so a real CI environment or manual `set` always wins. No value is printed.
+def _load_laptop_env():
+    for cand in (Path(__file__).with_name("laptop.env"),
+                 Path(__file__).with_name(".env")):
+        if not cand.exists():
+            continue
+        for line in cand.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if k and k not in os.environ:
+                os.environ[k] = v
+        break  # only the first file that exists
+_load_laptop_env()
+
 # 127.0.0.1, not localhost. On Windows localhost resolves to ::1 first, and on
 # 2026-08-10 a stray `python -m http.server 8080` bound [::]:8080 while Maxun held
 # only 0.0.0.0:8080 - so every call silently hit the wrong server and the bridge

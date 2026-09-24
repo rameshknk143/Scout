@@ -22,3 +22,6 @@ _recovery/
 audit-output/scraped-data.csv
 audit-output/network-endpoints.csv
 security-audit/
+scraper/laptop.env
+scraper/.maxun_services.state
+scraper/.maxun_lastpass.log
