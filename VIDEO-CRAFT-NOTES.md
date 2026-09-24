@@ -312,3 +312,107 @@
 
 *Raw JSON data available in FRAME-ANALYSIS-Raw.json*
 *Previous version dated 2026-09-21 — updated with full frame-by-frame analysis*
+
+---
+
+# Vision-Confirmed Pass (2026-09-24) — RAW FRAME OBSERVATIONS
+
+> Earlier notes above were written while the vision model was degraded (no image input), so hex/palette details were inferred from filenames and general descriptions. This section records what the **active vision model actually saw**, per frame, restricted to buildable craft (no themes, no characters). Re-used to ground spec §1 #21–#30 and §4.5.1.
+
+**Vision test:** PASSED — `v3_f40.jpg` correctly described (dark-themed AI video-gen web app, king.ai, showing Iron Man-style renders). All frames below are vision-verified.
+
+## V3 (highest priority — HUD/scroll craft)
+
+**v3_f2 / v3_f8 / v3_f15 (hero HUD frames):**
+- **Grading:** near-black `#050505`–`#0a0b0d` (warm, not blue); radial/vignette lift in center fading to darker edges; desaturated slate-teal fog `#3a4448`; deep crimson horizon `#5e121c`→`#a01824`; single warm accent gold/amber `#e8b437`–`#f0c040` reserved for ONE word + tiny glyphs; off-white text `#f4f5f6`, muted cool gray `#8a8f96` for body.
+- **Core technique:** restraint — ~90% monochrome, one hot accent. Color = signal, not decoration. That scarcity is what reads "premium."
+- **Type:** two-face system. Huge tight-tracked heavy grotesk headline (left, one word recolored amber) vs. tiny (~9–11px) uppercase technical MONO labels with wide tracking + `//` and `—` separators (SEG 001/009, TELEMETRY LINK, PROTOCOL). Extreme scale contrast = "control panel" voice.
+- **HUD anatomy (TASTEFUL):** L-shaped corner crop-brackets at canvas corners; thin hairline rails top/bottom; peripheral data readouts pinned to the four edges (flight log left, seq counter right, playback center); a "● LIVE" status dot; "SCROLL ↓" cue. These read as "operational interface / film frame inside a viewfinder."
+- **Lighting/depth:** crushed-black background → subject max separation; cinematic low-key (warm core bloom + cool rim on subject); volumetric smoke/fog at base; heavy vignette pulling eye inward; a semi-transparent glass quote-card layered over the photo = 3rd depth plane (UI → card → photo → black).
+- **Costume vs craft:** corner brackets + seq counters are tasteful ONLY as functional framing; they become costume if repeated decoratively across the whole dashboard. Custom cursor = high-end marketing cue, NOT appropriate for a data SaaS dashboard.
+
+**v3_f40 / v3_f50 (workbench / DCC-tool frames):**
+- **Grading:** cool near-black `#0B0D10`–`#101216`; panels `#16181D`/`#1A1D22`; hairlines `#262A30`; text `#E6E8EC` primary / `#9AA0AA` secondary; ONE accent — signal green `#3DDC84`–`#4ADE80` on "NEW" badge, toggle-on, active tab, success dots. Monochrome + single accent = "hardware/console" precision.
+- **Layout:** classic pro-workbench 3-zone shell — left icon rail (~56px, 12–14 line icons + one badge) + left config panel + center canvas (media player strip on top, media-card feed below) + right filmstrip thumbnail rail. Uniform 8-pt grid, hairline dividers not heavy borders, F-pattern reading flow.
+- **Micro-badge grammar:** tiny uppercase tags (NEW, 2K HD, IMAGE 3.0) on subtle backgrounds = a "visual vocabulary" that feels engineered.
+- **Depth:** elevation by lightness + 1px strokes (floating-panel feel), NOT heavy blur; low-key UI so content images read as key-lit subjects ("studio suite" contrast). Active thumb gets a glowing outline = "spotlight."
+- **Motion cues (static tells):** sliding toggle knob + color-fill (gray→green); sliding segmented-tab indicator; chevron dropdowns; hover row icons + active-thumb scale-up; progress/scrub timeline with playhead; transient slide-in toast banner.
+
+**v3_f60 / v3_f70 / v3_f80 (dev-cockpit frames, multi-window/IDE):**
+- **Grading:** warm charcoal `#0d0d0f`–`#18181b` (not pure black), panel steps `#1f1f23`→`#26262a`, text ramp `#e4e4e7` / `#a1a1aa` / `#5a5f58`. Single warm accent coral/orange `#ff6f4d`–`#f97350` (pixel mascot, status dots) used <5% of screen.
+- **Layout:** 3-zone "sources → work surface → reference" master-detail. Radical negative space in the focus panel ("console awaiting input"); hairline 1px vertical dividers; grouped label-driven IA (GPTs / Projects).
+- **Depth (KEY TECHNIQUE #21):** flat tonal layering — each layer ~2–3% lighter than the one behind (window→panel→card→input) + 1px hairlines; NO drop shadows. "Glass-on-matte" depth.
+- **Emissive (KEY TECHNIQUE #22):** the orange glyph, red status dots, and white scrub line are self-illuminated points — the only bright pixels read as *light sources* on the carbon field ("night console" glow).
+- **Type:** mono + geometric-sans pairing; `// TODO:` placeholder borrows terminal syntax as a *brand voice* (empty state feels like a codebase, not marketing copy).
+- **v3_f88 (end-card):** near-black + one hot accent `#FF1A3D`–`#E60023` (reserved only for "SUBSCRIBE!"), radial vignette glow behind text = light source, neon bloom on the hero word (soft outer glow + inner saturation = backlit signage). Stagger-in language encoded: headline fade → CTA slide → button rise, glow "breathes." Confirms glow-on-value as a tasteful, scarce effect.
+
+## V1 (3D website visuals)
+
+- **v1_f2 (desk-setup thumbnail):** matte-body + emissive-accent material pairing (OLED-like teal glow `#22e0cf` on graphite `#3a3d42`); one cool accent + one tiny warm signal orange; photographic contact shadows + global illumination + depth-of-field lift the 3D objects off the page (prototypes, not mockups).
+- **v1_f5 (dora.ai 3D):** FLAT-minimal 2D UI (white + black type + electric-blue pills `#1E6BFF`, airy negative space, single CTA) over a GLOSSY 3D dark-navy band `#101A4A`–`#1B1B5C`. The "future" signal is the crisp-2D / dimensional-3D contrast. Horizon line where white meets navy = "ground plane" so objects rest in space.
+- **v1_f8 (dora sphere hero):** restrained cool duotone (deep blue + violet on black `#070712`–`#0a0a18`); electric-cobalt sphere rim `#2d5bff`; glassmorphism on input bar + lower panels (translucent fill, soft border, blur). Real-time 3D sphere w/ atmospheric rim light + bloom = biggest "futuristic" signal; minimal centered single-CTA = confidence.
+- **v1_f11 (card rail + type hero):** near-black `#0B0B12` + magenta-violet ambient glow `#3A1550` + single electric-cyan horizon line `#22D3EE`/`#18E0C8`; asymmetric two-zone (modular card grid left, type hero right); emissive "horizon" bar as organizing axis; backlit gradient = holographic depth.
+- **v1_f14 (AirPods 3D):** cinematic dark mode, pure-black canvas `#000000`–`#0A0A0A`, pure-white product+type; massive thin wordmark BEHIND the 3D product (real occlusion/parallax depth = "type as 3D set piece"); studio-lit renders (soft key, rim speculars, ambient occlusion, implied floor shadow); "whisper vs shout" type contrast (display vs whisper-small nav with `→` affordances).
+- **v1_f17 (power/battery case study):** asymmetric left hero (text ~55%, low-key visual right ~45%); near-black `#07070A`–`#0D0D12`; off-white `#F5F5F7`; single electric green `#39FF14`/`#00E64D` on the word "power" only (color-coded to meaning: green=battery/power); low-key vignetted photography layered flat-over-dimmed-photo; generous editorial negative space.
+- **v1_f20 (spatial 3D tilt):** the page rendered as a TILTED card in space; blueprint/CAD layer of thin axis ticks + node connectors + square markers beneath content; near-black `#0B0B0E` + luminous lime gradient `#5BE04A`→`#A8F04C` + violet `#7A2BF5`; micro data-viz (mono cards, axis ticks, node graph). "Spatial computing / holographic control surface" — flat UI presented as objects in a room.
+
+## V2 (Apple-style 3D product)
+
+- **v2_f5 (SONY headphones):** studio-grade PBR hero, 3/4 view, floating on near-black w/ soft radial halo; matte-black + faint teal accent; classic low-key product lighting (soft upper-left key → rim highlights on headband/cup edges, rest falls into shadow); monochromatic desaturated grade, eye funneled to product; asymmetric right-edge feature copy; glassmorphism minimal but present (frosted overlay behind nav/text).
+- **v2_f180 / v2_f360 (matte-black headphone grid + exploded):** the KEY Apple-render lesson — **light the product with EDGES, not faces:** soft rim/backlight (clay-light) traces top edges, controlled narrow speculars on metal/leather, background is a SUBTLE RADIAL GRADIENT (slightly lighter behind product, darker at edges) not flat black, lifted shadows (no crush to #000). v2_f360 shows two side-by-side keyframes = assembled → exploded view (slow, "professional internal tech showcase, Apple-style"). Material honesty: matte vs gloss contrast = "engineered."
+- **v2_f90 / v2_f450 / v2_f540 / v2_f270:** (dev-workflow / desktop / empty frames — vision noted these are NOT 3D hero shots, so no render craft; captured dark-UI tone: warm charcoal not pure black, one accent <5%, hover = low-alpha white overlay `rgba(255,255,255,0.06)`; macOS vibrancy = heavier blur on edge chrome, lighter on content = "glass" gradient.)
+
+## V4 (general web-design course / GSAP)
+
+- **v4_f15 (MacBook Pro hero):** void-black `#000000`–`#0a0a0a`; centered 3D product floating w/ faint reflection; screen is the light source (chiaroscuro); off-white `#f5f5f7` + quiet two-tier sans nav; single saturated blue Buy pill `#0071e3` = only "hot spot" (accent discipline guides eye to conversion). PBR + glowing screen + floor reflection = "expensive object."
+- **v4_f300 (Hostinger domain wizard):** cool off-white `#F8F8FB`; one violet accent thread `#6C4EE8`–`#7B5CFF` (focus ring, progress fill, banner, assistant chip — consistent brand thread) + semantic green `#1FA85F` (Owned) / violet (Expired). CTA deliberately NOT the accent (dark slate `#33333B`). **KEY TECHNIQUE #28:** the domain input is framed inside a faux "browser chrome" card — "typing the address of a site that's about to exist." Low-elevation flat-hybrid (hairline border + near-imperceptible shadow), depth by VALUE STEPPING not shadows.
+- **v4_f900 / v4_f1800 / v4_f2700 / v4_f4800 / v4_f7200 (GSAP dev splits):** monospace-for-machine + humanist-sans-for-human pairing; near-monochrome dark `#0d1117`; one luminous accent (teal `#4ec9b0` / cyan `#5eead4` for active scrollbar + hologram edges) used sparingly = "signal" color; code↔result split = "engineered" credibility. **KEY TECHNIQUE #24:** gradient-filled headline (background-clip:text) + soft bloom = "lit, not inked." **v4_f7200:** subtle chromatic-aberration/hologram edge on the 3D model (out-of-focus sci-fi) — tasteful at 1px/20%, costume if pushed.
+- **v4_f8400 (Apple "Built for Apple Intelligence" page):** true black `#000000`–`#050505`; single signature horizontal gradient cyan `#00D4FF`→blue `#3A5CFF`→violet `#8A2BEE`→magenta `#FF2BD6`→orange `#FF7A00` (used ONLY on hero fill + product light-bar; ~10% luminous color, 90% monochrome = "deliberate"); glassmorphic frosted dark browser panel layered IN FRONT of a rim-lit edge-on laptop (blue-left/orange-right rim = lit-from-within); **KEY TECHNIQUE #25:** the browser mock is a 3-step choreographed loop (typed caret → checkmark → spinner) = "intelligence is thinking." Centered vertical stack, void does the framing.
+
+## Concrete cross-video principles (buildable, theme-free)
+1. **Warm near-black, never flat:** `#050505`–`#0D1117` with a center-lifted radial/vertical gradient falloff (vignette). Pure `#000000` reserved for Apple-grade "Pro" object showcases only.
+2. **One accent per screen, <5% of the area:** amber/gold (v3), signal-green (v3 workbench), electric-blue (v4 CTA), violet (v4 wizard). Color is a currency, not a paint. Semantic green/red reserved for meaning.
+3. **Depth by luminance steps + 1px hairlines, not box-shadows** (pro-dark technique). Reserve a soft shadow for the single floating/hero element only.
+4. **Emissive focal points:** the only "bright" elements (status dots, key numbers, accent glyph, scrub line) should read as lit sources on the dark field.
+5. **Type scale contrast does the hierarchy:** huge tight grotesk display vs. ~10px wide-tracked mono micro-labels; two-face sans+mono system; weight/size/color over ornament.
+6. **Motion = state communication:** count-ups, assembled→exploded, syncing→synced→next-in, hover-scaling, slide-in toasts. Slow + eased + few (max 2 moving per viewport).
+7. **Tasteful HUD = monospace numerals + 1px hairlines + value-glow + 3px status dots + 24px/1px sparklines.** Costume to AVOID: all-cyan glow, scan-lines, pulsing borders everywhere, decorative corner brackets, custom cursors, particle/spotlight spectacle.
+8. **Asymmetric composition + generous negative space** ("command deck"/"museum vitrine") over busy grids; one hero element isolated against a quiet field.
+
+---
+
+## Vision-Confirmed Pass #3 (this run) — raw per-frame craft observations
+
+Vision was re-tested and confirmed working this pass. Re-analyzed the full frame set with a live vision model. Below are the raw frame observations (craft-only; fictional/entertainment content deliberately ignored). These are the concrete observations merged into `DESIGN-SPEC-3D-UI.md` §1 and §4.5.
+
+### v3 — Iron Man-style scrolling site (the reference Boss likes; craft only)
+- **v3_f2 (hero):** Strict asymmetric 12-col grid on warm near-black `#050506→#0A0A0C` (matte, not pure black). Single amber accent `#D4A72C–#E0B13C` used sparingly; off-white text `#F4F4F2`; muted mono grays `#6E6E73–#8A8A90`. Two-family type: one huge tight-tracked grotesk display headline (120–160px feel) + micro uppercase mono labels (10–11px, wide tracking, low opacity) pinned to all four corners (viewfinder ticks, "LIVE" tag, "SEQ 001/019", "SCROLL ↓"). Radial highlight + heavy vignette + subtle film grain; translucent quote card `rgba(20,20,24,.6)` + 1px `#2A2A30` border sitting above the image plane. Premium = 2-color discipline + extreme type-scale contrast + hairline rules + HUD framing.
+- **v3_f8:** Light studio-gray gradient field `#c9c9c7→#8c8c8a` (not the dark variant) with dark letterbox strips; near-black UI chrome `#141414`; single amber `#e9b93f` + one cool glow `#bfe9e6`. Right-anchored type stack; corner brackets + "SEQ 102/169 ▮" counter + "TITAN II // FINAL FRAME" status pill; soft key light upper-left, specular bloom. Diagonal tension + negative-space corridor = "mission readout."
+- **v3_f15:** Dark cinematic, deep crimson→black ambient gradient (oxblood `#5a1414`), gold accent `#e8b400` on one word only, hot red `#ff2a2a` glow on a point source. Volumetric fog + rim light + particle depth-of-field; edge-anchored content (left rail / right headline / top+bottom bars) leaving center clean. Cinematic 16:9 frame + HUD micro-typography.
+- **v3_f40 / f50 / f60 / f70 / f80 (dev-workbench register):** This is the *transferable* line for ScoutVeda. Three-zone "rail → params → canvas" shell; monochrome near-black `#0a0a0a–#141414` with ~1–2% luminance steps between panels + 1px `#222–#2a2a2a` hairlines; single warm accent (coral `#ff5a3c`/amber) on the active state only. Monospace terminal voice (`// TODO:…`, tabular timecodes), low-contrast quiet type. Depth is tonal, not shadowed. Selection reads as a glowing outline, not a drop shadow. Flat, matte, "instrument panel."
+- **v3_f88 (outro card):** Pure black `#050505` + one neon-red `#ff2d3f` accent + radial maroon glow; the emphasized word is treated as an **emissive light source** (bloom/text-shadow, not a border). Confirms "glow-on-value" and "emissive points read as focal light."
+
+### v1 — 3D web-visuals tutorial
+- **v1_f5 / f8 (Dora AI):** Light hero (`#F3F4FB`) hands off to a full-bleed lit 3D "ocean" `#1E2A5A`; electric-blue accent `#2F6BFF` + one warm yellow focal `#FFCF33`. "2D chrome over 3D world" = the core depth trick. Flat unlit type on top, fully-lit volumetric scene below.
+- **v1_f8b (space hero, f8/f11 variants):** Deep space navy `#0a0e2a`, planet with atmospheric rim lighting, glassmorphism floating panels (translucent + blur + soft shadow), neon violet→magenta `#6d28d9→#e040fb` used sparingly for glow/strokes. Two-tone two-weight headline lockup for emphasis without scaling.
+- **v1_f14 / f17 / f20 (editorial dark):** Near-black `#0a0a14` purple cast; electric violet `#7C4DFF` + one cyan `#17E0C4` + functional blue CTA `#2E6BFF`. Asymmetric left-anchored type column; a single horizontal neon "scan" line as a horizon; floating glass/3D object with parallax; oversized light-weight grotesk headline + tiny tracked caps eyebrow. v1_f20 even adds an engineering "blueprint" overlay (mono data + tick marks) + a lit glass-sphere 3D asset — the studio-credibility device.
+
+### v2 — Apple-style 3D product pages
+- **v2_f5 (headphones hero):** One hero object = 50–60% of frame, on a black void; matte PBR finish, turntable loop + shallow DoF; three-point studio light with **rim/edge light** carving the dark product off the dark bg + radial pedestal glow; monochrome + single electric-blue accent `#0a84ff`; one typeface, hierarchy by size/weight/contrast only; slow eased scroll-synced camera. "Restraint = luxury."
+- **v2_f180 / f360:** "Object-first, chrome-second" — black-on-black hero cut-out, UI reduced to ghost glyph strips in corners, one accent pill. **v2_f360:** the exploded-view beat (assembled → disassembled, slow, "professional internal tech showcase") — the signature product-narrative motion.
+- **v2_f270 / f540 (macOS/asset pipeline):** Warm-cool cinematic light (cool fill + warm rim), glass/vibrancy translucency for depth, spec-sheet typography (aligned tabular columns, small low-contrast metadata), sequenced 3D reveal grammar (explode → orbit → light sweep → scroll-linked copy).
+
+### v4 — general web-design course
+- **v4_f15 (MacBook hero):** Centered lit device on a true-black void; monochrome nav + one electric-blue CTA; the only saturated color lives inside the screen (content-as-hero). Micro-reflections + soft contact shadow ground the device.
+- **v4_f300 (wizard onboarding):** The *pro-tool dashboard* register — pinned app-shell scaffold, constrained ~560–640px column, one confident violet accent `#6C4CF1` + semantic green, flat-2.0 surfaces (1px borders + soft shadows, no skeuomorph), in-context browser mockup, floating AI-assistant pill. This is the cleanest model for ScoutVeda's operational dashboard.
+- **v4_f1800 / f3600 / f4800 (code + live 3D):** 70/30 asymmetric split (raw source left, lit 3D viewer right); single cool accent; soft studio key + contact shadow + vignette; pill/segmented configurator controls; code-to-design gutter ticks (green/amber/red) as a craft signal; GSAP + react-three implies eased orbit/scroll reveal.
+- **v4_f8400:** "Choreographed thinking loop" — a 3-step animated sequence (URL typed → checkmark → spinner → resolves) simulating intelligence; and uppercase-mono loading fallbacks ("LOAD..."). The pattern for ScoutVeda's data-freshness indicator.
+
+### Cross-video synthesis (what actually makes them premium — craft, not theme)
+1. **Monochrome base + ONE accent.** Every premium frame is 90%+ desaturated (near-black or off-white) with a single saturated accent reserved for state/action only. Restraint = perceived quality.
+2. **Extreme type-scale contrast.** One huge tight-tracked display face vs. many tiny wide-tracked mono micro-labels. Hierarchy by size/weight/tracking, almost never by color.
+3. **Tonal depth, not shadows.** Panels separated by 1–3% luminance steps + 1px hairlines; drop shadows reserved for the single floating hero only. Flat, matte, machined.
+4. **Emissive "light-source" points.** Small self-lit elements (status dots, key numbers, active outlines) with subtle outer glow read as literal light on a dark field → focal points.
+5. **HUD anatomy that reads tasteful:** tabular monospace numerals, thin hairlines, glow-on-value, 3px status dots, short mono counters (`SEQ 001/019`). **Costume to avoid on a SaaS dashboard:** all-cyan glow, scan-line everywhere, pulsing borders, decorative corner brackets, custom cursors, chromatic aberration, particle spectacle.
+6. **Motion = state communication.** Count-ups, assembled→exploded, syncing→synced→next-in, hover-scale, slide-in toasts. Slow + eased (cubic-bezier(0.16,1,0.3,1)) + few (max ~2 moving per viewport).
+7. **Two registers, kept separate:** a *cinematic hero* register (glow, gradient material, idle levitation, atmospheric depth) and a *data-instrument dashboard* register (restraint, tonal layering, single accent, mono type). The "costume" lives only in the hero.

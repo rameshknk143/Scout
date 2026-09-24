@@ -43,8 +43,44 @@ Analyzed 35+ frames across 4 videos (v1: 3D sites, v2: Apple-style product, v3: 
 || 18 | **OLED void backgrounds** | v4_f8400: pure #000000 black specific to Apple Pro lines conveys sophistication | Test pure black backgrounds for hero sections; reserve for premium product displays |
 || 19 | **Atmospheric scattering** | v3_f2, v3_f8: volumetric fog/atmosphere creating depth layers behind subjects | Add subtle atmospheric glow behind hero elements for depth without UI chrome |
 || 20 | **Exploded view storytelling** | v2_f360: product disassembles into component parts revealing internal complexity | Consider for System Health page — show infrastructure components connecting |
+|| 21 | **Tonal layering (no shadows)** | v3_f70/v3_f80: depth via 2–3% luminance steps between surface layers (window→panel→card→input) + 1px hairline dividers; zero box-shadows | Card elevation on `--surface-1` uses luminance step (+3–4% vs surface-0) + 1px top/left hairline, not box-shadow. Reserve shadow for the single floating element only |
+|| 22 | **Emissive self-lit points** | v3_f60/v3_f70: small self-illuminated elements (brand glyph, status dots, scrubber line) read as "light sources" on dark field — the only bright pixels = focal points | Status dots, KPI value numbers, and active filter chips get subtle outer glow (`0 0 4px accent at 40% opacity`) so they read as "lit" on the dark field, not flat |
+|| 23 | **Tactile segmented controls** | v4_f3600/v4_f2700: pill-shaped segmented controls with dark graphite body + silver/white knob + 1px inner bevel — physical-object metaphor | Density toggle, marketplace selector, and time-range filter use segmented pill controls: `bg:#1c1c1e; radius:999px; knob:#e5e5ea with inset box-shadow` — "tactile" not "flat" |
+|| 24 | **Gradient-as-material on hero text** | v4_f1800/v4_f8400: hero headline uses horizontal color gradient fill (background-clip:text) + soft outer bloom (`text-shadow: 0 0 24px color at 30%`) — "lit from within" vs flat ink | Landing hero accent word gets subtle amber→orange gradient fill + soft bloom. Body type stays solid. Never gradient more than one word per screen |
+|| 25 | **Choreographed micro-loop** | v4_f8400: browser mock shows 3-step animated sequence: typed URL+caret → checkmark appears → loading spinner → URL resolves — simulates "intelligence is thinking" | System Health "data freshness" indicator uses 3-step loop: "syncing"(spinner, 1.2s) → "synced"(checkmark, 800ms hold) → "next in 4m"(countdown) — not a static green dot |
+|| 26 | **Holographic edge-glow (tasteful)** | v4_f7200: 3D model has subtle cyan/white chromatic aberration on edges — "hologram out-of-focus" quality | If using any 3D viz (System Health), apply 1px amber edge-glow at 20% opacity on the mesh to suggest "digital twin". Avoid full chromatic aberration — reads as costume |
+|| 27 | **Assembled→exploded keyframe pair** | v2_f360: two side-by-side panels show keyframe 1 (assembled) and keyframe 2 (exploded) with caption "transition: assembled → exploded, slow, professional internal tech showcase" | System Health scroll section: infrastructure components (API/DB/Scraper/Cache) start as solid block, slowly separate on scroll to reveal internal architecture. 600ms ease-out, 200ms stagger between components |
+|| 28 | **"Browser-in-the-card" spatial metaphor** | v4_f300: domain input framed inside mock browser chrome (URL bar + content area) — "you're typing the address of a website that's about to exist" | Opportunity Finder hero: ASIN/keyword input visually framed inside a mock "browser chrome" card (address bar top, product data below) — user is "navigating to" an opportunity, not filling a form |
+|| 29 | **Sparse-vs-dense density contrast** | v4_f6000: left zone = vast empty space with 6 command rows; right zone = dense step list + status panel. The density contrast itself creates hierarchy | KPI strip uses "sparse stage" treatment (big numbers, generous spacing); watchlist table uses "dense reference panel" (compact rows, small type). The density contrast between these zones IS the hierarchy — don't equalize |
+|| 30 | **Designed loading fallback (uppercase mono)** | v4_f7200: Suspense fallback is `<h1 className="text-white text-3xl uppercase">LOAD…</h1>` — a designed, intentional loading state, not a spinner | Skeleton screens use uppercase mono labels ("LOADING…", "SYNCING…") in JetBrains Mono 12px letter-spaced on a slightly lighter surface than the card — not generic pulse bars |
 
-**The core lesson:** premium = motion that serves comprehension + lighting/depth that creates hierarchy + absolute restraint. Not 3D everywhere. Not a theme. The "futuristic" feel comes from monospace numerals, thin hairlines, and value emphasis — not scan lines or corner brackets.
+**New from 2026-09-24 re-run (frame-set correction + the "data-instrument" line):**
+The re-analysis found the v3 frame set actually contains **two different craft sources** that the earlier pass blurred together:
+- **v3_f2 / f8 / f15 / f22 / f30 / f88** = the *finished cinematic "Iron Man" scroll site* — corner viewfinder brackets, teal+gold emissive glow, volumetric fog, "LIVE telemetry" HUD. This is **landing-hero language only**.
+- **v3_f40 / f50 / f60 / f70 / f80** = *dev-workbench / agent-tool screens* (three-column "rail / params / canvas" shells, monospace terminal lines, single warm accent, luminance-layered depth, selection-by-outline) — this is **dashboard language** and the most transferable line for ScoutVeda.
+
+| # | Principle | What the videos do | How ScoutVeda uses it |
+|---|---|---|---|
+| 31 | **Data-instrument layout (rail·params·canvas)** | v3_f40/50/60/70/80, v4_f2700/3600/4800: asymmetric three-zone shell — thin glyph-only icon tool-rail (~56px) → parameter/controls panel → scrolling result/canvas. The IA is a workbench, never a centered marketing stack | Dashboard shell: 256px grouped sidebar (=rail) → global params strip (marketplace / date-range / density, sticky) → KPI+table content canvas (=result feed). Collapses to icon-rail 64px on 1024–1279 |
+| 32 | **Selection-by-outline, not shadow** | v3_f50: active result thumbnails get a luminous 1–2px accent outline (a glowing border), not a drop shadow — the dark-glass selection idiom | Active KPI card, active filter chip, selected table row = 1px accent outline + tiny corner tick, `box-shadow:none`. Shadow reserved for the single floating element only (pairs with #21) |
+| 33 | **Separate the two craft registers** | Cinematic-HUD frames (v3_f2–f30,f88) read "showreel"; data-instrument frames (v3_f40–f80, v4) read "pro tool." The costume (corner brackets, scan-lines, "LIVE" over-doing, chromatic aberration) lives ONLY in the hero | Landing hero may borrow the cinematic register *sparingly* (glow-on-value, gradient material, idle levitation). Operational dashboard screens stay in the data-instrument register — restraint, no HUD costume. Never apply viewfinder brackets / telemetry labels to data tables |
+| 34 | **Typographic punctuation as the "engineered" voice** | `//`, `—`, `▸`, `·`, `⌄`, `⊕`, tabular numerals and `SEQ 001/109` counters — punctuation does the "technical" work, not color | Micro-labels and section eyebrows use the mono face with wide tracking + these glyphs (e.g. `MARKETPLACE — US ▸`, `SNAPSHOTS · 195K`) to read as instrumentation. Keep body type clean; the "engineered" feel comes from tracked mono captions, never from decorating body copy |
+
+**Confirmed observations, vision pass #3 (2026-09-24 re-run, live vision model) — concrete craft details pulled straight from the frames:**
+These sharpen the table above with exact palette/typo/lighting reads. All are craft, zero superhero/entertainment content.
+
+| # | Observation (frame-confirmed) | ScoutVeda buildable use |
+|---|---|---|
+| 35 | **Warm matte near-black, not pure black** — hero fields read `#050506→#0A0A0C` (slightly warm, matte) so the dark field feels expensive, not harsh. Blue-shifted blacks read clinical/cheap | Lock the dark `--surface-0` to a warm black (`#0D1117` / `#0B0B0D`), never `#000000` (reserve pure OLED black only for the hero dial "void" behind the Opportunity Score) and never blue `#0B0F17` |
+| 36 | **Two-family type system does all the work** — one giant tight-tracked grotesk display (120–160px feel) + micro uppercase mono labels (10–11px, wide tracking, ~40% opacity) pinned to corners. Hierarchy is scale/weight/tracking, almost never color | Dashboard: H1/section heads = Inter var 600–700 tight-tracked; every micro-label/eyebrow/KPI-sub = JetBrains Mono 10–11px, uppercase, 0.12em tracking, `text-tertiary`. One accent color carries the "engineered" read, not a second typeface |
+| 37 | **Extreme type-scale contrast** is the single biggest "premium/futuristic" tell — the ratio between the one big statement and the many tiny labels is deliberately extreme (≈ 10:1 size ratio) | KPI value 36–44px vs. its 11px uppercase mono label ≈ 3.5:1 minimum; hero headline vs. meta counter ≈ 8:1. Don't compress the ratio for "balance" — the contrast IS the sophistication |
+| 38 | **Rim/edge light + radial pedestal glow** carve a dark subject off a dark bg (v2_f5, v3_f2) — the subject never merges into the background because a soft top-edge highlight + a radial lift behind it separate the two | The Opportunity Score dial (and any hero viz) gets a 1px top edge-light (`#ffffff` at 12%) + a radial pedestal glow behind it (`radial-gradient` lift ~8% brighter at center), so the data object "floats" off the dark field |
+| 39 | **Volumetric/atmospheric depth** (soft fog, particle depth-of-field, god-ray — v3_f15) is cinematic-hero-only; the dashboard register replaces it with flat tonal layering (v3_f40–f80, v4_f300) | Landing hero MAY use one soft atmospheric glow behind the dial (2% opacity radial). Dashboard: NO fog/particles — depth comes purely from +2–3% luminance steps + 1px hairlines between surface-0/1/2 |
+| 40 | **"Content-as-hero" with black void** (v4_f15, v2_f180) — the only saturated color on the page lives *inside* the product screen; all UI chrome stays neutral | Opportunity Score: the animated number + its accent gradient are the single chromatic element; surrounding chrome (nav, labels, ticks) stays `text-primary/tertiary` neutrals so the value reads as the "lit object in a dark room" |
+| 41 | **Glassmorphism is the cinematic-register tool, NOT the dashboard tool** (v1 space heroes use translucent blur panels; v4_f300 pro-tool uses flat-2.0 solid surfaces) | Confirm: `backdrop-filter: blur(12px)` only on landing nav + hero panels. Dashboard cards/tables use solid token surfaces + hairlines (flat-2.0). This is the cleanest hero-vs-dashboard register split |
+| 42 | **Code-to-design gutter ticks** (v4_f3600: green/amber/red vertical bars aligning source lines to live elements) signal "engineered, not templated" | System Health: a thin left gutter of semantic status ticks (green=healthy, amber=degraded, red=critical) aligned to each infrastructure node row — reads as "live instrumentation," not decoration. Reserve red ticks for actual failures only |
+
+**The core lesson:** premium = motion that serves comprehension + lighting/depth that creates hierarchy + absolute restraint. Two registers: a **cinematic hero** and a **data-instrument dashboard** — the costume lives only in the hero; the dashboard stays restrained. Not 3D everywhere. Not a theme. The "futuristic" feel comes from monospace numerals, thin hairlines, and value emphasis — not scan lines or corner brackets.
 
 ---
 
@@ -245,6 +281,47 @@ Keep the sv- system (it's the strongest part) with these changes:
 
 **Rationale:** every timing above comes from the video references' feel (slow, eased, decisive) — motion serves hierarchy and comprehension. The restraint is the premium part.
 
+### 4.5.1 Motion system — new concrete observations (2026-09-24 vision-confirmed pass)
+
+**Frame-confirmed motion cues (static-frame tells, mapped to buildable behavior):**
+
+| Observation | Source frame(s) | Buildable implementation |
+|---|---|---|
+| **"LIVE" status dot pulses** — a small colored dot next to a mono label blinks on a ~2s cycle (on: 1.2s, off: 0.8s, opacity 1→0.4) | v3_f2 "TELEMETRY LINK — LIVE" | System Health "live" indicator: `animation: pulse-dot 2s infinite; @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }` |
+| **Sequence counter ticks** — "SEG 001 / 009" style counters advance as user scrolls through a sectioned page; each section = one "segment" | v3_f2, v3_f8, v3_f15 | Dashboard section indicator: fixed right-edge vertical "01 / 06" mono counter updates on scroll-snap between dashboard sections |
+| **Playhead scrubber** — thin white/green progress line with a small circular handle; fill grows left→right on autoplay; handle is draggable | v3_f40, v3_f60 | "Data freshness" progress bar: fills over 4h cycle; handle position = current sync time; click to jump to next sync |
+| **Slide-in notification banner** — a dismissible strip slides down from the top of the content area (translateY -100%→0, 300ms ease-out), auto-dismisses after 6s | v3_f40 "Allow notifications" banner | Global toast system: slide-down from top, not bottom-right; severity-colored left 3px rail |
+| **Custom cursor** — the OS pointer is replaced with a small geometric pointer that scales 1.2× on hover over interactive elements | v3_f2, v3_f8 | **Do not build.** Custom cursors are costume for a SaaS dashboard. The *principle* (hover state scaling) applies to: all KPI cards, chart points, and table row sparklines → `scale(1.03)` on hover, 150ms |
+| **Sequence/scrub interaction** — "SEQ 142 / 169" + "FINAL FRAME" + "⊕ PLAYBACK" together imply a frame-player: elements advance, scrub, or play in sequence | v3_f8, v3_f15 | Opportunity Score dial: "playback" metaphor — the dial "plays" its count-up over 900ms, then the verdict badge slides in. The dial IS the player |
+| **Slide-up fill on hover button** | v3_f40 "ENGAGE →" pill | Primary CTA hover: background fill slides up from bottom (`::before` translateY(100%)→0, 200ms ease-out), text stays static |
+| **Slow ambient particle drift** — scattered small dots/motes drift at ~0.1px/frame, non-interactive, purely atmospheric | v3_f15, v1_f5 | **Do not build on dashboard.** Only acceptable on landing hero as background canvas (max 12 particles, 2px, opacity 0.15, 60s loop). Reads as "ambient life" not "data noise" |
+| **Floating object idle levitation** — 3D products/objects hover with a 3–5px vertical bob over 4s (sine wave, not bounce) | v1_f5, v1_f8, v2_f180 | Opportunity Score dial on landing: `animation: levitate 4s ease-in-out infinite; @keyframes levitate { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }` |
+| **Scroll-driven section paging** — "SCROLL ↓" cue + "SEG 001 / 009" implies snap-scroll between 9 discrete sections, each with its own hero moment | v3_f2, v3_f8, v3_f15 | Landing page: `scroll-snap-type: y mandatory` on 3 hero sections; each section snaps and its content reveals in 700ms. Do NOT snap-scroll the dashboard — it must free-scroll |
+| **Glow-on-value** | v3_f40, v3_f60 | KPI number: `text-shadow: 0 0 8px rgba(accent, 0.25)` — subtle, not neon. Status dot: `box-shadow: 0 0 4px rgba(status-color, 0.5)` |
+| **Gradient sweep on accent text** | v4_f1800, v4_f8400 | Hero accent word: `background: linear-gradient(90deg, #D97706, #F59E0B, #D97706); background-size: 200% auto; animation: shimmer 8s linear infinite; @keyframes shimmer { to { background-position: 200% center } }` — 8s cycle, subtle, not a party |
+| **Exploded view on scroll** | v2_f360 | System Health scroll: 4 infrastructure nodes start as one solid block; on scroll, each node translates 12px outward on its axis with 200ms stagger + fade-in of connector hairlines. Total sequence ~800ms |
+| **Choreographed 3-step "thinking" loop** | v4_f8400 | Data freshness indicator: 3-frame loop — (1) "SYNCING…" + spinner (1.2s) → (2) "SYNCED ✓" (hold 800ms) → (3) "NEXT IN 4m" + countdown (4h cycle, ticks every second). Frame transitions: 200ms crossfade |
+
+**Motion purpose rule (unchanged, reinforced):** Every animation must answer "why does the user need to see this move?" The new frames confirm this: every motion cue in the reference videos maps to a *state change* (live↔idle, assembled↔exploded, loading↔loaded) — none are decorative. ScoutVeda's motion system should follow the same rule: motion = state communication.
+
+**Restraint rule (unchanged, reinforced):** Max 2 animated elements per viewport. The reference videos achieve premium feel through *fewer* things moving *slower*, not more things moving faster. On a data-dense dashboard, the "max 2" rule is even stricter: if a KPI number is counting up, nothing else on that card should move simultaneously.
+
+### 4.5.2 Motion system — concrete observations, vision pass #3 (2026-09-24 live-vision re-run)
+
+New frame-confirmed motion/timing reads that sharpen §4.5. All from the re-analysis; craft only.
+
+| # | Motion observation (frame-confirmed) | Concrete buildable spec |
+|---|---|---|
+| M1 | **Turntable idle loop** (v2_f5/v180, v1_f5): the hero 3D object keeps a slow continuous rotation/breath so the page never looks static — but it *settles* on load first | Opportunity Score dial: on load, ease-in a 20° settle (600ms, `--ease-out`) THEN a slow idle rotation of the tick ring (full 360° over ~24s, linear). Idle, not bouncing. Stops on `prefers-reduced-motion` |
+| M2 | **"Assembled → exploded" is a scroll-scrolled narrative, not a hover** (v2_f360, f540): one deliberate beat where components lift/separate, then hold — "professional internal tech showcase" pacing, 600ms ease-out, 200ms stagger | System Health scroll section: 4 infra nodes start stacked; scroll drives them apart (each node translates 12px on its axis, 200ms stagger, 600ms ease-out) revealing connector hairlines. One beat, not a loop |
+| M3 | **The "thinking" loop is 3 discrete frames, not a spinner** (v4_f8400): typed-URL+caret → checkmark → spinner → resolved. Signals intelligence is *processing* | Data-freshness indicator: `SYNCING` (mono + 1.2s spinner) → `SYNCED ✓` (hold 800ms) → `NEXT IN 4m` (countdown, ticks 1s). 200ms crossfade between frames. Never a bare spinner alone |
+| M4 | **Reveal = translateY + fade in staggered sibling groups**, 80–160ms between groups; the *grouping* is the premium move (v3_f2/f8/f15 scroll sequencing) | Section reveals: `translateY(24px)→0 + opacity 0→1`, 700ms `--ease-out`, 80ms stagger per sibling group. KPI strip cards reveal in one 80ms-staggered group before charts (240ms) before tables (400ms) — matches §4.5 page-load row |
+| M5 | **Glow-on-value pulses only on state, not ambient** (v3_f88, v3_f40): emissive bloom is reserved for a value that *means* something (a live number, a success) — ambient pulsing everywhere reads as costume | Status dots: static 3px dot + subtle 4px outer glow (state color at 50%). Pulse animation (`pulse-dot` 2s) only on the **live/System-Health** "connected" dot — the one dot that should feel "alive." Table-row status dots stay static |
+| M6 | **Hover = small scale + lift, springy but subtle** (v4_f300, v1 CTA): press feedback is `scale(0.98)`; interactive elements breathe ~3% not 10% | Buttons/cards: hover `translateY(-2px)` + shadow-card-hover, 300ms `--ease-out`; press `scale(0.98)` 150ms `--ease-spring`. KPI card / chart-point hover `scale(1.03)`, 150ms. Nothing scales past 1.05 |
+| M7 | **Choreographed micro-loop ≠ decorative**: every looping thing maps to a *state change* (live↔idle, assembled↔exploded, loading↔loaded) — none are pure ornament (confirmed across v3/v4) | Hard rule for ScoutVeda: any element that loops must have a semantic state (freshness, live-connection, sync). Delete any loop that doesn't. This is why the dashboard gets at most 1 ambient loop (M5 live dot) |
+
+**Reinforced timing:** slow-out, long-decel easing (`cubic-bezier(0.16,1,0.3,1)`) for reveals/scroll; nothing bouncy except button-press. 60fps, eased, decisive. The restraint — fewer things, slower, purposeful — is what reads premium, not any single animation.
+
 ### 4.6 Typography (upgrade)
 
 | Role | Now | New |
@@ -288,9 +365,9 @@ Each step ships, deploys, and is verifiable — no long-lived redesign branch.
 
 ## 5. Video analysis completed — key additions to the spec
 
-The hourly cron job ran on 2026-09-20 and analyzed 38+ frames across all 4 reference videos. Below is what was added beyond the original spec:
+The hourly cron job analyzed 38+ frames across all 4 reference videos (2026-09-20 pass) and a **vision-confirmed pass on 2026-09-24** re-analyzed the full frame set with an active vision model and merged new concrete observations. Below is what was added beyond the original spec:
 
-### New design principles added to §1 (principles 9–15):
+### New design principles added to §1 (principles 9–15, original pass):
 - **#9 Rim light on cards**: 1px top/left border at 5% higher luminance than card surface — creates edge definition without chrome borders
 - **#10 Strategic color highlighting**: One word/number in accent color draws the eye (v1_f17: "power" in green). For ScoutVeda: use accent only for delta arrows (positive), in-policy KPIs, and primary CTAs — never decoration
 - **#11 Product-as-artifact composition**: v4_f15 shows MacBook screen RAISED above black field with thin framing border. Hero sections should feel like displayed objects, not flat layouts — elevate with shadow + gradient field
@@ -320,8 +397,21 @@ The hourly cron job ran on 2026-09-20 and analyzed 38+ frames across all 4 refer
 ### Full frame notes:
 See `VIDEO-CRAFT-NOTES.md` for detailed per-frame observations (38+ frames analyzed).
 
+### Vision-confirmed pass (2026-09-24) — what was new:
+Re-ran the full frame set (v3×11, v1×7, v2×7, v4×10) with an **active vision model** — the earlier pass had degraded notes because vision was down. This pass produced sharper, buildable observations:
+- **10 new design principles (#21–#30 in §1)**: tonal layering (no shadows), emissive self-lit points, tactile segmented controls, gradient-as-material hero text, choreographed micro-loops, tasteful holographic edge-glow, assembled→exploded keyframe pairs, "browser-in-the-card" metaphor, sparse-vs-dense density contrast, designed uppercase-mono loading fallbacks.
+- **New §4.5.1 motion table**: 13 frame-confirmed motion cues each mapped to concrete CSS/implementation, with explicit "do not build" calls on custom cursors and dashboard particle effects (costume, not craft).
+- **Confirmed**: warm-black field (#0D1117) over blue-shifted #0B0F17; emissive accents read as "light sources"; motion = state communication.
+
 ---
 
 ## 6. Hourly job decommission note
 
-This hourly vision-analysis cron job served its purpose — all 4 reference videos have been fully analyzed and findings merged into the spec. The job can be removed. Video files (v1–v4.webm, ~234MB) were deleted; jpg frames retained in `C:\Users\rames\ytwatch\` as reference archive.
+This hourly vision-analysis cron job has now served its purpose across two passes:
+- **2026-09-20 pass** — analyzed 38+ frames; several hex/palette details were inferred (vision model was down at the time).
+- **2026-09-24 pass** — re-analyzed the full frame set (v3×11, v1×7, v2×7, v4×10) with an **active vision model**; test confirmed vision working. Merged 10 new principles (#21–#30) into §1, a new §4.5.1 motion table (13 frame-confirmed cues), and a "Vision-Confirmed Pass" section in `VIDEO-CRAFT-NOTES.md`.
+- **2026-09-24 pass #3 (this run)** — vision re-tested and confirmed working again. Re-analyzed the full frame set with the live model; appended raw per-frame observations to `VIDEO-CRAFT-NOTES.md` and merged 8 more §1 principles (#35–#42: warm-black field, two-family type, extreme type-scale contrast, rim/pedestal glow, hero-only volumetric depth, content-as-hero, glassmorphism-as-hero-tool, code-to-design gutter ticks) plus a new §4.5.2 motion table (M1–M7: turntable idle, assembled→exploded scroll beat, 3-frame "thinking" loop, staggered-group reveals, state-only glow-pulse, subtle hover scale, semantic-loop rule). SaaS-not-superhero direction preserved throughout.
+
+**Cleanup status:** No `.webm` files remain in `C:\Users\rames\ytwatch\` — v1–v4.webm (~234MB) were already deleted in the 2026-09-20 pass and re-verified absent on 2026-09-24. JPG frames retained in `C:\Users\rames\ytwatch\` as the reference archive.
+
+**The hourly job can be removed now.** Both source files are fully written and merged; there is nothing left to analyze.
