@@ -825,6 +825,12 @@ def main():
     if args.mode == 'weekly':
         engine.run_weekly_cycle(args.week, args.year)
     elif args.mode == 'report':
+        # Report mode reads rotation tables; make sure they exist first.
+        # The weekly cycle path calls ensure_tables() itself, but a report
+        # can run on a database that has never had a weekly cycle, and the
+        # 2026-09-25 scheduled run died exactly there: 'rotation_batches'
+        # does not exist.
+        engine.db.ensure_tables()
         week, year = engine.db.get_current_week()
         report = engine.generate_weekly_report(week, year)
         print(json.dumps(asdict(report), indent=2))
