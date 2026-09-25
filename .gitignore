@@ -26,3 +26,5 @@ scraper/laptop.env
 scraper/.maxun_services.state
 scraper/.maxun_lastpass.log
 scraper/.maxun_watchdog.log
+.maxun_pass.lock
+.maxun_manual.log

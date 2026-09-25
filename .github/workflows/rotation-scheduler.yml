@@ -52,13 +52,18 @@ jobs:
           SCOUT_GAP_MIN: '4'
           SCOUT_GAP_MAX: '10'
           SCOUT_MAX_REQUESTS_PER_WINDOW: '60'
+          SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}  # residential proxy (optional; unblocks bot-walled IPs)
         run: |
+          # Build args: only pass --week/--year when non-empty (scheduled runs have no inputs)
+          WEEK_ARGS=""
+          if [ -n "${{ github.event.inputs.week }}" ]; then WEEK_ARGS="$WEEK_ARGS --week ${{ github.event.inputs.week }}"; fi
+          if [ -n "${{ github.event.inputs.year }}" ]; then WEEK_ARGS="$WEEK_ARGS --year ${{ github.event.inputs.year }}"; fi
           if [ "${{ github.event.inputs.mode }}" = "report" ]; then
-            python rotation_engine.py --mode report --week ${{ github.event.inputs.week }} --year ${{ github.event.inputs.year }}
+            python rotation_engine.py --mode report $WEEK_ARGS
           elif [ "${{ github.event.inputs.mode }}" = "daily" ]; then
             python rotation_engine.py --mode daily --category "${{ github.event.inputs.category }}"
           else
-            python rotation_engine.py --mode weekly --week ${{ github.event.inputs.week }} --year ${{ github.event.inputs.year }}
+            python rotation_engine.py --mode weekly $WEEK_ARGS
           fi
       
       - name: Upload weekly report
@@ -66,6 +71,6 @@ jobs:
         run: |
           echo "## Weekly Rotation Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Mode: ${{ github.event.inputs.mode }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Week: ${{ github.event.inputs.week || 'current' }}" >> $GITHUB_STEP_SUMmary
+          echo "- Mode: ${{ github.event.inputs.mode || 'weekly (scheduled)' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Week: ${{ github.event.inputs.week || 'current' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

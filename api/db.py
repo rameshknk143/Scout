@@ -1092,21 +1092,22 @@ def pipeline_freshness():
         new-releases. The laptop robots do bestsellers exclusively, so these
         three list_types identify the collector unambiguously.
       * VM deep-tracker — the only writer of list_type 'watchlist'.
-      * laptop Maxun — bestsellers in the four categories it runs. This one
-        overlaps with the collector, which also covers those categories, so its
-        row count is a lower bound and its freshness is advisory only. It is
-        expected to be stale for most of the day: the laptop runs roughly an
-        hour a day by design, and nothing may depend on it being on.
+      * laptop Maxun — the bridge (maxun_bridge.py) forwards its robots with
+        list_type 'custom-scrape' (its CLI default). Bestsellers in the four
+        original categories is NOT a clean Maxun signature: the collector
+        writes bestsellers everywhere, and the Maxun robots now cover 15
+        categories, so that old query matched nothing useful. 'custom-scrape'
+        is written by the bridge alone — check scraper/maxun_bridge.py:438.
+        Freshness is advisory: the laptop is expected to be off most of the
+        day, and nothing may depend on it being on.
 
     Returned as hours, computed in SQL against now(), so the answer does not
     depend on the caller's clock.
     """
     sources = {
-        "nightly_collector": "list_type IN ('most-gifted', 'most-wished-for', 'new-releases')",
+        "nightly_collector": "list_type IN ('most-gifted', 'most-wished-for', 'new-releases', 'bestsellers')",
         "vm_watchlist": "list_type = 'watchlist'",
-        "laptop_maxun": ("list_type = 'bestsellers' AND category IN "
-                         "('Home & Kitchen', 'Health & Personal Care', "
-                         "'Beauty & Personal Care', 'Grocery & Gourmet Foods')"),
+        "laptop_maxun": "list_type = 'custom-scrape'",
     }
     out = {}
     with get_conn() as conn:

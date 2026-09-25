@@ -52,6 +52,46 @@ MAXUN_API_KEY = os.environ.get("MAXUN_API_KEY", "")
 SCOUT_API_URL = os.environ.get("SCOUT_API_URL", "https://scout-api-3yvy.onrender.com").rstrip("/")
 SCOUT_API_KEY = os.environ.get("SCOUT_API_KEY", "")
 
+# ---- overlap lock ------------------------------------------------------------
+# The hourly scheduler can fire while a previous pass is still running (or while
+# the watchdog / a manual run holds the services). Two passes at once = two
+# browser sessions hammering the same robots, which is what surfaced as
+# Last Result -1 / stuck "Running" on the Windows task. A lock file with a
+# stale-detection window makes overlap impossible: a second run exits 0
+# immediately (nothing lost — the first pass owns the work), and a crashed
+# pass cannot hold the lock past STALE_AFTER so the next tick self-heals.
+LOCK_FILE = SCRAPER_DIR / ".maxun_pass.lock"
+STALE_AFTER = 90 * 60  # a healthy pass finishes in ~6 min; 90 min = crashed
+
+
+def acquire_lock() -> bool:
+    import json as _json
+    now = time.time()
+    try:
+        if LOCK_FILE.exists():
+            age = now - LOCK_FILE.stat().st_mtime
+            if age < STALE_AFTER:
+                log("Pass already running (lock %ds old) — skipping this tick." % int(age))
+                return False
+            log("Stale lock (%dm old) — clearing and taking over." % int(age // 60))
+    except OSError:
+        pass
+    try:
+        LOCK_FILE.write_text(_json.dumps({
+            "pid": os.getpid(), "started": datetime.now(timezone.utc).isoformat(),
+        }))
+        return True
+    except OSError as e:
+        log("Could not write lock: %s" % e)
+        return True  # proceed anyway; dedupe in the bridge still guards
+
+
+def release_lock():
+    try:
+        LOCK_FILE.unlink()
+    except OSError:
+        pass
+
 # MAXUN_ROBOTS format: "ID1=Category1;ID2=Category2;..."
 def parse_robots():
     raw = os.environ.get("MAXUN_ROBOTS", "")
@@ -167,44 +207,54 @@ def main():
     ap = argparse.ArgumentParser(description="Run all configured Maxun robots and forward results.")
     ap.add_argument("--limit", type=int, default=0, help="max robots to run this pass (0 = all)")
     ap.add_argument("--no-start", action="store_true", help="skip the service auto-start")
+    ap.add_argument("--force", action="store_true",
+                   help="take the lock even if a fresh one exists (manual override)")
     args = ap.parse_args()
 
-    robots = parse_robots()
-    if args.limit:
-        robots = robots[:args.limit]
-    if not robots:
-        log("No robots configured. Set MAXUN_ROBOTS in laptop.env. Nothing to do.")
-        return 1
-
-    if not MAXUN_API_KEY:
-        log("MAXUN_API_KEY missing in laptop.env. Cannot proceed.")
-        return 1
-
-    if not args.no_start:
-        if not ensure_services():
-            log("Services still down after auto-start. Aborting this pass.")
+    if not args.force and not acquire_lock():
+        # A pass already owns the work for this tick. Exiting 0 keeps the
+        # scheduler quiet; the running pass will deliver the rows.
+        log("SKIP: another pass is running. Next tick will pick up anything new.")
+        return 0
+    try:
+        robots = parse_robots()
+        if args.limit:
+            robots = robots[:args.limit]
+        if not robots:
+            log("No robots configured. Set MAXUN_ROBOTS in laptop.env. Nothing to do.")
             return 1
 
-    log("Running %d robot(s)..." % len(robots))
-    total_inserted = 0
-    ok_robots = 0
-    for rid, cat in robots:
-        log("--- %s ---" % cat)
-        run_id = trigger_robot(rid)
-        if not run_id:
-            log("  trigger failed; skipping forward")
-            time.sleep(5)
-            continue
-        time.sleep(3)  # let the run fully land in Maxun's store
-        total_inserted += forward_robot(rid, cat, run_id)
-        ok_robots += 1
-        time.sleep(10)  # be polite to Amazon between robots
+        if not MAXUN_API_KEY:
+            log("MAXUN_API_KEY missing in laptop.env. Cannot proceed.")
+            return 1
 
-    log("=" * 52)
-    log("PASS DONE: %d/%d robots, %d rows forwarded to ScoutVeda"
-        % (ok_robots, len(robots), total_inserted))
-    log("=" * 52)
-    return 0 if total_inserted > 0 else 1
+        if not args.no_start:
+            if not ensure_services():
+                log("Services still down after auto-start. Aborting this pass.")
+                return 1
+
+        log("Running %d robot(s)..." % len(robots))
+        total_inserted = 0
+        ok_robots = 0
+        for rid, cat in robots:
+            log("--- %s ---" % cat)
+            run_id = trigger_robot(rid)
+            if not run_id:
+                log("  trigger failed; skipping forward")
+                time.sleep(5)
+                continue
+            time.sleep(3)  # let the run fully land in Maxun's store
+            total_inserted += forward_robot(rid, cat, run_id)
+            ok_robots += 1
+            time.sleep(10)  # be polite to Amazon between robots
+
+        log("=" * 52)
+        log("PASS DONE: %d/%d robots, %d rows forwarded to ScoutVeda"
+            % (ok_robots, len(robots), total_inserted))
+        log("=" * 52)
+        return 0 if total_inserted > 0 else 1
+    finally:
+        release_lock()
 
 
 if __name__ == "__main__":

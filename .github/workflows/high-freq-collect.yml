@@ -28,7 +28,7 @@ on:
 
 jobs:
   collect-top-level:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'full' || github.event.inputs.session == 'top-level' || (github.event.schedule && contains('*/3 * * * *', github.event.schedule)) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.session == 'full' || github.event.inputs.session == 'top-level') || github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
     defaults:
@@ -59,7 +59,7 @@ jobs:
         run: python collector_optimized.py
 
   collect-subcategories:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'full' || github.event_name == 'workflow_dispatch' && github.event.inputs.session == 'subcategories' || (github.event.schedule && contains('0 * * * *', github.event.schedule)) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.session == 'full' || github.event.inputs.session == 'subcategories') || github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     needs: collect-top-level
     timeout-minutes: 70
