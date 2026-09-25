@@ -785,10 +785,48 @@ if __name__ == "__main__":
     else:
         stats = run_collection()
 
+    # ---- Auto-stealth retry ------------------------------------------------
+    # Evidence (25 Sep): the 12-worker/4-10s-gap burst gets bot-walled (248
+    # fetches, 0 rows) while the 4-worker/20-45s-gap nightly pass lands
+    # thousands of rows from the SAME datacenter IPs. Amazon walls the burst,
+    # not just the IP class. So when a fast pass comes back walled, re-run it
+    # with the nightly-proven stealth pacing before declaring failure.
+    #
+    # Guarded by SCOUT_AUTO_STEALTH (default on). Skipped for dry runs,
+    # explicit CLI pacing, and large subcat lists (stealth would overrun the
+    # job timeout). Dedupe is ON-CONFLICT-based, so a retry that lands rows
+    # costs no duplicates.
+    auto_stealth = os.environ.get("SCOUT_AUTO_STEALTH", "1") != "0"
+    stealth_done = os.environ.get("_SCOUT_STEALTH_DONE") == "1"
+    explicit_pacing = bool(args.workers or args.gap_min or args.gap_max)
+
+    if (not args.dry_run and stats and stats.get("suspected_bot_wall")
+            and auto_stealth and not stealth_done and not explicit_pacing):
+        # Only top-level (248 tasks) is small enough to finish at stealth
+        # pacing inside the 50-min job timeout; a 1528-task subcat pass
+        # would not, and the nightly already covers it.
+        total_tasks = 31 * 4 * 2  # cats × lists × pages, matches CATEGORIES
+        if stats["total_requests"] <= total_tasks * 1.2:
+            print("\n[collector] Bot-walled on fast pacing. Auto-retrying in "
+                  "stealth mode: 4 workers, 30 req/min rate cap.")
+            # Module-level scope: these assignments update the module globals
+            # that run_collection()/fetch_with_retry() read at call time.
+            FETCH_WORKERS = 4
+            GAP_MIN_SECONDS = 20.0
+            GAP_MAX_SECONDS = 45.0
+            os.environ["_SCOUT_STEALTH_DONE"] = "1"
+            _rate_limiter = TokenBucketRateLimiter(rate=30 / RATE_LIMIT_WINDOW, burst=30)
+            if args.subcats:
+                stats = run_subcats(max_count=args.max, dry_run=False)
+            else:
+                stats = run_collection()
+
     # A run where every fetch "succeeded" but 0 rows parsed means Amazon is
     # bot-walling the egress IP — not a dedup, not a code bug. Exit 3 (distinct
     # from the usual 1) so the workflow can alert and the log says WHY, instead
     # of showing a green "success" that hides the drop.
     if not args.dry_run and stats and stats.get("suspected_bot_wall"):
         print("\n[collector] EXIT 3: suspected bot-wall (fetches succeeded, 0 rows parsed).", file=sys.stderr)
+        print("[collector] Set SCOUT_PROXY to a residential proxy to unblock "
+              "datacenter IPs at full speed.", file=sys.stderr)
         sys.exit(3)

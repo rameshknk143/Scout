@@ -782,7 +782,7 @@ class RotationEngine:
                     avg_data_completeness=75.0,  # Placeholder
                     new_attributes_discovered=0,
                     failures=0,
-                    retries=progress['total_asins'] * 0.05,  # Estimate
+                    retries=((progress['total_asins'] or 0)) * 0.05,  # Estimate (None-safe: empty week)
                     rate_limit_events=metrics['total_rate_limits'] or 0,
                     avg_processing_speed=100,  # Placeholder
                     unfinished_work_carried_forward=0,
