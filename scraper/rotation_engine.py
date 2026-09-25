@@ -803,22 +803,21 @@ def main():
     
     args = parser.parse_args()
     
-    # Load database URL
-    env_file = Path(__file__).parent.parent / ".env"
-    if not env_file.exists():
-        logger.error(" .env file not found")
-        sys.exit(1)
-    
-    database_url = None
-    with open(env_file) as f:
-        for line in f:
-            if line.startswith('DATABASE_URL='):
-                database_url = line.split('=', 1)[1].strip()
-                break
-    
+    # Load database URL: prefer the environment (GitHub Actions passes the
+    # DATABASE_URL secret, and .env is gitignored so it never exists on a
+    # runner). Fall back to the local .env for laptop runs.
+    database_url = os.environ.get("DATABASE_URL", "").strip()
     if not database_url:
-        logger.error(" DATABASE_URL not found in .env")
-        sys.exit(1)
+        env_file = Path(__file__).parent.parent / ".env"
+        if env_file.exists():
+            with open(env_file) as f:
+                for line in f:
+                    if line.startswith('DATABASE_URL='):
+                        database_url = line.split('=', 1)[1].strip()
+                        break
+        if not database_url:
+            logger.error(" DATABASE_URL not set (env var or .env)")
+            sys.exit(1)
     
     # Initialize engine
     engine = RotationEngine(database_url)
