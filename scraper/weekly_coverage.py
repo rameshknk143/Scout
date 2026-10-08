@@ -265,7 +265,10 @@ def run_due(ledger,today,*,minutes,max_tasks,workers):
                 result,details=execute(task);ledger.finish(task,result,details)
                 with lock:state['consecutive_failures']=0;state['succeeded']+=1
             except Exception as exc:
-                code=str(exc) if isinstance(exc,RuntimeError) and str(exc) in {'fetch_failed','empty_or_blocked_list','detail_fetch_failed'} else type(exc).__name__
+                safe_messages={'fetch_failed','empty_or_blocked_list','detail_fetch_failed',
+                    'No product title: blocked or unsupported page','Product page ASIN differs from requested ASIN',
+                    'Canonical product differs from requested ASIN','Blank ASIN input requires a matching canonical product URL'}
+                code=str(exc) if isinstance(exc,(RuntimeError,ValueError)) and str(exc) in safe_messages else type(exc).__name__
                 ledger.fail(task,code)
                 with lock:
                     state['consecutive_failures']+=1

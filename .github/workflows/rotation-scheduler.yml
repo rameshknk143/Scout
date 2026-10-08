@@ -2,7 +2,7 @@ name: ScoutVeda Seven-Day Category Coverage
 
 on:
   schedule:
-    - cron: '0 */2 * * *' # Resume due work every two hours; days use Asia/Kolkata.
+    - cron: '17 */2 * * *' # Avoid top-of-hour load; days use Asia/Kolkata.
   workflow_dispatch:
     inputs:
       mode:
@@ -53,7 +53,7 @@ jobs:
             plan) python weekly_coverage.py --plan ;;
             report) python weekly_coverage.py --report ;;
             canary) python weekly_coverage.py --minutes 5 --max-tasks 3 --workers 1 ;;
-            canary-details) python weekly_coverage.py --details-only --minutes 5 --max-tasks 1 --workers 1 ;;
+            canary-details) python weekly_coverage.py --details-only --minutes 5 --max-tasks 3 --workers 1 ;;
             run) python weekly_coverage.py --minutes 100 --max-tasks 1000 --workers 2 ;;
             *) exit 1 ;;
           esac
