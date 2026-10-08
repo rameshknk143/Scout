@@ -295,6 +295,8 @@ def run_due(ledger,today,*,minutes,max_tasks,workers):
                     'No product title: blocked or unsupported page','Product page ASIN differs from requested ASIN',
                     'Canonical product differs from requested ASIN','Blank ASIN input requires a matching canonical product URL'}
                 code=str(exc) if isinstance(exc,(RuntimeError,ValueError)) and str(exc) in safe_messages else type(exc).__name__
+                print(json.dumps({'event':'task_failed','task_id':task.get('task_id'),
+                    'kind':task.get('kind'),'error':code}),flush=True)
                 ledger.fail(task,code)
                 with lock:
                     state['consecutive_failures']+=1
@@ -337,6 +339,7 @@ def main(argv=None):
         ledger.heartbeat('RUNNING',{'week_start':str(week)})
         tick=run_due(ledger,today,minutes=args.minutes,max_tasks=args.max_tasks,workers=args.workers)
         ledger.heartbeat('DEGRADED' if tick['failed'] else 'OK',tick)
+        print(json.dumps({'event':'worker_tick',**tick}),flush=True)
     report=ledger.report(week,today)
     Path('weekly-coverage-report.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps({k:v for k,v in report.items() if k!='coverage'}))
@@ -351,3 +354,4 @@ if __name__=='__main__':
         try:Ledger().heartbeat('ERROR',{'error_type':type(exc).__name__})
         except Exception:pass
         raise
+
