@@ -995,6 +995,11 @@ def get_ppc_analytics(user_id: int = Depends(require_user)):
 # --- Maxun Visual Scraper Ingestion ----------------------------------------
 
 class MaxunRowItem(BaseModel):
+    brand: str | None = None
+    subcategory: str | None = None
+    product_type: str | None = None
+    attribute_observations: dict | None = None
+    source: str = "maxun"
     asin: str
     title: str | None = None
     category: str | None = "Maxun Visual Scrape"
@@ -1017,19 +1022,40 @@ class MaxunIngestPayload(BaseModel):
     category: str | None = "Maxun Visual Scrape"
 
 
+def laptop_capacity():
+    """Small authenticated storage probe; never scan product history."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT pg_database_size(current_database())")
+        size = cur.fetchone()[0]
+    limit = int(os.environ.get("SCOUT_DATABASE_MAX_BYTES", 460 * 1024 * 1024))
+    return {"accepting": size < limit, "database_bytes": size,
+            "limit_bytes": limit, "checked_at": datetime.now(timezone.utc).isoformat()}
+
+
+@app.get("/scraper/capacity", dependencies=[Depends(require_key)])
+def get_laptop_capacity():
+    return laptop_capacity()
+
+
 @app.post("/ingest/maxun", dependencies=[Depends(require_key)])
 def ingest_maxun_batch(payload: MaxunIngestPayload, request: Request):
     """Ingests raw visual scraping batches from Maxun (CSV/JSON exports).
     Sanitizes ASINs, validates ratings/prices against bounds, and inserts rows into Supabase snapshots."""
     now = datetime.now(timezone.utc).isoformat()
     default_cat = payload.category or "Maxun Visual Scrape"
+    if len(payload.items) > 500:
+        raise HTTPException(status_code=413, detail="Maximum 500 records per delivery")
+    if not laptop_capacity()["accepting"]:
+        raise HTTPException(status_code=503, detail="storage_guard: retain local delivery backlog")
     valid_rows = []
 
     for item in payload.items:
         raw_asin = (item.asin or "").strip().upper()
-        if not ASIN_RE.match(raw_asin):
+        if not ASIN_RE.fullmatch(raw_asin) or not item.title or not item.title.strip():
             continue
 
+        if item.attribute_observations and (len(item.attribute_observations.get("observations", [])) > 500 or len(item.attribute_observations.get("unmapped", [])) > 500):
+            raise HTTPException(status_code=413, detail="Too many product attributes")
         rc = item.review_count if item.review_count is not None else item.reviews
         if rc is not None and (rc < 0 or rc > 10_000_000):
             rc = None
@@ -1073,6 +1099,11 @@ def ingest_maxun_batch(payload: MaxunIngestPayload, request: Request):
             "review_count": rc,
             "image_url": item.image_url,
             "collected_at": collected,
+            "source": item.source if item.source in ("maxun", "vm-watchlist", "laptop-category", "laptop-product-detail") else "maxun",
+            "brand": item.brand,
+            "subcategory": item.subcategory,
+            "product_type": item.product_type,
+            "attribute_observations": item.attribute_observations,
         })
 
     inserted_count = db.insert_snapshot_rows(valid_rows)
