@@ -12,6 +12,13 @@ import weekly_coverage as weekly
 
 
 class WeeklyCoverageTests(unittest.TestCase):
+    def test_empty_category_requires_full_matching_shell_and_no_product_links(self):
+        payload={'path':'Sports > Polo Equipment','list_type':'bestsellers'}
+        shell='<title>Amazon.in Bestsellers: Polo Equipment</title><h1>Bestsellers in Polo Equipment</h1>'+(' '*21000)
+        self.assertTrue(weekly.empty_category_shell(shell,payload))
+        self.assertFalse(weekly.empty_category_shell(shell+'<a href="/dp/B012345678">Product</a>',payload))
+        self.assertFalse(weekly.empty_category_shell(shell+'validateCaptcha',payload))
+        self.assertFalse(weekly.empty_category_shell(shell,{**payload,'path':'Sports > Hunting'}))
     def test_every_route_is_assigned_once_and_all_days_repeat(self):
         plan=weekly.manifest()
         self.assertEqual(len(plan['routes']),490)

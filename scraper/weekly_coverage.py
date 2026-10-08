@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import time
 import uuid
 import threading
@@ -157,6 +158,8 @@ class Ledger:
             plan=row[0]
             cur.execute('SELECT path,kind,status,due_date,COUNT(*) FROM scrape_week_tasks WHERE week_start=%s GROUP BY path,kind,status,due_date',(week,))
             records=cur.fetchall()
+            cur.execute("SELECT path,COUNT(*) FROM scrape_week_tasks WHERE week_start=%s AND kind='list' AND status='DONE' AND result->>'verified_empty'='true' GROUP BY path",(week,))
+            empty_pages=dict(cur.fetchall())
             cur.execute("SELECT status,COUNT(*) FROM scrape_week_tasks WHERE due_date<=%s AND status<>'DONE' GROUP BY status",(today,))
             global_due=dict(cur.fetchall())
             cur.execute("""SELECT item.key,SUM(item.value::bigint) FROM scrape_week_tasks t,
@@ -171,7 +174,7 @@ class Ledger:
             for path,kind,status,_,count in records:
                 if path==route['path']:counts[kind+':'+status]+=count
             expected=len(plan['lists'])*len(plan['pages'])
-            complete=counts['list:DONE']==expected and not any(v for k,v in counts.items() if k.startswith('detail:') and k!='detail:DONE') and counts['detail:DONE']>0
+            complete=counts['list:DONE']==expected and not any(v for k,v in counts.items() if k.startswith('detail:') and k!='detail:DONE') and (counts['detail:DONE']>0 or empty_pages.get(route['path'],0)==expected)
             coverage.append({'path':route['path'],'day':DAYS[route['weekday']],'due_date':str(due),'complete':complete,'counts':dict(counts)})
         overdue=[r for r in coverage if not r['complete'] and date.fromisoformat(r['due_date'])<=today]
         return {'week_start':str(week),'status':'COMPLETE' if all(r['complete'] for r in coverage) else 'INCOMPLETE',
@@ -196,7 +199,17 @@ def execute(task):
             rank=collector.RANK_RE.search(card)
             row=collector.parse_product_card(card,int(rank.group(1)) if rank else None,task['path'],payload['list_type'])
             if row and row.get('title'):rows.append({**row,'collected_at':payload['capture_at']})
-        if not rows:raise RuntimeError('empty_or_blocked_list')
+        if not rows:
+            # An empty catalogue category is different from a bot wall. Require
+            # matching full category shells on independent HTTP/browser reads.
+            if empty_category_shell(html,payload):
+                path=collector.LIST_TYPES[payload['list_type']]
+                url=collector.BASE_URL.format(path=path,slug=payload['slug'])
+                if payload['page']>1:url+='?pg='+str(payload['page'])
+                rendered=browser_html(url)
+                if empty_category_shell(rendered,payload):
+                    return {'rows_parsed':0,'verified_empty':True,'document_hashes':[digest(html),digest(rendered)]},[]
+            raise RuntimeError('empty_or_blocked_list')
         db.insert_snapshot_rows(rows)
         return {'rows_parsed':len(rows)},rows
     html=collector.fetch_with_retry('https://www.amazon.in/dp/'+payload['asin'],session=_sessions.opener)
@@ -248,6 +261,19 @@ def browser_html(url):
             page.wait_for_timeout(2000)
             return page.content()
         finally:browser.close()
+
+
+def empty_category_shell(html,payload):
+    from bs4 import BeautifulSoup
+    if len(html)<20000 or re.search(r'/dp/[A-Z0-9]{10}|data-asin="[A-Z0-9]{10}"',html):return False
+    soup=BeautifulSoup(html,'html.parser')
+    title=soup.title.get_text(' ',strip=True) if soup.title else ''
+    heading=' '.join(h.get_text(' ',strip=True) for h in soup.select('h1,h2'))
+    normalize=lambda value:re.sub(r'[^a-z0-9]','',value.lower())
+    expected=normalize(payload['path'].split(' > ')[-1])
+    marker='bestsellers' if payload['list_type']=='bestsellers' else 'newreleases'
+    blocked=any(word in html.lower() for word in ('validatecaptcha','robot check','automated access'))
+    return bool(expected and not blocked and 'Amazon.in' in title and marker in normalize(title) and expected in normalize(title) and expected in normalize(heading))
 
 
 def run_due(ledger,today,*,minutes,max_tasks,workers):
