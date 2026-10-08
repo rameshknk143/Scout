@@ -72,6 +72,7 @@ class Ledger:
     def __init__(self):
         import db
         self.connection=db.get_conn
+        self.task_kind=None
 
     def preflight(self):
         with self.connection() as conn,conn.cursor() as cur:
@@ -121,12 +122,13 @@ class Ledger:
         with self.connection() as conn,conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""WITH candidate AS (
               SELECT task_id FROM scrape_week_tasks WHERE due_date<=%s
+              AND (%s::text IS NULL OR kind=%s)
               AND ((status IN ('PENDING','RETRY') AND next_attempt<=NOW()) OR (status='RUNNING' AND attempts<5 AND lease_until<NOW()))
               ORDER BY due_date,CASE WHEN kind='list' THEN 0 ELSE 1 END,task_id
               FOR UPDATE SKIP LOCKED LIMIT 1)
               UPDATE scrape_week_tasks t SET status='RUNNING',attempts=attempts+1,lease_token=%s,lease_until=NOW()+INTERVAL '15 minutes',
               payload=payload || jsonb_build_object('capture_at',NOW())
-              FROM candidate c WHERE t.task_id=c.task_id RETURNING t.*""",(today,token))
+              FROM candidate c WHERE t.task_id=c.task_id RETURNING t.*""",(today,self.task_kind,self.task_kind,token))
             # A worker dying on its fifth attempt must not leave RUNNING forever.
             row=cur.fetchone()
             cur.execute("UPDATE scrape_week_tasks SET status='EXHAUSTED',last_error='lease_expired_after_final_attempt' WHERE status='RUNNING' AND attempts>=5 AND lease_until<NOW()")
@@ -251,6 +253,7 @@ def main(argv=None):
     parser.add_argument('--date',type=date.fromisoformat)
     parser.add_argument('--max-tasks',type=int,default=1000);parser.add_argument('--minutes',type=int,default=100)
     parser.add_argument('--workers',type=int,default=2)
+    parser.add_argument('--details-only',action='store_true',help='Bounded detail-delivery canary')
     args=parser.parse_args(argv)
     if args.max_tasks<1 or args.minutes<1:parser.error('Budgets must be positive')
     if not 1<=args.workers<=4:parser.error('Workers must be between 1 and 4')
@@ -258,6 +261,7 @@ def main(argv=None):
     if args.plan:
         print(json.dumps({**plan,'weekly_list_tasks':len(list_tasks(plan,week))},indent=2));return 0
     ledger=Ledger()
+    if args.details_only:ledger.task_kind='detail'
     if args.migrate:
         from registry.observation_store import SQL_PATH
         with ledger.connection() as conn,conn.cursor() as cur:

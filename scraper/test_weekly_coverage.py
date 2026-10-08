@@ -133,6 +133,22 @@ class LocalPostgresCoverageTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):ledger.seed({**plan,'version':2},week)
                 ledger.seed(plan,date(2026,10,12))
                 self.assertTrue(ledger.report(date(2026,10,12),date(2026,10,12))['all_weeks_due_unfinished'])
+                with ledger.connection() as conn,conn.cursor() as cur:
+                    cur.execute("UPDATE scrape_week_tasks SET status='EXHAUSTED',attempts=5,next_attempt=NOW()-INTERVAL '25 hours',due_date='2026-10-01' WHERE task_id=%s",(b['task_id'],))
+                ledger.recover()
+                probe=ledger.claim(date(2026,10,11))
+                self.assertEqual(probe['task_id'],b['task_id']);self.assertEqual(probe['attempts'],6)
+                ledger.fail(probe,'still_blocked')
+                ledger.recover()
+                with ledger.connection() as conn,conn.cursor() as cur:
+                    cur.execute('SELECT status,attempts FROM scrape_week_tasks WHERE task_id=%s',(b['task_id'],))
+                    self.assertEqual(cur.fetchone(),('EXHAUSTED',6))
+                ledger.heartbeat('OK',{'test':True})
+                with ledger.connection() as conn,conn.cursor() as cur:
+                    cur.execute("SELECT status FROM scrape_worker_health WHERE component='weekly-coverage'")
+                    self.assertEqual(cur.fetchone()[0],'OK')
+                with patch.dict(os.environ,{'SCOUT_DATABASE_MAX_BYTES':'1'}):
+                    with self.assertRaisesRegex(RuntimeError,'database_capacity_guard'):ledger.storage_guard()
                 import importlib.util
                 with patch.object(sys,'path',[str(weekly.HERE.parent),*sys.path]):
                     spec=importlib.util.spec_from_file_location('weekly_test_api_db',weekly.HERE.parent/'api/db.py')
