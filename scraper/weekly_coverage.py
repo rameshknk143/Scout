@@ -200,9 +200,15 @@ def execute(task):
         db.insert_snapshot_rows(rows)
         return {'rows_parsed':len(rows)},rows
     html=collector.fetch_with_retry('https://www.amazon.in/dp/'+payload['asin'],session=_sessions.opener)
+    if not html:html=browser_html('https://www.amazon.in/dp/'+payload['asin'])
     if not html:raise RuntimeError('detail_fetch_failed')
     product_type='ebook' if payload.get('top')=='Kindle Store' else payload.get('product_type')
-    row=parse_detail(html,payload['asin'],schema_category=task['path'],schema_product_type=product_type)
+    try:
+        row=parse_detail(html,payload['asin'],schema_category=task['path'],schema_product_type=product_type)
+    except ValueError as exc:
+        if str(exc)!='No product title: blocked or unsupported page':raise
+        html=browser_html('https://www.amazon.in/dp/'+payload['asin'])
+        row=parse_detail(html,payload['asin'],schema_category=task['path'],schema_product_type=product_type)
     row.update(category=task['path'],rank=None,list_type='product-detail',source='weekly-product-detail',collected_at=payload['capture_at'])
     for k in ('price','rating','review_count','image_url'):row.setdefault(k,None)
     records=snapshot_records(row)
@@ -217,6 +223,31 @@ def execute(task):
     store.acknowledge(accepted)
     return {'field_statuses':statuses,'field_counts':dict(Counter(statuses.values())),
             'observed_fields':len(records),'collected_fields':sum(r['status']=='COLLECTED' for r in records)},[]
+
+
+def browser_html(url):
+    """Normal rendered-page fallback; browser resources close on every outcome."""
+    from playwright.sync_api import sync_playwright
+    from urllib.parse import unquote
+    import collector_optimized as collector
+    collector._rate_limiter.wait()
+    proxy=None
+    if collector.PROXY_URL:
+        parsed=urlparse(collector.PROXY_URL)
+        proxy={'server':f'{parsed.scheme}://{parsed.hostname}:{parsed.port}'}
+        if parsed.username:proxy['username']=unquote(parsed.username)
+        if parsed.password:proxy['password']=unquote(parsed.password)
+    with sync_playwright() as runtime:
+        settings={'headless':True}
+        if proxy:settings['proxy']=proxy
+        if os.environ.get('SCOUT_BROWSER_EXECUTABLE'):settings['executable_path']=os.environ['SCOUT_BROWSER_EXECUTABLE']
+        browser=runtime.chromium.launch(**settings)
+        try:
+            page=browser.new_page(locale='en-IN')
+            page.goto(url,wait_until='domcontentloaded',timeout=45000)
+            page.wait_for_timeout(2000)
+            return page.content()
+        finally:browser.close()
 
 
 def run_due(ledger,today,*,minutes,max_tasks,workers):

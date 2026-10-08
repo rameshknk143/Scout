@@ -77,6 +77,20 @@ class WeeklyCoverageTests(unittest.TestCase):
         self.assertEqual(len(result['field_statuses']),391)
         self.assertEqual(details,[])
 
+    def test_blocked_detail_uses_rendered_fallback_without_accepting_wrong_identity(self):
+        import collector_optimized as collector
+        import db
+        from registry.observation_store import ObservationStore
+        task={'kind':'detail','path':'Electronics','payload':{'asin':'B012345678','capture_at':'2026-10-07T01:00:00Z'}}
+        html='<input id="ASIN" value="B012345678"><span id="productTitle">Laptop</span>'
+        with patch.object(collector,'fetch_with_retry',return_value='<html>blocked</html>'),patch.object(weekly,'browser_html',return_value=html) as rendered,patch.object(db,'insert_snapshot_rows'),patch.object(db,'get_conn'),patch.object(ObservationStore,'__init__',return_value=None),patch.object(ObservationStore,'acknowledge'),patch('registry.observation_store.deliver',return_value=[]):
+            result,_=weekly.execute(task)
+            rendered.assert_called_once();self.assertGreater(result['collected_fields'],0)
+        wrong=html.replace('B012345678','B012345679')
+        with patch.object(collector,'fetch_with_retry',return_value=wrong),patch.object(weekly,'browser_html') as rendered:
+            with self.assertRaisesRegex(ValueError,'differs'):weekly.execute(task)
+            rendered.assert_not_called()
+
 
 @unittest.skipUnless(os.environ.get('SCOUT_LOCAL_PG_TEST')=='1','Explicit isolated local PostgreSQL test only')
 class LocalPostgresCoverageTests(unittest.TestCase):

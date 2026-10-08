@@ -57,7 +57,7 @@ def get_conn():
     # expects plain tuple rows from cursor.fetchall(). A RealDictCursor default at the
     # connection level silently corrupts pandas' column/row mapping. Functions that want
     # dict-like rows ask for RealDictCursor explicitly on their own cursor instead.
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg2.connect(DATABASE_URL, connect_timeout=20, options='-c statement_timeout=120000')
     try:
         yield conn
         conn.commit()

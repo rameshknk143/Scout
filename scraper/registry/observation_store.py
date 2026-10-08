@@ -51,6 +51,9 @@ def snapshot_records(row):
         if f['applicability_status']=='APPLICABLE':
             try:value=schema().normalize(f,[raw] if key=='subcategory' and isinstance(raw,str) else raw);status='COLLECTED'
             except (ValueError,TypeError,ArithmeticError):status='FAILED'
+        if status=='COLLECTED' and ((source=='collector' and old in {'brand','subcategory','product_type'}) or
+            ((row.get('attribute_observations') or {}).get('classification_evidence') and old in {'subcategory','product_type'})):
+            status='INFERRED'
         observations.append({'field_key':key,'raw_value':raw,'normalized_value':value,
                              'status':status,'scope':f['scope'],'unit':f['unit'],
                              'source_url':url,'observed_at':observed,'schema_version':plan['schema_version']})
