@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from .attribute_registry import AttributeRegistry, default_registry
+from .attribute_registry import AttributeRegistry, DataStatus, default_registry
 
 
 class CategoryMapper:
@@ -39,13 +39,13 @@ class CategoryMapper:
     PRODUCT_TYPE_PATTERNS = {
         # Electronics
         "earbuds": re.compile(r'\b(earbuds|ear buds|in-ear|free\_ear|true\_wireless)\b', re.I),
-        "wired_headphones": re.compile(r'\b(wired|on\_ear|headset)\b.*\b(headphone|earphone)\b', re.I),
+        "wired_headphones": re.compile(r'\b(wired|on_ear|headset)\b.*\b(headphones?|earphones?)\b', re.I),
         "over_ear": re.compile(r'\b(over.?ear|circumaural)\b', re.I),
         "headphone": re.compile(r'\bheadphones?\b', re.I),
         "smartphone": re.compile(r'\b(smartphone|mobile|cellphone|cell phone|android|iphone)\b', re.I),
         "tablet": re.compile(r'\b(tablet|ipad|kindle\s+fire)\b', re.I),
         "laptop": re.compile(r'\b(laptop|notebook)\b', re.I),
-        "charger": re.compile(r'\b(charger|adapter|power\s+bank)\b', re.I),
+        "charger": re.compile(r'\b(charger|adap[tr][eo]r|power\s+bank)\b', re.I),
         "cable": re.compile(r'\b(cable|usb\s+cable|charging\s+ cable)\b', re.I),
         "camera": re.compile(r'\b(camera|dslr|mirrorless|action\s+camera)\b', re.I),
         
@@ -70,6 +70,9 @@ class CategoryMapper:
         "shampoo": re.compile(r'\b(shampoo)\b', re.I),
         "oil": re.compile(r'\b(oil)\b', re.I),
         " lipstick": re.compile(r'\b(lipstick|lip\s+color)\b', re.I),
+        
+        # Accessories & covers (electronics)
+        "case": re.compile(r'\b(case|cover)\b', re.I),
         
         # Sports
         "bat": re.compile(r'\b(bat|club|racket)\b', re.I),
@@ -109,10 +112,16 @@ class CategoryMapper:
         
         self.subcats_file = subcats_file
         self._subcats_cache: Optional[dict] = None
+        self._canonical_taxonomy = subcats_file is None or Path(subcats_file).resolve() == (Path(__file__).parent.parent/'subcats.json').resolve()
     
     def _load_subcats(self) -> dict:
         """Load subcategories from JSON file."""
         if self._subcats_cache is not None:
+            return self._subcats_cache
+        if self._canonical_taxonomy:
+            from .amazon_schema import AmazonSchema
+            schema=AmazonSchema()
+            self._subcats_cache={'subcategories':schema.data['taxonomy'],'count':len(schema.data['taxonomy'])}
             return self._subcats_cache
         
         if not self.subcats_file or not Path(self.subcats_file).exists():
@@ -150,6 +159,18 @@ class CategoryMapper:
         if existing_category:
             parsed = self._parse_category_label(existing_category)
             if parsed:
+                # A bare top-level label ("Electronics Accessories") carries no
+                # subcategory, so the stored `subcategory` column stayed NULL
+                # for every top-level row (the 44.8% gap). Enrich it from the
+                # title so newly-collected rows populate subcategory/product_type
+                # even when the collector only knows the top category.
+                if not parsed.get("subcategory") and title:
+                    inferred = self._infer_from_title(title)
+                    if inferred.get("subcategory") or inferred.get("product_type"):
+                        parsed["subcategory"] = parsed.get("subcategory") or inferred.get("subcategory")
+                        parsed["product_type"] = parsed.get("product_type") or inferred.get("product_type")
+                        parsed["enriched"] = True
+                        return {**parsed, "confidence": 0.8, "source": "existing_enriched"}
                 return {**parsed, "confidence": 1.0, "source": "existing"}
         
         # Strategy 2: Look up in subcategories file
@@ -201,26 +222,29 @@ class CategoryMapper:
         matches = {}
         
         # Check each pattern - use specific patterns first, generic last
-        for attr_name, pattern in sorted(self.PRODUCT_TYPE_PATTERNS.items(), key=lambda x: len(x[0]), reverse=True):
+        # category by attr name (specific product types first)
+        CAT_BY_ATTR = {
+            "earbuds": "Electronics", "wired_headphones": "Electronics",
+            "over_ear": "Electronics", "headphone": "Electronics",
+            "smartphone": "Electronics", "tablet": "Electronics",
+            "laptop": "Electronics", "charger": "Electronics",
+            "cable": "Electronics", "camera": "Electronics",
+            "case": "Electronics",
+            "shirt": "Fashion", "pant": "Fashion", "tshirt": "Fashion",
+            "dress": "Fashion", "kurti": "Fashion", "shoe": "Fashion",
+            "watch": "Fashion",
+            "cooker": "Home & Kitchen", "pan": "Home & Kitchen",
+            "blade": "Home & Kitchen", "fan": "Home & Kitchen",
+            "cream": "Beauty", "serum": "Beauty", "shampoo": "Beauty",
+            "oil": "Beauty", "lipstick": "Beauty",
+            "bat": "Sports", "ball": "Sports", "mat": "Sports",
+            "book": "Books",
+            "app": "Software", "license": "Software",
+        }
+        for attr_name, pattern in sorted(self.PRODUCT_TYPE_PATTERNS.items(),
+                                        key=lambda x: len(x[0]), reverse=True):
             if pattern.search(title):
-                # Extract category context (prioritize specific types)
-                if "earbud" in attr_name or "headphone" in attr_name or "camera" in attr_name:
-                    cat = "Electronics"
-                elif "shirt" in attr_name or "dress" in attr_name or "watch" in attr_name:
-                    cat = "Fashion"
-                elif "cooker" in attr_name or "pan" in attr_name or "fan" in attr_name:
-                    cat = "Home & Kitchen"
-                elif "cream" in attr_name or "shampoo" in attr_name or "oil" in attr_name:
-                    cat = "Beauty"
-                elif "bat" in attr_name or "ball" in attr_name or "mat" in attr_name:
-                    cat = "Sports"
-                elif "book" in attr_name:
-                    cat = "Books"
-                elif "app" in attr_name or "license" in attr_name:
-                    cat = "Software"
-                else:
-                    cat = "General"
-
+                cat = CAT_BY_ATTR.get(attr_name, "General")
                 matches[attr_name] = {
                     "category": cat,
                     "product_type": attr_name,
@@ -251,12 +275,14 @@ class CategoryMapper:
                 "earbuds": "Headphones",
                 "wired_headphones": "Headphones",
                 "over_ear": "Headphones",
+                "headphone": "Headphones",
                 "smartphone": "Mobiles & Tablets",
                 "tablet": "Mobiles & Tablets",
                 "laptop": "Computers & Accessories",
-                "charger": "Accessories",
-                "cable": "Accessories",
+                "charger": "Chargers & Accessories",
+                "cable": "Cables & Accessories",
                 "camera": "Camera & Photography",
+                "case": "Covers & Cases",
             },
             "Fashion": {
                 "shirt": "Men's Clothing",
@@ -322,7 +348,7 @@ class CategoryMapper:
         return None
 
 
-def map_asin_to_schema(asin: str, title: str, 
+def map_asin_to_schema(asin: str, title: str,
                        existing_category: str = None) -> dict:
     """
     Convenience function to get full schema for an ASIN.
@@ -341,14 +367,14 @@ def map_asin_to_schema(asin: str, title: str,
     category_info = mapper.map(asin, title=title, existing_category=existing_category)
     
     # Get applicable attributes
-    applicable = registry.get_applicable_attributes(
+    plan = registry.get_extraction_plan(
         category=category_info["category"],
         subcategory=category_info["subcategory"],
         product_type=category_info["product_type"]
     )
     
     # Build schema
-    schema = {attr.name: DataStatus.MISSING.value for attr in applicable}
+    schema = {key:field['initial_status'] for key,field in plan['fields'].items()}
     schema["asin"] = DataStatus.MISSING.value
     schema["title"] = DataStatus.MISSING.value
     schema["collected_at"] = DataStatus.MISSING.value
@@ -356,8 +382,9 @@ def map_asin_to_schema(asin: str, title: str,
     return {
         "schema": schema,
         "category_info": category_info,
-        "applicable_attributes": [attr.name for attr in applicable],
-        "total_fields": len(applicable)
+        "applicable_attributes": [key for key,field in plan['fields'].items() if field['applicability_status']=='APPLICABLE'],
+        "total_fields": len(schema),
+        "extraction_plan": plan
     }
 
 

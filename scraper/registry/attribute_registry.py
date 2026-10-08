@@ -443,6 +443,17 @@ class AttributeRegistry:
     def get_attribute(self, name: str) -> Optional[Attribute]:
         """Get an attribute by name."""
         return self._attributes.get(name)
+
+    def get_extraction_plan(self, category: str, subcategory: Optional[str] = None,
+                            product_type: Optional[str] = None, **context) -> dict:
+        """Canonical versioned master plan, including source/access and pending conditions.
+
+        The older get_schema_for_asin API remains a compatibility status dictionary.
+        New collection code should use collect_now from this full plan, never turn
+        seller-only or unknown-context fields into public scraping requirements.
+        """
+        from .amazon_schema import AmazonSchema
+        return AmazonSchema().plan(category, subcategory, product_type, **context)
     
     def get_applicable_attributes(self, category: str, 
                                    subcategory: Optional[str] = None,

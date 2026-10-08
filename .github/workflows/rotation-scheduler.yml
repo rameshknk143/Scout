@@ -1,76 +1,71 @@
-name: ScoutVeda Weekly Rotation Scheduler
+name: ScoutVeda Seven-Day Category Coverage
 
-# Run daily at 02:00 UTC (07:30 IST) to process the current week's batch
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 */2 * * *' # Resume due work every two hours; days use Asia/Kolkata.
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Run mode'
-        required: true
-        default: 'weekly'
+        description: 'Run due tasks or inspect coverage'
         type: choice
-        options:
-          - weekly
-          - daily
-          - report
-      category:
-        description: 'Specific category (for daily mode)'
-        type: string
-        default: ''
-      week:
-        description: 'Week number (optional)'
-        type: string
-        default: ''
-      year:
-        description: 'Year (optional)'
-        type: string
-        default: ''
+        default: run
+        options: [run, canary, report, plan]
+
+concurrency:
+  group: scout-market-collection
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
-  rotation-scheduler:
+  weekly-coverage:
+    # Enable after reviewed migrations, schema preflight and bounded canary.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.SCOUT_WEEKLY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 115
     defaults:
       run:
         working-directory: scraper
     steps:
       - uses: actions/checkout@v4
-      
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
       - name: Install dependencies
         run: pip install -r requirements.txt
-      
-      - name: Run rotation scheduler
+      - name: Run durable category rotation
         env:
+          MODE: ${{ inputs.mode || 'run' }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SCOUT_FETCH_WORKERS: '12'
+          SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}
+          SCOUT_FETCH_WORKERS: '2'
           SCOUT_GAP_MIN: '4'
           SCOUT_GAP_MAX: '10'
-          SCOUT_MAX_REQUESTS_PER_WINDOW: '60'
-          SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}  # residential proxy (optional; unblocks bot-walled IPs)
+          SCOUT_MAX_REQUESTS_PER_WINDOW: '30'
         run: |
-          # Build args: only pass --week/--year when non-empty (scheduled runs have no inputs)
-          WEEK_ARGS=""
-          if [ -n "${{ github.event.inputs.week }}" ]; then WEEK_ARGS="$WEEK_ARGS --week ${{ github.event.inputs.week }}"; fi
-          if [ -n "${{ github.event.inputs.year }}" ]; then WEEK_ARGS="$WEEK_ARGS --year ${{ github.event.inputs.year }}"; fi
-          if [ "${{ github.event.inputs.mode }}" = "report" ]; then
-            python rotation_engine.py --mode report $WEEK_ARGS
-          elif [ "${{ github.event.inputs.mode }}" = "daily" ]; then
-            python rotation_engine.py --mode daily --category "${{ github.event.inputs.category }}"
-          else
-            python rotation_engine.py --mode weekly $WEEK_ARGS
-          fi
-      
-      - name: Upload weekly report
+          set +e
+          case "$MODE" in
+            plan) python weekly_coverage.py --plan ;;
+            report) python weekly_coverage.py --report ;;
+            canary) python weekly_coverage.py --minutes 5 --max-tasks 3 --workers 1 ;;
+            run) python weekly_coverage.py --minutes 100 --max-tasks 1000 --workers 2 ;;
+            *) exit 1 ;;
+          esac
+          code=$?
+          # Exit 2 is truthful unfinished coverage, not a crashed worker.
+          if [ "$code" -eq 2 ]; then exit 0; fi
+          exit "$code"
+      - name: Retain coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-coverage-${{ github.run_id }}
+          path: scraper/weekly-coverage-report.json
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Summarize coverage
         if: always()
         run: |
-          echo "## Weekly Rotation Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Mode: ${{ github.event.inputs.mode || 'weekly (scheduled)' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Week: ${{ github.event.inputs.week || 'current' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo 'Coverage report includes every registered route, unfinished tasks and field statuses.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'A green tick means the worker tick ran; use the report for actual category completion.' >> "$GITHUB_STEP_SUMMARY"

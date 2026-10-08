@@ -1,10 +1,8 @@
+# Legacy manual collector. Scheduled broad scans are replaced by weekly coverage.
 name: ScoutVeda Max Capacity Collector
 
 # Triggered manually or on schedule (multiple times per day for max coverage)
 on:
-  schedule:
-    # Run 4x per day for maximum coverage
-    - cron: '0 1,9,17,23 * * *'  # 06:30, 14:30, 22:30, 04:30 IST
   workflow_dispatch:
     inputs:
       session:
@@ -25,6 +23,10 @@ on:
         description: 'Max sub-categories (default: 382)'
         type: string
         default: '382'
+
+concurrency:
+  group: scout-market-collection
+  cancel-in-progress: false
 
 jobs:
   collect-top-level:

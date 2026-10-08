@@ -1,0 +1,47 @@
+name: ScoutVeda Weekly Worker Watchdog
+on:
+  schedule:
+    - cron: '25 */6 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  issues: write
+  actions: write
+concurrency:
+  group: scout-weekly-watchdog
+  cancel-in-progress: false
+jobs:
+  watchdog:
+    if: ${{ vars.SCOUT_WEEKLY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install psycopg2-binary
+      - id: check
+        continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scraper/weekly_watchdog.py
+      - name: Record incident and request recovery
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          CHECK_FAILED: ${{ steps.check.outcome != 'success' }}
+          WEEKLY_ENABLED: ${{ vars.SCOUT_WEEKLY_ENABLED }}
+        with:
+          script: |
+            const title = 'ScoutVeda automated weekly worker incident';
+            const {owner, repo} = context.repo;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {owner,repo,state:'open',creator:'github-actions[bot]',per_page:100});
+            const incident = issues.find(i => i.title === title && !i.pull_request);
+            if (process.env.CHECK_FAILED === 'true') {
+              if (!incident) await github.rest.issues.create({owner,repo,title,body:`The independent check found a worker, database connection, or storage problem. Inspect the sanitized check output: https://github.com/${owner}/${repo}/actions/runs/${context.runId}. Recovery was requested; backlog remains durable.`});
+              if (process.env.WEEKLY_ENABLED === 'true') await github.rest.actions.createWorkflowDispatch({owner,repo,workflow_id:'rotation-scheduler.yml',ref:context.ref.replace('refs/heads/',''),inputs:{mode:'run'}});
+              core.setFailed('Weekly worker needs recovery; incident retained until health returns');
+            } else if (incident) {
+              await github.rest.issues.update({owner,repo,issue_number:incident.number,state:'closed'});
+            }

@@ -1,10 +1,8 @@
+# Legacy manual collector. Scheduled broad scans are replaced by weekly coverage.
 name: ScoutVeda High-Frequency Collector
 
 # Run every 1 hour for maximum coverage (24x per day)
 on:
-  schedule:
-    - cron: '0 * * * *'  # Every hour: 00:00, 01:00, 02:00...23:00 UTC
-                              # = 05:30, 06:30, 07:30, 08:30...04:30 IST
   workflow_dispatch:
     inputs:
       session:
@@ -25,6 +23,10 @@ on:
         description: 'Max sub-categories (default: 382)'
         type: string
         default: '382'
+
+concurrency:
+  group: scout-market-collection
+  cancel-in-progress: false
 
 jobs:
   collect-top-level:
@@ -59,7 +61,7 @@ jobs:
         run: python collector_optimized.py
 
   collect-subcategories:
-    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.session == 'full' || github.event.inputs.session == 'subcategories') || github.event_name == 'schedule' }}
+    if: ${{ !cancelled() && (needs.collect-top-level.result == 'success' || needs.collect-top-level.result == 'skipped') && (github.event_name == 'workflow_dispatch' && (github.event.inputs.session == 'full' || github.event.inputs.session == 'subcategories') || github.event_name == 'schedule') }}
     runs-on: ubuntu-latest
     needs: collect-top-level
     timeout-minutes: 70

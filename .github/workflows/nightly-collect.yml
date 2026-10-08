@@ -1,3 +1,4 @@
+# Legacy manual collector. Scheduled broad scans are replaced by weekly coverage.
 name: Scout Nightly Collector
 
 # Two nightly sessions, deliberately far apart (8-hour gap):
@@ -16,11 +17,6 @@ name: Scout Nightly Collector
 # to SCOUT_SUBCAT_LIST_TYPES once their liveness probe shows them revived.
 
 on:
-  schedule:
-    # 20:15 UTC = 01:45 IST — session 1
-    - cron: "15 20 * * *"
-    # 04:15 UTC = 09:45 IST — session 2 (8-hour gap)
-    - cron: "15 4 * * *"
   workflow_dispatch:
     inputs:
       session:
@@ -30,6 +26,10 @@ on:
           - top
           - subcats
         default: top
+
+concurrency:
+  group: scout-market-collection
+  cancel-in-progress: false
 
 jobs:
   collect:

@@ -83,6 +83,9 @@ def insert_snapshot_rows(rows):
     reflect the last page; psycopg2 paginates at 100 rows)."""
     if not rows:
         return 0
+    from registry.observation_store import ObservationStore, deliver
+    store = ObservationStore()
+    store.enqueue(rows)
     with get_conn() as conn:
         with conn.cursor() as cur:
             inserted = psycopg2.extras.execute_values(
@@ -105,7 +108,10 @@ def insert_snapshot_rows(rows):
                 ],
                 fetch=True,
             )
-            return len(inserted)
+            accepted = deliver(cur, store.pending())
+    # get_conn committed successfully before any durable outbox acknowledgement.
+    store.acknowledge(accepted)
+    return len(inserted)
 
 
 def get_latest_snapshot(asin):
