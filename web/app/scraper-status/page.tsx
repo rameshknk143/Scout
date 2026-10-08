@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { getScraperStatus } from "@/lib/actions";
 
 // ==================== Type Definitions ====================
 
@@ -106,7 +106,7 @@ export default function ScraperStatusClient() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const result = await api.scraper_status();
+        const result = await getScraperStatus();
         setData(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch scraper status");
@@ -419,3 +419,4 @@ export default function ScraperStatusClient() {
     </div>
   );
 }
+

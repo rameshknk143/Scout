@@ -74,6 +74,11 @@ export async function getWatchlist() {
   return api.watchlist();
 }
 
+export async function getScraperStatus() {
+  await requireSession();
+  return api.scraper_status();
+}
+
 export async function calcProfit(input: {
   sell_price: number;
   buy_price: number;
@@ -323,3 +328,4 @@ export async function getPpcAnalytics() {
   await requireSession();
   return api.ppcAnalytics();
 }
+
