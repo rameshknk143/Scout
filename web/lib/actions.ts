@@ -328,4 +328,3 @@ export async function getPpcAnalytics() {
   await requireSession();
   return api.ppcAnalytics();
 }
-
