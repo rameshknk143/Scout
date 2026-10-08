@@ -550,13 +550,16 @@ def insert_snapshot_rows(rows):
                 cur,
                 """INSERT INTO snapshots
                    (asin, category, list_type, rank, title, price, rating,
-                    review_count, image_url, collected_at)
+                    review_count, image_url, collected_at, source, brand,
+                    subcategory, product_type, dynamic_attributes_json)
                    VALUES %s ON CONFLICT DO NOTHING RETURNING id""",
                 [
                     (
                         r["asin"], r["category"], r["list_type"], r["rank"],
                         r["title"], r["price"], r["rating"], r["review_count"],
-                        r["image_url"], r["collected_at"],
+                        r["image_url"], r["collected_at"], r.get("source", "collector"),
+                        r.get("brand"), r.get("subcategory"), r.get("product_type"),
+                        psycopg2.extras.Json(r.get("attribute_observations") or {}),
                     )
                     for r in rows
                 ],
