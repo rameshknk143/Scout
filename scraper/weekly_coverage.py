@@ -125,7 +125,7 @@ class Ledger:
               SELECT task_id FROM scrape_week_tasks WHERE due_date<=%s
               AND (%s::text IS NULL OR kind=%s)
               AND ((status IN ('PENDING','RETRY') AND next_attempt<=NOW()) OR (status='RUNNING' AND attempts<5 AND lease_until<NOW()))
-              ORDER BY due_date,CASE WHEN kind='list' THEN 0 ELSE 1 END,task_id
+              ORDER BY CASE WHEN kind='list' THEN 0 ELSE 1 END,due_date,task_id
               FOR UPDATE SKIP LOCKED LIMIT 1)
               UPDATE scrape_week_tasks t SET status='RUNNING',attempts=attempts+1,lease_token=%s,lease_until=NOW()+INTERVAL '15 minutes',
               payload=payload || jsonb_build_object('capture_at',NOW())
