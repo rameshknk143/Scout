@@ -84,8 +84,9 @@ def insert_snapshot_rows(rows):
     if not rows:
         return 0
     from registry.observation_store import ObservationStore, deliver
+    from list_field_policy import requires_field_ledger
     store = ObservationStore()
-    store.enqueue(rows)
+    store.enqueue([row for row in rows if requires_field_ledger(row)])
     with get_conn() as conn:
         with conn.cursor() as cur:
             inserted = psycopg2.extras.execute_values(
