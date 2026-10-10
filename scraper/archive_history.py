@@ -16,6 +16,8 @@ from pathlib import Path
 
 TABLES = {'snapshots': 'collected_at', 'field_observations': 'observed_at',
           'snapshots_backup_20260831': None}
+KEYS = {'snapshots': 'id', 'field_observations': 'observation_id',
+        'snapshots_backup_20260831': 'id'}
 
 
 def verify(path, expected_count, expected_sha=None):
@@ -60,7 +62,8 @@ def export(conn, table, destination, before=None):
         count = 0
         with conn.cursor(name='archive_' + token) as cur:
             cur.itersize = 1000
-            cur.execute(sql.SQL('SELECT row_to_json(t)::text FROM {} t').format(relation) + where, params)
+            cur.execute(sql.SQL('SELECT row_to_json(t)::text FROM {} t').format(relation) + where
+                        + sql.SQL(' ORDER BY {}').format(sql.Identifier(KEYS[table])), params)
             with gzip.open(temporary, 'wb') as stream:
                 for row in cur:
                     stream.write(row[0].encode('utf8') + b'\n')
