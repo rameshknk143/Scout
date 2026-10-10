@@ -1,0 +1,48 @@
+name: ScoutVeda verified encrypted history export
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: scout-history-maintenance
+  cancel-in-progress: false
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install psycopg2-binary==2.9.11 cryptography==50.0.2
+      - name: Export consistent read-only copies
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          python scraper/archive_history.py --table snapshots_backup_20260831 --destination "$RUNNER_TEMP/history"
+          python scraper/archive_history.py --table snapshots --before "$cutoff" --destination "$RUNNER_TEMP/history"
+          python scraper/archive_history.py --table field_observations --before "$cutoff" --destination "$RUNNER_TEMP/history"
+      - name: Encrypt before leaving runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m zipfile -c "$RUNNER_TEMP/history.zip" "$RUNNER_TEMP/history"
+          mkdir -p "$RUNNER_TEMP/encrypted"
+          python scraper/archive_transport.py encrypt "$RUNNER_TEMP/history.zip" "$RUNNER_TEMP/encrypted/history.scoutarc" scraper/archive_public.pem
+          cd "$RUNNER_TEMP/encrypted"
+          sha256sum history.scoutarc > history.scoutarc.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-history-${{ github.run_id }}
+          path: ${{ runner.temp }}/encrypted/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Remove temporary plaintext
+        if: always()
+        shell: bash
+        run: |
+          rm -rf -- "$RUNNER_TEMP/history" "$RUNNER_TEMP/history.zip"
