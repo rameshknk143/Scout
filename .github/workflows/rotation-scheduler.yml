@@ -43,6 +43,7 @@ jobs:
           MODE: ${{ inputs.mode || 'run' }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SCOUT_PROXY: ${{ secrets.SCOUT_PROXY }}
+          SCOUT_LIST_FIELD_LEDGER_ENABLED: 'false'
           SCOUT_FETCH_WORKERS: '2'
           SCOUT_GAP_MIN: '4'
           SCOUT_GAP_MAX: '10'
