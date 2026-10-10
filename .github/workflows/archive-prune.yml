@@ -1,0 +1,28 @@
+name: ScoutVeda apply verified archive receipt
+on:
+  workflow_dispatch:
+    inputs:
+      proof:
+        description: 'Signed receipt for a verified private archive; expires after six hours'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: scout-history-maintenance
+  cancel-in-progress: false
+jobs:
+  compact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install psycopg2-binary==2.9.11 cryptography==50.0.2
+      - name: Verify exact archived rows before removal and compaction
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCOUT_ARCHIVE_PROOF: ${{ inputs.proof }}
+        run: python scraper/archive_prune.py
