@@ -1,6 +1,11 @@
 name: ScoutVeda verified encrypted history export
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        default: export
+        options: [export, verify]
 permissions:
   contents: read
 concurrency:
@@ -10,23 +15,44 @@ jobs:
   export:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: archive-test-only
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install psycopg2-binary==2.9.11 cryptography==50.0.2
+      - name: Verify export, restore, encryption and refusal on isolated data
+        working-directory: scraper
+        env:
+          SCOUT_LOCAL_PG_TEST: '1'
+          SCOUT_ARCHIVE_TEST_DSN: postgresql://postgres:archive-test-only@127.0.0.1:55432/postgres
+        run: python -m unittest test_archive_history -q
       - name: Export consistent read-only copies
+        if: inputs.mode != 'verify'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         shell: bash
         run: |
           set -euo pipefail
           cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          field_cutoff=$(date -u -d '1 day ago' +%Y-%m-%dT%H:%M:%SZ)
           python scraper/archive_history.py --table snapshots_backup_20260831 --destination "$RUNNER_TEMP/history"
           python scraper/archive_history.py --table snapshots --before "$cutoff" --destination "$RUNNER_TEMP/history"
-          python scraper/archive_history.py --table field_observations --before "$cutoff" --destination "$RUNNER_TEMP/history"
+          python scraper/archive_history.py --table field_observations --before "$field_cutoff" --destination "$RUNNER_TEMP/history"
       - name: Encrypt before leaving runner
+        if: inputs.mode != 'verify'
         shell: bash
         run: |
           set -euo pipefail
@@ -36,6 +62,7 @@ jobs:
           cd "$RUNNER_TEMP/encrypted"
           sha256sum history.scoutarc > history.scoutarc.sha256
       - uses: actions/upload-artifact@v4
+        if: inputs.mode != 'verify'
         with:
           name: encrypted-history-${{ github.run_id }}
           path: ${{ runner.temp }}/encrypted/
