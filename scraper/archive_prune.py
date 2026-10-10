@@ -39,6 +39,8 @@ def authenticate(envelope, public_key, now=None):
         seen.add(table)
         if manifest['rows'] < 0 or len(manifest['uncompressed_sha256']) != 64:
             raise ValueError('Invalid archive receipt')
+        if 'ordered_sha256' in manifest and len(manifest['ordered_sha256']) != 64:
+            raise ValueError('Invalid ordered archive receipt')
         if TABLES[table]:
             cutoff = datetime.fromisoformat(manifest['before'])
             if cutoff.tzinfo is None or cutoff > now - timedelta(hours=24):
@@ -71,7 +73,7 @@ def prune(conn, proof):
                             + sql.SQL(' ORDER BY {}').format(sql.Identifier(KEYS[table])), params)
                 for row in cur:
                     digest.update(row[0].encode('utf8') + b'\n'); count += 1
-            if count != manifest['rows'] or digest.hexdigest() != manifest['uncompressed_sha256']:
+            if count != manifest['rows'] or digest.hexdigest() != manifest.get('ordered_sha256', manifest['uncompressed_sha256']):
                 raise ValueError('Cloud rows changed since archive; no history removed')
         removed = {}
         with conn.cursor() as cur:
