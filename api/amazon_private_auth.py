@@ -34,7 +34,11 @@ def restore_token(token, user_id, db, session=requests):
                 'marketplaceIds': marketplace, 'keywords': 'phone case',
                 'pageSize': 1, 'includedData': 'summaries'}, timeout=(10, 40))
         if catalog.status_code != 200:
-            raise AuthorizationFailure(f'Amazon catalog access denied (HTTP {catalog.status_code}); existing connection retained.')
+            # One read-only control request distinguishes catalog-specific denial
+            # from a broader SP-API grant/account denial. Never expose raw bodies.
+            seller = session.get('https://sellingpartnerapi-eu.amazon.com/sellers/v1/marketplaceParticipations',
+                headers={'x-amz-access-token': access}, timeout=(10, 25))
+            raise AuthorizationFailure(f'Amazon login exchange succeeded; catalog HTTP {catalog.status_code}; seller-access HTTP {seller.status_code}. Existing connection retained.')
         result = catalog.json()
         if not isinstance(result, dict) or not isinstance(result.get('items'), list):
             raise AuthorizationFailure('Invalid catalog response; existing connection retained.')
@@ -43,3 +47,4 @@ def restore_token(token, user_id, db, session=requests):
     # All writes occur only after actual catalog authorization succeeds.
     db.save_seller_credentials(account['selling_partner_id'], token, user_id, marketplace)
     return {'ok': True, 'catalog_access': True, 'sample_items': len(result['items'])}
+
