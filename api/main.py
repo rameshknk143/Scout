@@ -23,7 +23,7 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator
 
 import alerts
 import amazon_sp_api
@@ -501,6 +501,21 @@ class WatchlistNotesRequest(BaseModel):
 def update_watchlist_notes(req: WatchlistNotesRequest, user_id: int = Depends(require_user)):
     db.update_validation_notes(req.asin, req.notes, user_id)
     return {"ok": True}
+
+
+class AmazonPrivateTokenRequest(BaseModel):
+    refresh_token: SecretStr
+
+
+@app.post("/auth/amazon/private-token", dependencies=[Depends(require_key)])
+def amazon_private_token(req: AmazonPrivateTokenRequest, user_id: int = Depends(require_user)):
+    from amazon_private_auth import restore_token, AuthorizationFailure
+    try:
+        return restore_token(req.refresh_token.get_secret_value(), user_id, db)
+    except AuthorizationFailure as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
+    except Exception:
+        raise HTTPException(status_code=503, detail="Credential storage unavailable; retry after checking server health.") from None
 
 
 class AmazonCallbackRequest(BaseModel):
