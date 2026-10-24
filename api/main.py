@@ -1409,3 +1409,77 @@ def phone_deliver(payload: PhoneDelivery, request: Request):
 
 
 _PHONE_QUERIES = [["Phone Cases","phone case"],["Electronics","bluetooth headphones"],["Computers","computer keyboard"],["Home & Kitchen","kitchen storage"],["Home Improvement","hand tools"],["Beauty","face moisturizer"],["Personal Care","shampoo"],["Grocery","tea coffee"],["Sports","fitness equipment"],["Toys","board games"],["Baby","baby care"],["Pet Supplies","pet supplies"],["Automotive","car accessories"],["Office","office stationery"],["Clothing","men cotton shirt"],["Footwear","running shoes"],["Bags","travel backpack"],["Watches","wrist watch"],["Books","paperback books"],["Musical Instruments","musical instruments"],["Garden","gardening tools"],["Appliances","kitchen appliance"],["Lighting","led light"],["Furniture","office chair"],["Phone Accessories","mobile charger"],["Computers","computer mouse"],["Kitchen","cookware"],["Home","bed sheets"],["Health","first aid"],["Crafts","art craft supplies"],["Jewellery","fashion earrings"],["Games","video game accessories"]]
+
+
+class OfficialWatchlistRequest(BaseModel):
+    asins: list[str] = Field(min_length=1, max_length=20)
+
+@app.post("/watchlist/official", dependencies=[Depends(require_key)])
+def official_watchlist(payload: OfficialWatchlistRequest, user_id: int = Depends(require_user)):
+    """Read-only Amazon catalog and Consumer/New offer prices; never fabricate prices."""
+    import requests as http
+    asins = list(dict.fromkeys(a.strip().upper() for a in payload.asins))
+    if any(not ASIN_RE.fullmatch(a) for a in asins):
+        raise HTTPException(status_code=400, detail="Invalid ASIN")
+    accounts = db.get_seller_credentials(user_id)
+    if len(accounts)!=1 or accounts[0].get("marketplace_id")!="A21TJRUUN4KGV":
+        raise HTTPException(status_code=409, detail="Existing India connection required")
+    token=accounts[0].get("refresh_token")
+    if not token or token.startswith("mock") or os.getenv("ALLOW_MOCK_LWA")=="1":
+        raise HTTPException(status_code=409, detail="Live Amazon connection required")
+    try:
+        login=http.post("https://api.amazon.com/auth/o2/token",data={
+            "grant_type":"refresh_token","refresh_token":token,
+            "client_id":os.getenv("LWA_CLIENT_ID"),"client_secret":os.getenv("LWA_CLIENT_SECRET")},timeout=(10,40))
+        if login.status_code!=200:
+            raise HTTPException(status_code=502,detail="Amazon login denied")
+        access=login.json().get("access_token")
+        if not isinstance(access,str) or not access:raise ValueError("invalid access")
+        headers={"x-amz-access-token":access}
+        catalog=http.get("https://sellingpartnerapi-eu.amazon.com/catalog/2022-04-01/items",
+            headers=headers,params={"marketplaceIds":"A21TJRUUN4KGV","identifiers":",".join(asins),
+            "identifiersType":"ASIN","pageSize":20,"includedData":"summaries,attributes,images,productTypes"},timeout=(10,40))
+        if catalog.status_code!=200:
+            raise HTTPException(status_code=catalog.status_code if catalog.status_code in (403,429) else 502,
+                detail="Amazon catalog unavailable")
+        pricing=http.post("https://sellingpartnerapi-eu.amazon.com/batches/products/pricing/v0/itemOffers",
+            headers=headers,json={"requests":[{"uri":"/products/pricing/v0/items/"+asin+"/offers",
+            "method":"GET","MarketplaceId":"A21TJRUUN4KGV","ItemCondition":"New","CustomerType":"Consumer"}
+            for asin in asins]},timeout=(10,50))
+        if pricing.status_code!=200:
+            raise HTTPException(status_code=pricing.status_code if pricing.status_code in (403,429) else 502,
+                detail="Amazon pricing unavailable")
+        prices={}
+        for response in pricing.json().get("responses",[]):
+            body=response.get("body") or {}
+            offer=body.get("payload") or {}
+            asin=offer.get("ASIN")
+            if asin not in asins:continue
+            price=None
+            summary=offer.get("Summary") or {}
+            for candidate in summary.get("BuyBoxPrices",[])+summary.get("LowestPrices",[]):
+                if str(candidate.get("condition","new")).lower()!="new":continue
+                listing=candidate.get("ListingPrice") or {}
+                amount=listing.get("Amount")
+                if listing.get("CurrencyCode")=="INR" and isinstance(amount,(int,float)) and math.isfinite(amount) and amount>0:
+                    price=float(amount);break
+            prices[asin]={"price":price,"pricing_http":(response.get("status") or {}).get("statusCode"),
+                          "price_basis":"new_consumer_listing_INR","summary":summary}
+        observed=datetime.now(timezone.utc).isoformat();items=[]
+        for item in catalog.json().get("items",[]):
+            if item.get("asin") not in asins:continue
+            summary=next((v for v in item.get("summaries",[]) if v.get("marketplaceId")=="A21TJRUUN4KGV"),{})
+            if not summary.get("itemName"):continue
+            images=[v for g in item.get("images",[]) for v in g.get("images",[]) if v.get("variant")=="MAIN"]
+            price=prices.get(item["asin"],{"price":None,"pricing_http":None,"summary":{}})
+            items.append({"asin":item["asin"],"title":summary["itemName"],"brand":summary.get("brand"),
+                "price":price["price"],"pricing_http":price.get("pricing_http"),"pricing_summary":price.get("summary"),
+                "price_basis":"new_consumer_listing_INR","currency":"INR","collected_at":observed,
+                "source":"official-spapi","image_url":images[0].get("link") if images else None,
+                "attributes":item.get("attributes",{}),"rating":None,"review_count":None})
+        return {"ok":True,"requested":len(asins),"catalog_items":len(items),
+                "priced_items":sum(i["price"] is not None for i in items),"items":items,
+                "missing_asins":[a for a in asins if a not in {i["asin"] for i in items}],
+                "pricing_rate_limit":pricing.headers.get("x-amzn-RateLimit-Limit")}
+    except (http.RequestException,ValueError,TypeError,KeyError):
+        raise HTTPException(status_code=502,detail="Official watchlist transport or response validation failed") from None
