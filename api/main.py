@@ -1314,3 +1314,92 @@ def probe_existing_amazon(user_id: int = Depends(require_user)):
         return result
     except (http.RequestException, ValueError, TypeError):
         raise HTTPException(status_code=502, detail="Amazon probe failed; connection retained") from None
+
+# Moto G85 has only this scoped bridge key, never the main API or Amazon keys.
+def _phone_secret(purpose):
+    import hashlib, hmac
+    return hmac.new(API_KEY.encode(), ("scoutveda-phone-v1:" + purpose).encode(), hashlib.sha256).hexdigest()
+
+def _phone_access(request):
+    import hmac
+    if not API_KEY or not hmac.compare_digest(request.headers.get("X-Scout-Phone-Key", ""), _phone_secret("client")):
+        raise HTTPException(status_code=401, detail="Invalid phone credential")
+
+def _phone_proof(batch):
+    import hashlib, hmac
+    body = json.dumps(batch, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
+    return hmac.new(_phone_secret("receipt").encode(), body, hashlib.sha256).hexdigest()
+
+@app.get("/phone/catalog")
+def phone_catalog(request: Request):
+    _phone_access(request)
+    if not laptop_capacity()["accepting"]:
+        raise HTTPException(status_code=503, detail="storage_guard")
+    import requests as http
+    credentials = db.get_seller_credentials(1)
+    if len(credentials) != 1 or credentials[0].get("marketplace_id") != "A21TJRUUN4KGV":
+        raise HTTPException(status_code=409, detail="Existing India connection required")
+    token = credentials[0].get("refresh_token")
+    if not token or token.startswith("mock") or os.getenv("ALLOW_MOCK_LWA") == "1":
+        raise HTTPException(status_code=409, detail="Live connection required")
+    try:
+        login = http.post("https://api.amazon.com/auth/o2/token", data={
+            "grant_type": "refresh_token", "refresh_token": token,
+            "client_id": os.getenv("LWA_CLIENT_ID"), "client_secret": os.getenv("LWA_CLIENT_SECRET")},
+            timeout=(10,40))
+        if login.status_code != 200:
+            raise HTTPException(status_code=502, detail="Amazon login denied")
+        access = login.json().get("access_token")
+        if not isinstance(access,str) or not access:
+            raise ValueError("missing access")
+        response = http.get("https://sellingpartnerapi-eu.amazon.com/catalog/2022-04-01/items",
+            headers={"x-amz-access-token":access}, params={"marketplaceIds":"A21TJRUUN4KGV",
+            "keywords":"phone case", "pageSize":20, "includedData":"summaries,attributes,images,productTypes"},
+            timeout=(10,50))
+        if response.status_code != 200:
+            raise HTTPException(status_code=502, detail="Amazon catalog denied HTTP " + str(response.status_code))
+        data = response.json()
+        if not isinstance(data.get("items"),list):
+            raise ValueError("invalid items")
+        captured = datetime.now(timezone.utc).isoformat()
+        rows=[]
+        for item in data["items"][:20]:
+            summaries=[s for s in item.get("summaries",[]) if s.get("marketplaceId")=="A21TJRUUN4KGV"]
+            if not summaries or not ASIN_RE.fullmatch(item.get("asin","")):
+                continue
+            summary=summaries[0]
+            if not isinstance(summary.get("itemName"),str) or not summary["itemName"].strip():
+                continue
+            images=[g for g in item.get("images",[]) if g.get("marketplaceId")=="A21TJRUUN4KGV"]
+            image=next((v.get("link") for g in images for v in g.get("images",[]) if v.get("variant")=="MAIN"),None)
+            rows.append({"asin":item["asin"],"title":summary["itemName"],"brand":summary.get("brand"),
+                "category":"Phone Cases","list_type":"official-catalog","rank":None,"price":None,
+                "rating":None,"review_count":None,"image_url":image,"collected_at":captured,
+                "source":"phone-spapi","subcategory":summary.get("browseClassification",{}).get("displayName"),
+                "product_type":next((p.get("productType") for p in item.get("productTypes",[])
+                    if p.get("marketplaceId")=="A21TJRUUN4KGV"),None),
+                "attribute_observations":{"unmapped":[{"label":k,"raw_value":v} for k,v in item.get("attributes",{}).items()]}})
+        batch={"version":1,"device":"moto-g85","captured_at":captured,"rows":rows}
+        return {"batch":batch,"proof":_phone_proof(batch)}
+    except (http.RequestException,ValueError,TypeError,KeyError):
+        raise HTTPException(status_code=502, detail="Catalog transport or validation failed") from None
+
+class PhoneDelivery(BaseModel):
+    batch: dict
+    proof: str = Field(max_length=64)
+
+@app.post("/phone/deliver")
+def phone_deliver(payload: PhoneDelivery, request: Request):
+    _phone_access(request)
+    import hmac
+    batch=payload.batch
+    if not hmac.compare_digest(payload.proof,_phone_proof(batch)):
+        raise HTTPException(status_code=400, detail="Invalid server capture proof")
+    rows=batch.get("rows")
+    if batch.get("version")!=1 or batch.get("device")!="moto-g85" or not isinstance(rows,list) or len(rows)>20:
+        raise HTTPException(status_code=400, detail="Invalid phone capture")
+    if not laptop_capacity()["accepting"]:
+        raise HTTPException(status_code=503, detail="storage_guard")
+    inserted=db.insert_snapshot_rows(rows)
+    return {"ok":True,"verified":len(rows),"inserted":inserted,"captured_at":batch["captured_at"]}
+
