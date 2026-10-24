@@ -1273,3 +1273,44 @@ def ops_relay(asin: str):
         logger.info("relay: amazon refused the fetch for %s (%d bytes)", asin, len(body))
         raise HTTPException(status_code=502, detail="amazon refused this request")
     return PlainTextResponse(body, media_type="text/html")
+
+# Read-only recovery check: credentials remain inside the API service.
+@app.get("/auth/amazon/probe", dependencies=[Depends(require_key)])
+def probe_existing_amazon(user_id: int = Depends(require_user)):
+    import requests as http
+    credentials = db.get_seller_credentials(user_id)
+    if len(credentials) != 1:
+        raise HTTPException(status_code=409, detail="Exactly one existing connection required")
+    account = credentials[0]
+    if account.get("marketplace_id") != "A21TJRUUN4KGV":
+        raise HTTPException(status_code=409, detail="Existing India connection required")
+    token = account.get("refresh_token")
+    if not token or token.startswith("mock") or os.getenv("ALLOW_MOCK_LWA") == "1":
+        raise HTTPException(status_code=409, detail="Live connection required; simulation rejected")
+    try:
+        response = http.post("https://api.amazon.com/auth/o2/token", data={
+            "grant_type": "refresh_token", "refresh_token": token,
+            "client_id": os.getenv("LWA_CLIENT_ID"),
+            "client_secret": os.getenv("LWA_CLIENT_SECRET")}, timeout=(10, 40))
+        result = {"login_http": response.status_code}
+        if response.status_code != 200:
+            return result
+        access = response.json().get("access_token")
+        if not isinstance(access, str) or not access:
+            raise ValueError("missing access")
+        headers = {"x-amz-access-token": access}
+        sellers = http.get("https://sellingpartnerapi-eu.amazon.com/sellers/v1/marketplaceParticipations",
+                          headers=headers, timeout=(10, 30))
+        catalog = http.get("https://sellingpartnerapi-eu.amazon.com/catalog/2022-04-01/items",
+                          headers=headers, params={"marketplaceIds": "A21TJRUUN4KGV",
+                          "keywords": "phone case", "pageSize": 1, "includedData": "summaries"},
+                          timeout=(10, 40))
+        result.update(seller_http=sellers.status_code, catalog_http=catalog.status_code)
+        if catalog.status_code == 200:
+            items = catalog.json().get("items")
+            if not isinstance(items, list):
+                raise ValueError("invalid catalog")
+            result["sample_items"] = len(items)
+        return result
+    except (http.RequestException, ValueError, TypeError):
+        raise HTTPException(status_code=502, detail="Amazon probe failed; connection retained") from None
