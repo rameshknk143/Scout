@@ -1363,6 +1363,7 @@ def phone_catalog(request: Request, query_index: int = 0, page_token: str = ""):
         data = response.json()
         if not isinstance(data.get("items"),list):
             raise ValueError("invalid items")
+        prices = _official_offer_prices(access, [i["asin"] for i in data["items"][:20] if ASIN_RE.fullmatch(i.get("asin",""))])
         captured = datetime.now(timezone.utc).isoformat()
         rows=[]
         for item in data["items"][:20]:
@@ -1375,12 +1376,12 @@ def phone_catalog(request: Request, query_index: int = 0, page_token: str = ""):
             images=[g for g in item.get("images",[]) if g.get("marketplaceId")=="A21TJRUUN4KGV"]
             image=next((v.get("link") for g in images for v in g.get("images",[]) if v.get("variant")=="MAIN"),None)
             rows.append({"asin":item["asin"],"title":summary["itemName"],"brand":summary.get("brand"),
-                "category":_PHONE_QUERIES[query_index][0],"list_type":"official-catalog","rank":None,"price":None,
+                "category":_PHONE_QUERIES[query_index][0],"list_type":"official-catalog","rank":None,"price":prices.get(item["asin"]),
                 "rating":None,"review_count":None,"image_url":image,"collected_at":captured,
                 "source":"phone-spapi","subcategory":summary.get("browseClassification",{}).get("displayName"),
                 "product_type":next((p.get("productType") for p in item.get("productTypes",[])
                     if p.get("marketplaceId")=="A21TJRUUN4KGV"),None),
-                "attribute_observations":{"unmapped":[{"label":k,"raw_value":v} for k,v in item.get("attributes",{}).items()]}})
+                "attribute_observations":{"pricing_basis":"INR New Consumer listing; buybox priority else lowest", "unmapped":[{"label":k,"raw_value":v} for k,v in item.get("attributes",{}).items()]}})
         batch={"version":1,"device":"moto-g85","captured_at":captured,"rows":rows,
                "query_index":query_index,"next_token":data.get("pagination",{}).get("nextToken"),
                "rate_limit":response.headers.get("x-amzn-RateLimit-Limit")}
@@ -1483,3 +1484,29 @@ def official_watchlist(payload: OfficialWatchlistRequest, user_id: int = Depends
                 "pricing_rate_limit":pricing.headers.get("x-amzn-RateLimit-Limit")}
     except (http.RequestException,ValueError,TypeError,KeyError):
         raise HTTPException(status_code=502,detail="Official watchlist transport or response validation failed") from None
+
+def _official_offer_prices(access, asins):
+    import requests as http
+    if not asins:return {}
+    response=http.post("https://sellingpartnerapi-eu.amazon.com/batches/products/pricing/v0/itemOffers",
+        headers={"x-amz-access-token":access},json={"requests":[{
+        "uri":"/products/pricing/v0/items/"+a+"/offers","method":"GET","MarketplaceId":"A21TJRUUN4KGV",
+        "ItemCondition":"New","CustomerType":"Consumer"} for a in asins[:20]]},timeout=(10,50))
+    if response.status_code!=200:
+        raise HTTPException(status_code=response.status_code if response.status_code in (403,429) else 502,
+            detail="Amazon pricing unavailable",headers={"Retry-After":response.headers.get("Retry-After","90")})
+    responses=response.json().get("responses")
+    if not isinstance(responses,list):raise ValueError("invalid pricing response")
+    if responses and all((r.get("status") or {}).get("statusCode")==403 for r in responses):
+        raise HTTPException(status_code=403,detail="Amazon pricing access denied")
+    prices={}
+    for result in responses:
+        offer=(result.get("body") or {}).get("payload") or {};a=offer.get("ASIN")
+        if a not in asins:continue
+        summary=offer.get("Summary") or {}
+        for candidate in summary.get("BuyBoxPrices",[])+summary.get("LowestPrices",[]):
+            if str(candidate.get("condition","new")).lower()!="new":continue
+            listing=candidate.get("ListingPrice") or {};value=listing.get("Amount")
+            if listing.get("CurrencyCode")=="INR" and isinstance(value,(int,float)) and math.isfinite(value) and value>0:
+                prices[a]=float(value);break
+    return prices
