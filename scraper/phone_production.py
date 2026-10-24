@@ -1,4 +1,4 @@
-"""Hourly official catalog client; scoped key, durable signed outbox, no Amazon secrets."""
+"""Paginated official catalog client; scoped key, durable signed outbox, no Amazon secrets."""
 import argparse
 import json
 import shutil
@@ -27,6 +27,11 @@ def call(path, payload=None):
 def _tick(ledger,out):
     out.execute('PRAGMA journal_mode=WAL')
     out.execute('CREATE TABLE IF NOT EXISTS captures(slot INTEGER PRIMARY KEY,payload TEXT NOT NULL,rows INTEGER NOT NULL,delivered_at REAL,receipt TEXT)')
+    out.execute('CREATE TABLE IF NOT EXISTS cursor_state(id INTEGER PRIMARY KEY,query_index INTEGER,token TEXT,page INTEGER,not_before REAL,blocked TEXT)')
+    out.execute("INSERT OR IGNORE INTO cursor_state VALUES(1,0,'',0,0,NULL)");out.commit()
+    query_index,token,page,not_before,blocked=out.execute('SELECT query_index,token,page,not_before,blocked FROM cursor_state WHERE id=1').fetchone()
+    if blocked:return 'authorization_blocked'
+    if time.time()<not_before:return 'throttled_or_storage_pause'
     # Delivery is safe to retry: the server verifies its original signed batch,
     # and snapshots/field records use existing unique observation identities.
     for slot, raw, count in out.execute('SELECT slot,payload,rows FROM captures WHERE delivered_at IS NULL ORDER BY slot').fetchall():
@@ -37,13 +42,16 @@ def _tick(ledger,out):
             with out:
                 out.execute('UPDATE captures SET delivered_at=?,receipt=? WHERE slot=?', (time.time(),json.dumps(result),slot))
             ledger.finish('phone-official-catalog',slot,'success',captured=count,delivered=count,result={**result,'production':True,'run_id':'moto-g85:'+str(slot),'source':'official-amazon-catalog'})
-        except (OSError,ValueError,urllib.error.URLError):
+        except (OSError,ValueError,urllib.error.URLError) as error:
+            code=getattr(error,'code',None)
+            with out:
+                if code in (400,401,403) or isinstance(error,ValueError):
+                    out.execute("UPDATE cursor_state SET blocked='delivery_requires_review' WHERE id=1")
+                else:
+                    try:delay=max(60,min(86400,float(error.headers.get('Retry-After','300'))))
+                    except (ValueError,TypeError,AttributeError):delay=60
+                    out.execute('UPDATE cursor_state SET not_before=? WHERE id=1',(time.time()+delay,))
             return 'delivery_pending'
-    out.execute('CREATE TABLE IF NOT EXISTS cursor_state(id INTEGER PRIMARY KEY,query_index INTEGER,token TEXT,page INTEGER,not_before REAL,blocked TEXT)')
-    out.execute("INSERT OR IGNORE INTO cursor_state VALUES(1,0,'',0,0,NULL)");out.commit()
-    query_index,token,page,not_before,blocked=out.execute('SELECT query_index,token,page,not_before,blocked FROM cursor_state WHERE id=1').fetchone()
-    if blocked:return 'authorization_blocked'
-    if time.time()<not_before:return 'throttled_or_storage_pause'
     slot = int(time.time() // INTERVAL_SECONDS) * INTERVAL_SECONDS
     if not ledger.claim('phone-official-catalog',slot):
         return 'already_recorded'
@@ -106,7 +114,9 @@ def main(once=False):
             status=tick()
         except (OSError,sqlite3.Error,ValueError):
             status='local_error_data_retained'
-        (BASE/'production-health.json').write_text(json.dumps({'checked_at':time.time(),'status':status,'production_enabled':True,'source':'official-amazon-catalog','interval_seconds':INTERVAL_SECONDS,'maximum_items_per_day':19200,'query_count':QUERY_COUNT}))
+        pending=BASE/'production-health.tmp'
+        pending.write_text(json.dumps({'checked_at':time.time(),'status':status,'production_enabled':True,'source':'official-amazon-catalog','interval_seconds':INTERVAL_SECONDS,'maximum_items_per_day':19200,'query_count':QUERY_COUNT}))
+        pending.replace(BASE/'production-health.json')
         if once:
             print(status)
             return
