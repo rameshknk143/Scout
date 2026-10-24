@@ -7,7 +7,11 @@ import time
 import urllib.request
 import urllib.error
 from pathlib import Path
-from hourly_automation import Ledger, hour_slot
+from hourly_automation import Ledger
+from urllib.parse import urlencode
+INTERVAL_SECONDS = 90
+QUERY_COUNT = 32
+MAX_PAGES = 50
 
 BASE = Path('/opt/scout')
 API = 'https://scout-api-3yvy.onrender.com'
@@ -35,7 +39,12 @@ def _tick(ledger,out):
             ledger.finish('phone-official-catalog',slot,'success',captured=count,delivered=count,result={**result,'production':True,'run_id':'moto-g85:'+str(slot),'source':'official-amazon-catalog'})
         except (OSError,ValueError,urllib.error.URLError):
             return 'delivery_pending'
-    slot = hour_slot(time.time())
+    out.execute('CREATE TABLE IF NOT EXISTS cursor_state(id INTEGER PRIMARY KEY,query_index INTEGER,token TEXT,page INTEGER,not_before REAL,blocked TEXT)')
+    out.execute("INSERT OR IGNORE INTO cursor_state VALUES(1,0,'',0,0,NULL)");out.commit()
+    query_index,token,page,not_before,blocked=out.execute('SELECT query_index,token,page,not_before,blocked FROM cursor_state WHERE id=1').fetchone()
+    if blocked:return 'authorization_blocked'
+    if time.time()<not_before:return 'throttled_or_storage_pause'
+    slot = int(time.time() // INTERVAL_SECONDS) * INTERVAL_SECONDS
     if not ledger.claim('phone-official-catalog',slot):
         return 'already_recorded'
     temp = Path('/sys/class/power_supply/battery/temp')
@@ -43,18 +52,34 @@ def _tick(ledger,out):
         ledger.finish('phone-official-catalog',slot,'paused',attempts=0,error='thermal_or_disk_guard')
         return 'paused'
     try:
-        data = call('/phone/catalog')
+        data = call('/phone/catalog?'+urlencode({'query_index':query_index,'page_token':token}))
         rows = data['batch']['rows']
         if not isinstance(rows,list) or len(rows)>20 or not isinstance(data['proof'],str):
             raise ValueError('invalid_capture')
+        next_token=data['batch'].get('next_token')
+        if not isinstance(next_token,(str,type(None))):raise ValueError('invalid_cursor')
+        if next_token and next_token!=token and page+1<MAX_PAGES:
+            next_query,next_page=query_index,page+1
+        else:
+            next_query,next_token,next_page=(query_index+1)%QUERY_COUNT,'',0
         with out:
             out.execute('INSERT INTO captures(slot,payload,rows) VALUES(?,?,?)',(slot,json.dumps(data),len(rows)))
+            out.execute('UPDATE cursor_state SET query_index=?,token=?,page=? WHERE id=1',(next_query,next_token or '',next_page))
         ledger.finish('phone-official-catalog',slot,'delivery_pending',captured=len(rows),result={
             'production':True,'source':'official-amazon-catalog','captured_at':data['batch']['captured_at'],
             'run_id':'moto-g85:'+str(slot),'price_available':False})
         return 'captured'
     except (OSError,ValueError,KeyError,TypeError,urllib.error.URLError) as error:
         code = getattr(error,'code',None)
+        with out:
+            if code in (401,403):
+                out.execute("UPDATE cursor_state SET blocked='authorization_denied' WHERE id=1")
+            elif code in (429,503):
+                try:delay=max(90,min(86400,float(error.headers.get('Retry-After','300'))))
+                except (ValueError,TypeError,AttributeError):delay=300
+                out.execute('UPDATE cursor_state SET not_before=? WHERE id=1',(time.time()+delay,))
+            elif code==400 and token:
+                out.execute("UPDATE cursor_state SET query_index=?,token='',page=0 WHERE id=1",((query_index+1)%QUERY_COUNT,))
         ledger.finish('phone-official-catalog',slot,'failed',error='capture_failed_no_blind_replay',result={'http_status':code})
         return 'failed'
 
@@ -81,11 +106,11 @@ def main(once=False):
             status=tick()
         except (OSError,sqlite3.Error,ValueError):
             status='local_error_data_retained'
-        (BASE/'production-health.json').write_text(json.dumps({'checked_at':time.time(),'status':status,'production_enabled':True,'source':'official-amazon-catalog','maximum_items_per_hour':20}))
+        (BASE/'production-health.json').write_text(json.dumps({'checked_at':time.time(),'status':status,'production_enabled':True,'source':'official-amazon-catalog','interval_seconds':INTERVAL_SECONDS,'maximum_items_per_day':19200,'query_count':QUERY_COUNT}))
         if once:
             print(status)
             return
-        time.sleep(60)
+        time.sleep(15)
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
