@@ -75,7 +75,7 @@ def _tick(ledger,out):
             out.execute('UPDATE cursor_state SET query_index=?,token=?,page=? WHERE id=1',(next_query,next_token or '',next_page))
         ledger.finish('phone-official-catalog',slot,'delivery_pending',captured=len(rows),result={
             'production':True,'source':'official-amazon-catalog','captured_at':data['batch']['captured_at'],
-            'run_id':'moto-g85:'+str(slot),'price_available':False})
+            'run_id':'moto-g85:'+str(slot),'price_available':any(r.get('price') is not None for r in rows),'priced_rows':sum(r.get('price') is not None for r in rows)})
         return 'captured'
     except (OSError,ValueError,KeyError,TypeError,urllib.error.URLError) as error:
         code = getattr(error,'code',None)
