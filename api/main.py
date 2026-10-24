@@ -1331,7 +1331,9 @@ def _phone_proof(batch):
     return hmac.new(_phone_secret("receipt").encode(), body, hashlib.sha256).hexdigest()
 
 @app.get("/phone/catalog")
-def phone_catalog(request: Request):
+def phone_catalog(request: Request, query_index: int = 0, page_token: str = ""):
+    if query_index < 0 or query_index >= len(_PHONE_QUERIES) or len(page_token) > 12000:
+        raise HTTPException(status_code=400, detail="Invalid bounded catalog query")
     _phone_access(request)
     if not laptop_capacity()["accepting"]:
         raise HTTPException(status_code=503, detail="storage_guard")
@@ -1354,10 +1356,10 @@ def phone_catalog(request: Request):
             raise ValueError("missing access")
         response = http.get("https://sellingpartnerapi-eu.amazon.com/catalog/2022-04-01/items",
             headers={"x-amz-access-token":access}, params={"marketplaceIds":"A21TJRUUN4KGV",
-            "keywords":"phone case", "pageSize":20, "includedData":"summaries,attributes,images,productTypes"},
+            "keywords":_PHONE_QUERIES[query_index][1], "pageSize":20, "includedData":"summaries,attributes,images,productTypes", **({"pageToken":page_token} if page_token else {})},
             timeout=(10,50))
         if response.status_code != 200:
-            raise HTTPException(status_code=502, detail="Amazon catalog denied HTTP " + str(response.status_code))
+            raise HTTPException(status_code=response.status_code if response.status_code in (403,429) else 502, detail="Amazon catalog denied HTTP " + str(response.status_code), headers={"Retry-After":response.headers.get("Retry-After","90")})
         data = response.json()
         if not isinstance(data.get("items"),list):
             raise ValueError("invalid items")
@@ -1373,13 +1375,15 @@ def phone_catalog(request: Request):
             images=[g for g in item.get("images",[]) if g.get("marketplaceId")=="A21TJRUUN4KGV"]
             image=next((v.get("link") for g in images for v in g.get("images",[]) if v.get("variant")=="MAIN"),None)
             rows.append({"asin":item["asin"],"title":summary["itemName"],"brand":summary.get("brand"),
-                "category":"Phone Cases","list_type":"official-catalog","rank":None,"price":None,
+                "category":_PHONE_QUERIES[query_index][0],"list_type":"official-catalog","rank":None,"price":None,
                 "rating":None,"review_count":None,"image_url":image,"collected_at":captured,
                 "source":"phone-spapi","subcategory":summary.get("browseClassification",{}).get("displayName"),
                 "product_type":next((p.get("productType") for p in item.get("productTypes",[])
                     if p.get("marketplaceId")=="A21TJRUUN4KGV"),None),
                 "attribute_observations":{"unmapped":[{"label":k,"raw_value":v} for k,v in item.get("attributes",{}).items()]}})
-        batch={"version":1,"device":"moto-g85","captured_at":captured,"rows":rows}
+        batch={"version":1,"device":"moto-g85","captured_at":captured,"rows":rows,
+               "query_index":query_index,"next_token":data.get("pagination",{}).get("nextToken"),
+               "rate_limit":response.headers.get("x-amzn-RateLimit-Limit")}
         return {"batch":batch,"proof":_phone_proof(batch)}
     except (http.RequestException,ValueError,TypeError,KeyError):
         raise HTTPException(status_code=502, detail="Catalog transport or validation failed") from None
@@ -1403,3 +1407,5 @@ def phone_deliver(payload: PhoneDelivery, request: Request):
     inserted=db.insert_snapshot_rows(rows)
     return {"ok":True,"verified":len(rows),"inserted":inserted,"captured_at":batch["captured_at"]}
 
+
+_PHONE_QUERIES = [["Phone Cases","phone case"],["Electronics","bluetooth headphones"],["Computers","computer keyboard"],["Home & Kitchen","kitchen storage"],["Home Improvement","hand tools"],["Beauty","face moisturizer"],["Personal Care","shampoo"],["Grocery","tea coffee"],["Sports","fitness equipment"],["Toys","board games"],["Baby","baby care"],["Pet Supplies","pet supplies"],["Automotive","car accessories"],["Office","office stationery"],["Clothing","men cotton shirt"],["Footwear","running shoes"],["Bags","travel backpack"],["Watches","wrist watch"],["Books","paperback books"],["Musical Instruments","musical instruments"],["Garden","gardening tools"],["Appliances","kitchen appliance"],["Lighting","led light"],["Furniture","office chair"],["Phone Accessories","mobile charger"],["Computers","computer mouse"],["Kitchen","cookware"],["Home","bed sheets"],["Health","first aid"],["Crafts","art craft supplies"],["Jewellery","fashion earrings"],["Games","video game accessories"]]
