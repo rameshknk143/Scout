@@ -20,8 +20,8 @@ export default async function HistoryPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Collection history</p>
-        <h1 className="mt-2 text-2xl font-bold text-zinc-900">Archives &amp; history</h1>
-        <p className="mt-2 max-w-2xl text-sm text-zinc-600">
+        <h1 className="mt-2 text-2xl font-bold text-white">Archives &amp; history</h1>
+        <p className="mt-2 max-w-2xl text-sm text-zinc-300">
           Older observations are preserved in verified, encrypted archives. Recent products remain searchable in the live database.
         </p>
       </div>
