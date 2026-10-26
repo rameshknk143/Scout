@@ -9,7 +9,10 @@ import urllib.error
 from pathlib import Path
 from hourly_automation import Ledger
 from urllib.parse import urlencode
+from email.utils import parsedate_to_datetime
 INTERVAL_SECONDS = 90
+REQUESTS_PER_CYCLE = 5
+MIN_REQUEST_GAP_SECONDS = 12
 QUERY_COUNT = 32
 MAX_PAGES = 50
 
@@ -24,7 +27,19 @@ def call(path, payload=None):
     with urllib.request.urlopen(req, timeout=110) as response:
         return json.load(response)
 
-def _tick(ledger,out):
+def retry_delay(error, minimum):
+    raw = error.headers.get('Retry-After', '') if getattr(error, 'headers', None) else ''
+    try:
+        delay = float(raw)
+    except (ValueError, TypeError):
+        try:
+            delay = parsedate_to_datetime(raw).timestamp() - time.time()
+        except (ValueError, TypeError, OverflowError):
+            delay = 300
+    return max(minimum, delay)
+
+
+def _tick(ledger,out,slot_override=None,delivery_only=False):
     out.execute('PRAGMA journal_mode=WAL')
     out.execute('CREATE TABLE IF NOT EXISTS captures(slot INTEGER PRIMARY KEY,payload TEXT NOT NULL,rows INTEGER NOT NULL,delivered_at REAL,receipt TEXT)')
     out.execute('CREATE TABLE IF NOT EXISTS cursor_state(id INTEGER PRIMARY KEY,query_index INTEGER,token TEXT,page INTEGER,not_before REAL,blocked TEXT)')
@@ -48,11 +63,12 @@ def _tick(ledger,out):
                 if code in (400,401,403) or isinstance(error,ValueError):
                     out.execute("UPDATE cursor_state SET blocked='delivery_requires_review' WHERE id=1")
                 else:
-                    try:delay=max(60,min(86400,float(error.headers.get('Retry-After','300'))))
-                    except (ValueError,TypeError,AttributeError):delay=60
+                    delay=retry_delay(error,60)
                     out.execute('UPDATE cursor_state SET not_before=? WHERE id=1',(time.time()+delay,))
             return 'delivery_pending'
-    slot = int(time.time() // INTERVAL_SECONDS) * INTERVAL_SECONDS
+    if delivery_only:
+        return 'delivered'
+    slot = slot_override if slot_override is not None else int(time.time() // INTERVAL_SECONDS) * INTERVAL_SECONDS
     if not ledger.claim('phone-official-catalog',slot):
         return 'already_recorded'
     temp = Path('/sys/class/power_supply/battery/temp')
@@ -83,22 +99,56 @@ def _tick(ledger,out):
             if code in (401,403):
                 out.execute("UPDATE cursor_state SET blocked='authorization_denied' WHERE id=1")
             elif code in (429,503):
-                try:delay=max(90,min(86400,float(error.headers.get('Retry-After','300'))))
-                except (ValueError,TypeError,AttributeError):delay=300
+                delay=retry_delay(error,90)
                 out.execute('UPDATE cursor_state SET not_before=? WHERE id=1',(time.time()+delay,))
             elif code==400 and token:
                 out.execute("UPDATE cursor_state SET query_index=?,token='',page=0 WHERE id=1",((query_index+1)%QUERY_COUNT,))
         ledger.finish('phone-official-catalog',slot,'failed',error='capture_failed_no_blind_replay',result={'http_status':code})
         return 'failed'
 
-def tick():
+def tick(slot_override=None,delivery_only=False):
     ledger=Ledger(BASE/'automation.sqlite')
     out=sqlite3.connect(BASE/'production-outbox.sqlite',timeout=15)
     try:
-        return _tick(ledger,out)
+        return _tick(ledger,out,slot_override,delivery_only)
     finally:
         out.close()
         ledger.db.close()
+
+def cycle():
+    """Up to five signed pages; retain each page separately and rest 90s."""
+    status=tick(delivery_only=True)
+    if status!='delivered':
+        return status
+    control=sqlite3.connect(BASE/'production-outbox.sqlite',timeout=15)
+    try:
+        control.execute('CREATE TABLE IF NOT EXISTS batch_control(id INTEGER PRIMARY KEY,next_cycle REAL NOT NULL)')
+        control.execute('INSERT OR IGNORE INTO batch_control VALUES(1,0)')
+        control.commit()
+        if time.time()<control.execute('SELECT next_cycle FROM batch_control WHERE id=1').fetchone()[0]:
+            return 'batch_gap'
+        base=int(time.time()//INTERVAL_SECONDS)*INTERVAL_SECONDS
+        try:
+            last_start=None
+            for index in range(REQUESTS_PER_CYCLE):
+                if last_start is not None:
+                    time.sleep(max(0,MIN_REQUEST_GAP_SECONDS-(time.monotonic()-last_start)))
+                last_start=time.monotonic()
+                # Fail closed after an abrupt process death during a request.
+                # Normal completion replaces this reservation with a 90s rest.
+                with control:
+                    control.execute('UPDATE batch_control SET next_cycle=? WHERE id=1',(time.time()+900,))
+                status=tick(slot_override=base+index)
+                if status!='captured':
+                    return status
+            return 'cycle_complete' if tick(delivery_only=True)=='delivered' else 'delivery_pending'
+        finally:
+            # Restarting the worker must not shorten the batch gap.
+            with control:
+                control.execute('UPDATE batch_control SET next_cycle=? WHERE id=1',(time.time()+INTERVAL_SECONDS,))
+    finally:
+        control.close()
+
 
 def main(once=False):
     import fcntl
@@ -111,11 +161,11 @@ def main(once=False):
     ledger.db.close()
     while True:
         try:
-            status=tick()
+            status=cycle()
         except (OSError,sqlite3.Error,ValueError):
             status='local_error_data_retained'
         pending=BASE/'production-health.tmp'
-        pending.write_text(json.dumps({'checked_at':time.time(),'status':status,'production_enabled':True,'source':'official-amazon-catalog','interval_seconds':INTERVAL_SECONDS,'maximum_items_per_day':19200,'query_count':QUERY_COUNT}))
+        pending.write_text(json.dumps({'checked_at':time.time(),'status':status,'production_enabled':True,'source':'official-amazon-catalog','minimum_cycle_gap_seconds':INTERVAL_SECONDS,'requests_per_cycle':REQUESTS_PER_CYCLE,'minimum_request_gap_seconds':MIN_REQUEST_GAP_SECONDS,'maximum_rows_per_cycle':20*REQUESTS_PER_CYCLE,'query_count':QUERY_COUNT}))
         pending.replace(BASE/'production-health.json')
         if once:
             print(status)
