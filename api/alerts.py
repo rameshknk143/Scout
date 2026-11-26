@@ -144,7 +144,7 @@ def _check_dropout(asin, title, category, list_type, points, latest_run_by_list)
             # captured band is now "1-30 and 51-80", which is not a number worth
             # putting in a user-facing sentence — and a stale "top 30" would
             # have been a wrong value stated confidently.
-            "message": f"No longer in {label} for {category} (last seen #{last_seen['rank']})",
+            "message": f"Dropped out of the {category} {label} list (last seen #{last_seen['rank']})",
             "detail": {"last_rank": last_seen["rank"], "last_seen_at": last_seen["collected_at"]},
             "detected_at": latest_run,
         }]

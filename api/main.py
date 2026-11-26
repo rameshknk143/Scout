@@ -277,6 +277,10 @@ def login(req: LoginRequest):
     # password is wrong — so login can't be used to enumerate accounts.
     if not user or not auth.verify_password(user["password_hash"], req.password):
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    try:
+        db.log_audit_event(user_id=user["id"], actor_email=email, action="Signed in (email)", target=email)
+    except Exception:
+        pass
     return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
 
 
@@ -304,6 +308,18 @@ def google_login(req: GoogleAuthRequest):
             email_verified=True,
             auth_provider="google",
         )
+    try:
+        db.log_audit_event(user_id=user["id"], actor_email=user["email"], action="Signed in (Google)", target=user["email"])
+    except Exception:
+        pass
+    return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
+
+
+@app.get("/auth/me", dependencies=[Depends(require_key)])
+def me(user_id: int = Depends(require_user)):
+    user = db.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
     return {"user_id": user["id"], "email": user["email"], "full_name": user.get("full_name")}
 
 
@@ -570,6 +586,10 @@ def amazon_callback(req: AmazonCallbackRequest, user_id: int = Depends(require_u
         user_id=user_id,
         marketplace_id=req.marketplace_id
     )
+    try:
+        db.log_audit_event(user_id=user_id, actor_email=f"user:{user_id}", action="Connected Amazon seller account", target=req.selling_partner_id)
+    except Exception:
+        pass
     return {"ok": True, "selling_partner_id": req.selling_partner_id}
 
 
@@ -590,6 +610,10 @@ def amazon_status(user_id: int = Depends(require_user)):
 @app.delete("/auth/amazon/{selling_partner_id}", dependencies=[Depends(require_key)])
 def delete_amazon_account(selling_partner_id: str, user_id: int = Depends(require_user)):
     db.delete_seller_credentials(selling_partner_id, user_id)
+    try:
+        db.log_audit_event(user_id=user_id, actor_email=f"user:{user_id}", action="Disconnected Amazon seller account", target=selling_partner_id)
+    except Exception:
+        pass
     return {"ok": True}
 
 @app.get("/alerts", dependencies=[Depends(require_key)])
@@ -604,9 +628,27 @@ class ListingAnalyzeRequest(BaseModel):
 
 
 @app.post("/listing/analyze", dependencies=[Depends(require_key)])
-def analyze_listing(req: ListingAnalyzeRequest):
+def analyze_listing(req: ListingAnalyzeRequest, user_id: int = Depends(require_user)):
     try:
-        return listing_analyzer.analyze_listing(clean_asin(req.asin), category=req.category, marketplace_id=req.marketplace_id)
+        result = listing_analyzer.analyze_listing(clean_asin(req.asin), category=req.category, marketplace_id=req.marketplace_id)
+        # Persist the Optimizer score so Listing Health counts it — previously
+        # only Validator scores were written to `validations`, so Optimizer
+        # scores (e.g. 67/100) never appeared there.
+        try:
+            db.log_validation(
+                asin=result.get("asin") or clean_asin(req.asin),
+                title=result.get("title"),
+                category=result.get("category") or req.category,
+                score=result.get("score"),
+                verdict="LISTING",
+                buy_price=None,
+                notes="listing-analyzer",
+                validated_at=datetime.now(timezone.utc).isoformat(),
+                user_id=user_id,
+            )
+        except Exception:
+            pass  # scoring must not fail because logging did
+        return result
     except listing_analyzer.ListingFetchError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
@@ -827,11 +869,15 @@ def get_listing_health(user_id: int = Depends(require_user)):
             listing_score -= 25
             
         listing_score = max(25, listing_score)
-            
+
+        # Show the score the user actually saw when the ASIN was scored
+        # (Validator / Optimizer), not a recomputed snapshot score. The
+        # snapshot gaps above are still listed, so the detail is not lost.
+        stored_score = row.get("score") if hasattr(row, "get") else row["score"]
         results.append({
             "asin": asin,
             "title": row["title"] or (snap["title"] if snap else "Unknown Product"),
-            "score": listing_score,
+            "score": stored_score if stored_score is not None else listing_score,
             "verdict": row["verdict"],
             "gaps": gaps,
             "price": snap["price"] if snap else None
@@ -917,6 +963,10 @@ def sync_storefront(user_id: int = Depends(require_user)):
     result = amazon_sp_api.sync_storefront_data(user_id)
     if not result.get("ok"):
         raise HTTPException(status_code=400, detail=result.get("error", "Sync failed"))
+    try:
+        db.log_audit_event(user_id=user_id, actor_email=f"user:{user_id}", action="Synced storefront (SP-API)", target="storefront")
+    except Exception:
+        pass
     return result
 
 
