@@ -26,6 +26,7 @@ const NAV = [
   { label: "How It Works", href: "#how" },
   { label: "Security", href: "#security" },
   { label: "Pricing", href: "#pricing" },
+  { label: "Profit Calculator", href: "#calculator" },
 ];
 
 interface StaggerItem {
@@ -37,25 +38,32 @@ export default function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [annualBilling, setAnnualBilling] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [explorerIdx, setExplorerIdx] = useState(0);
+  const [calcPrice, setCalcPrice] = useState(499);
+  const [calcCost, setCalcCost] = useState(200);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const faqs = [
     {
+      q: "How does the 30-day free trial work?",
+      a: "The launch offer is a 30-day free trial, no card needed. Trial access is arranged by mail at support@scoutveda.com while the Amazon public app is pending — write to us and we will confirm the start. If you continue, pick Starter, Pro Reseller or Agency — monthly or annual.",
+    },
+    {
       q: "Is it safe? Do you need my Amazon password?",
-      a: "ScoutVeda connects using Amazon's official Selling Partner API (SP-API) via OAuth 2.0. We never see or store your Amazon password. You approve read-only access directly on Amazon's official site.",
+      a: "ScoutVeda connects using Amazon's official Selling Partner API (SP-API) via OAuth 2.0. We never see or store your Amazon password. You approve read-only access directly on Amazon's official site. That public connection is not available yet — the current app is private/draft and pending a new public app.",
     },
     {
-      q: "Can Amazon suspend my seller account for connecting?",
-      a: "No. ScoutVeda uses standard Amazon LWA read-only scopes. We do not place automated orders or execute restricted inventory operations. Access can be revoked anytime with one click.",
+      q: "Are sales numbers exact?",
+      a: "No — and we will never claim they are. Monthly sales are labelled estimates, based on BSR and category signals. Fees and margins use the published Amazon.in fee tables.",
     },
     {
-      q: "Can I explore ScoutVeda before connecting my seller account?",
-      a: "Yes! You get full access to our product database, keyword harvester, and profit calculator immediately upon sign up. Connecting your Seller Central account is an optional upgrade to unlock live storefront sales sync.",
+      q: "Does it work for Flipkart?",
+      a: "Not yet. ScoutVeda is India-first, with Amazon.in as the core today. There is no Flipkart API app yet — Flipkart support is on the roadmap, not live.",
     },
     {
-      q: "What data does ScoutVeda sync from my storefront?",
-      a: "We sync order metrics, sales revenue totals, units sold, and inventory health flags over a 14-day rolling period. We never share, sell, or benchmark your private storefront data with third parties.",
+      q: "How do I get help?",
+      a: "By mail only — write to support@scoutveda.com and we will reply there. There is no WhatsApp support.",
     },
   ];
 
@@ -178,8 +186,8 @@ export default function Landing() {
     },
     {
       name: "Agency & Brand",
-      price: annualBilling ? "₹6,999" : "₹9,999",
-      desc: "For agencies managing multiple Amazon seller accounts.",
+      price: annualBilling ? "₹6,499" : "₹9,999",
+      desc: "For agencies & multi-store teams.",
       features: [
         "10 Connected Storefronts",
         "Multi-Workspace Access",
@@ -191,6 +199,24 @@ export default function Landing() {
       popular: false,
     },
   ];
+
+  const demoProducts = [
+    { name: "Phone Case — iPhone 17, Grey", cat: "Cases, Covers & Skins", price: 499, bsr: 1240, rating: "4.3 ★ (2,184)", sellers: 7, est: "1,240 / mo*", score: 86, margin: "38.2%", verdict: "Strong demand, referral 0% at this price, healthy margin after Easy Ship fees." },
+    { name: "Stainless Steel Bottle — 1 Litre", cat: "Kitchen & Dining", price: 699, bsr: 3810, rating: "4.4 ★ (5,902)", sellers: 14, est: "860 / mo*", score: 74, margin: "29.6%", verdict: "Steady category, more competition. Win on bundle or colour variants." },
+    { name: "LED Study Lamp — Rechargeable", cat: "Home & Kitchen", price: 899, bsr: 6920, rating: "4.1 ★ (1,340)", sellers: 22, est: "410 / mo*", score: 58, margin: "21.4%", verdict: "Crowded and price-sensitive. Only enter with a clear feature edge." },
+  ];
+  const demo = demoProducts[explorerIdx];
+  // Verified Amazon.in Easy Ship calculator (prototype logic): referral 0% ≤ ₹1,000
+  // (25% above) for Cases/Covers-type categories, closing by price band, ₹55 shipping, 18% GST on fees.
+  const calcReferral = calcPrice <= 1000 ? 0 : calcPrice * 0.25;
+  const calcClosing = calcPrice <= 300 ? 2 : calcPrice <= 500 ? 23 : calcPrice <= 1000 ? 48 : 79;
+  const calcShipping = 55;
+  const calcGst = (calcReferral + calcClosing + calcShipping) * 0.18;
+  const calcFees = calcReferral + calcClosing + calcShipping + calcGst;
+  const calcPayout = calcPrice - calcFees;
+  const calcProfit = calcPayout - calcCost;
+  const calcMargin = calcPrice ? (calcProfit / calcPrice) * 100 : 0;
+  const inr = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
 
   return (
     <div className="sv-page">
@@ -257,7 +283,7 @@ export default function Landing() {
                 transition: `opacity var(--dur-base) var(--ease-out) ${staggerItems[5].delay}ms, transform var(--dur-base) var(--ease-out) ${staggerItems[5].delay}ms`,
               }}
             >
-              Start free
+              Start free trial
             </Link>
             <button
               className="sv-burger"
@@ -327,12 +353,12 @@ export default function Landing() {
               }ms`,
             }}
           >
-            <span className="sv-eyebrow">The Operating System for Amazon Sellers</span>
+            <span className="sv-eyebrow">New&nbsp;·&nbsp;30-day free trial — no card needed</span>
             <h1 className="sv-h1">
-              Run your Amazon business with <span className="text-accent">total confidence</span>.
+              Run your Amazon<br />business with<br />total confidence.
             </h1>
             <p className="sv-lede">
-              Research products, calculate real net margins, monitor keywords, and sync storefront sales in one secure workspace.
+              ScoutVeda is the affordable research and profit tool being built for Amazon.in sellers — product research and true fees in one simple cockpit. This page shows demo data.
             </p>
             <div className="sv-hero-cta">
               <Link
@@ -350,10 +376,10 @@ export default function Landing() {
                   }ms`,
                 }}
               >
-                Start Free Research
+                Start your 30-day free trial
               </Link>
-              <a
-                href="#how"
+              <Link
+                href="/login"
                 className="sv-btn sv-btn-ghost sv-btn-lg"
                 style={{
                   opacity: staggerItems[2]?.visible ? 1 : 0,
@@ -367,8 +393,8 @@ export default function Landing() {
                   }ms`,
                 }}
               >
-                See How It Works
-              </a>
+                Log in
+              </Link>
             </div>
             <div className="sv-hero-trust">
               <svg
@@ -386,6 +412,8 @@ export default function Landing() {
               <span>Read-only access</span>
               <span className="divider" aria-hidden="true">·</span>
               <span>Revoke anytime</span>
+              <span className="divider" aria-hidden="true">·</span>
+              <span>30-day trial, no card · support@scoutveda.com</span>
             </div>
           </div>
 
@@ -404,6 +432,80 @@ export default function Landing() {
             }}
           >
             <HeroPreview3D />
+          </div>
+        </div>
+      </section>
+
+      {/* iOS STRIP — prototype value bar */}
+      <div className="sv-wrap" style={{ marginTop: 8 }}>
+        <div className="sv-ios-strip">
+          <span><b>₹1,499/mo</b> on annual — vs ~₹9,000+ for international tools</span>
+          <span><b>India-first</b> fees &amp; pricing</span>
+          <span><b>Designed for read-only</b> SP-API access</span>
+          <span><b>Mail support</b> support@scoutveda.com</span>
+        </div>
+      </div>
+
+      {/* RESEARCH EXPLORER — demo data only, ported from prototype */}
+      <section id="explorer" className="sv-wrap sv-section" aria-labelledby="explorer-heading">
+        <div className="sv-section-head sv-ios-center">
+          <span className="sv-eyebrow">Product Research</span>
+          <h2 id="explorer-heading" className="sv-h2">One ASIN. One complete picture.</h2>
+          <p className="sv-sub">Tap a demo product to see the record ScoutVeda is designed to build for every ASIN. Demo data only — live seller connection for other sellers is pending Amazon public-app approval, so you cannot connect an account yet.</p>
+        </div>
+        <div className="sv-ios-explorer">
+          <div className="sv-ios-asin-list">
+            {demoProducts.map((p, i) => (
+              <button key={p.name} type="button" onClick={() => setExplorerIdx(i)}
+                className={`sv-ios-asin-btn${i === explorerIdx ? " active" : ""}`}>
+                <span><strong>{p.name}</strong><span className="sv-ios-asin-sub">{p.cat} · ₹{p.price} · BSR #{p.bsr.toLocaleString("en-IN")}</span></span>
+                <span className="sv-ios-score">{p.score}</span>
+              </button>
+            ))}
+          </div>
+          <div className="sv-ios-detail">
+            <span className="sv-ios-detail-eyebrow">OPPORTUNITY SCORE {demo.score} / 100</span>
+            <h3>{demo.name}</h3>
+            <p className="sv-ios-detail-verdict">{demo.verdict}</p>
+            <div className="sv-ios-detail-grid">
+              <div><span>Price</span><strong>₹{demo.price}</strong></div>
+              <div><span>BSR</span><strong>#{demo.bsr.toLocaleString("en-IN")}</strong></div>
+              <div><span>Rating / Reviews</span><strong>{demo.rating}</strong></div>
+              <div><span>Sellers</span><strong>{demo.sellers}</strong></div>
+              <div><span>Est. monthly sales*</span><strong>{demo.est}</strong></div>
+              <div><span>Net margin</span><strong style={{ color: "#30d158" }}>{demo.margin}</strong></div>
+            </div>
+            <p className="sv-ios-note">*Estimate only. Category: {demo.cat}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* PROFIT CALCULATOR — verified Amazon.in Easy Ship fees, ported from prototype */}
+      <section id="calculator" className="sv-wrap sv-section" aria-labelledby="calculator-heading" style={{ paddingTop: 0 }}>
+        <div className="sv-section-head sv-ios-center">
+          <span className="sv-eyebrow">Profit Calculator</span>
+          <h2 id="calculator-heading" className="sv-h2">Know your margin before you buy stock.</h2>
+          <p className="sv-sub">Move the sliders. This working demo uses Amazon.in Easy Ship logic — referral, closing fee, shipping and GST on fees.</p>
+        </div>
+        <div className="sv-ios-calc">
+          <div>
+            <label className="sv-ios-label">Selling price <span className="sv-ios-val">{inr(calcPrice)}</span>
+              <input type="range" min={199} max={1999} step={10} value={calcPrice} onChange={(e) => setCalcPrice(Number(e.target.value))} aria-label="Selling price" />
+            </label>
+            <label className="sv-ios-label">Your buying cost <span className="sv-ios-val">{inr(calcCost)}</span>
+              <input type="range" min={50} max={1200} step={10} value={calcCost} onChange={(e) => setCalcCost(Number(e.target.value))} aria-label="Your buying cost" />
+            </label>
+            <p className="sv-ios-note"><b>Fee basis:</b> Referral 0% up to ₹1,000 (25% above) for Cases/Covers-type categories, closing fee by price band, Easy Ship ₹55 for first 500g, plus 18% GST on Amazon fees. Verified against Amazon.in fee schedule, Nov 2025. Other categories vary — ScoutVeda applies the right category table live.</p>
+          </div>
+          <div className="sv-ios-result">
+            <div className="sv-ios-row"><span>Selling price</span><b>{inr(calcPrice)}</b></div>
+            <div className="sv-ios-row"><span>Referral fee</span><span>{calcReferral === 0 ? "₹0 (0% up to ₹1,000)" : inr(calcReferral)}</span></div>
+            <div className="sv-ios-row"><span>Closing fee (Easy Ship)</span><span>{inr(calcClosing)}</span></div>
+            <div className="sv-ios-row"><span>Shipping — first 500g</span><span>{inr(calcShipping)}</span></div>
+            <div className="sv-ios-row"><span>GST 18% on Amazon fees</span><span>{inr(calcGst)}</span></div>
+            <div className="sv-ios-row"><span>Your buying cost</span><span>{inr(calcCost)}</span></div>
+            <div className="sv-ios-row total"><span>Net profit</span><span style={{ color: calcProfit >= 0 ? "#1a7f37" : "#d70015" }}>{inr(calcProfit)}</span></div>
+            <p className="sv-ios-note">Margin: <b>{calcMargin.toFixed(1)}%</b> · Estimated payout from Amazon: <b>{inr(calcPayout)}</b> before your cost. TCS 0.5% &amp; TDS 0.1% are withheld from payout but are not a lost cost.</p>
           </div>
         </div>
       </section>
@@ -588,6 +690,22 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* COMPARE — prototype table */}
+      <section className="sv-wrap sv-section" style={{ paddingTop: 0 }} aria-labelledby="compare-heading">
+        <div className="sv-section-head sv-ios-center">
+          <span className="sv-eyebrow">Compare</span>
+          <h2 id="compare-heading" className="sv-h2">ScoutVeda vs Helium 10 Platinum</h2>
+        </div>
+        <div className="sv-ios-compare">
+          <div className="sv-ios-compare-row head"><span>Compare</span><span>ScoutVeda</span><span>Helium 10 Platinum</span></div>
+          <div className="sv-ios-compare-row"><span>Starting price</span><b>₹1,499 / mo*</b><span>$99–$129 / mo</span></div>
+          <div className="sv-ios-compare-row"><span>Built for</span><span>Amazon.in sellers</span><span>US / global first</span></div>
+          <div className="sv-ios-compare-row"><span>India fee accuracy</span><span>✓ Built-in</span><span>Manual check needed</span></div>
+          <div className="sv-ios-compare-row"><span>Free trial</span><span>30 days, no card</span><span>Varies</span></div>
+        </div>
+        <p className="sv-ios-note" style={{ textAlign: "center" }}>*Annual billing. Helium 10 pricing verified Nov 2025: Platinum $129/mo monthly, $99/mo yearly.</p>
+      </section>
+
       {/* FAQ - Accordion with smooth animation */}
       <section
         id="faq"
@@ -647,25 +765,16 @@ export default function Landing() {
               Help us shape the future of ScoutVeda
             </h2>
             <p className="text-xs text-text-tertiary leading-relaxed mt-2 font-semibold">
-              Have suggestions, feature requests, or encountered a bug? We iterate fast based on seller input. Reach out directly via Email or WhatsApp.
+              Have suggestions, feature requests, or encountered a bug? We iterate fast based on seller input. Reach out by mail only — there is no WhatsApp support.
             </p>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
             <a
-              href="mailto:rameshknk143@gmail.com?subject=ScoutVeda Feedback & Suggestions"
+              href="mailto:support@scoutveda.com?subject=ScoutVeda Feedback & Suggestions"
               className="sv-btn sv-btn-ghost flex items-center gap-2 text-xs py-2.5 px-4 border border-black/10 hover:bg-surface-2 cursor-pointer shadow-sm rounded-lg"
               style={{ padding: "10px 16px", fontSize: "11px", fontWeight: "bold" }}
             >
-              ✉️ Email Suggestions
-            </a>
-            <a
-              href="https://wa.me/919900000000?text=Hi%20Ram,%20I%20have%20some%20feedback/suggestions%20for%20ScoutVeda..."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sv-btn sv-btn-primary flex items-center gap-2 text-xs py-2.5 px-4 bg-positive hover:bg-positive/90 text-accent-on cursor-pointer shadow-sm rounded-lg border border-positive/10"
-              style={{ padding: "10px 16px", fontSize: "11px", fontWeight: "bold" }}
-            >
-              💬 WhatsApp Chat
+              ✉️ Email support@scoutveda.com
             </a>
           </div>
         </GlassCard>
@@ -682,11 +791,12 @@ export default function Landing() {
               <a href="#security">Security</a>
               <a href="#faq">FAQ</a>
               <a href="#feedback">Feedback</a>
-              <a href="mailto:rameshknk143@gmail.com">Support</a>
+              <a href="mailto:support@scoutveda.com">support@scoutveda.com</a>
+              <a href="/login">Log in</a>
             </nav>
           </div>
           <p className="sv-footer-fine">
-            ScoutVeda is an independent research platform and is not affiliated with Amazon.<br />
+            ScoutVeda is an independent research platform and is not affiliated with Amazon. Sales figures are estimates. Fees per Amazon.in schedule.<br />
             © {new Date().getFullYear()} ScoutVeda. All rights reserved.
           </p>
         </div>
