@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import Tilt from "@/components/3d/Tilt";
-import BrowserShowcase from "@/components/BrowserShowcase";
+import HeroCockpit from "@/components/HeroCockpit";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { OpportunityDial } from "@/components/3d/OpportunityDial";
 import PerspectiveGrid from "@/components/3d/PerspectiveGrid";
 import { GlassCard } from "@/components/3d/GlassCard";
 import { FeatureCard3D } from "@/components/3d/FeatureCard3D";
@@ -200,10 +198,12 @@ export default function Landing() {
     },
   ];
 
+  // One verified demo record only. The previous explorer listed two
+  // more "demo" products (a bottle and a lamp) with invented scores and
+  // margins — removed 26 Nov 2026. Do not add products back without
+  // verified price / BSR / rating / fee figures.
   const demoProducts = [
     { name: "Phone Case — iPhone 17, Grey", cat: "Cases, Covers & Skins", price: 499, bsr: 1240, rating: "4.3 ★ (2,184)", sellers: 7, est: "1,240 / mo*", score: 86, margin: "38.2%", verdict: "Strong demand, referral 0% at this price, healthy margin after Easy Ship fees." },
-    { name: "Stainless Steel Bottle — 1 Litre", cat: "Kitchen & Dining", price: 699, bsr: 3810, rating: "4.4 ★ (5,902)", sellers: 14, est: "860 / mo*", score: 74, margin: "29.6%", verdict: "Steady category, more competition. Win on bundle or colour variants." },
-    { name: "LED Study Lamp — Rechargeable", cat: "Home & Kitchen", price: 899, bsr: 6920, rating: "4.1 ★ (1,340)", sellers: 22, est: "410 / mo*", score: 58, margin: "21.4%", verdict: "Crowded and price-sensitive. Only enter with a clear feature edge." },
   ];
   const demo = demoProducts[explorerIdx];
   // Verified Amazon.in Easy Ship calculator (prototype logic): referral 0% ≤ ₹1,000
@@ -360,6 +360,9 @@ export default function Landing() {
             <p className="sv-lede">
               ScoutVeda is the affordable research and profit tool being built for Amazon.in sellers — product research and true fees in one simple cockpit. This page shows demo data.
             </p>
+            <p className="sv-hero-proof">
+              <b>Demo storefront, live sync:</b> KNK Enterprises — <b>₹1,447 in 14 days, 3 units sold</b> · Live · SP-API
+            </p>
             <div className="sv-hero-cta">
               <Link
                 href="/signup"
@@ -451,7 +454,7 @@ export default function Landing() {
         <div className="sv-section-head sv-ios-center">
           <span className="sv-eyebrow">Product Research</span>
           <h2 id="explorer-heading" className="sv-h2">One ASIN. One complete picture.</h2>
-          <p className="sv-sub">Tap a demo product to see the record ScoutVeda is designed to build for every ASIN. Demo data only — live seller connection for other sellers is pending Amazon public-app approval, so you cannot connect an account yet.</p>
+          <p className="sv-sub">This is the record ScoutVeda is designed to build for every ASIN — price, BSR, rating, sellers, fees and margin in one place. Demo data only — live seller connection for other sellers is pending Amazon public-app approval, so you cannot connect an account yet. The KNK storefront below it is a real sync: ₹1,447 in 14 days, 3 units sold.</p>
         </div>
         <div className="sv-ios-explorer">
           <div className="sv-ios-asin-list">
@@ -806,25 +809,13 @@ export default function Landing() {
 }
 
 function HeroPreview3D() {
-  return (
-    <div className="relative w-full max-w-[620px] mx-auto py-10">
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-1">
-        <div className="relative">
-          <OpportunityDial score={82} size={280} />
-        </div>
-        <div className="md:hidden">
-          <Tilt className="relative w-full max-w-[620px] mx-auto py-10">
-            <BrowserShowcase />
-          </Tilt>
-        </div>
-      </div>
-      <div className="hidden md:block mt-8">
-        <Tilt className="relative w-full max-w-[620px] mx-auto py-10">
-          <BrowserShowcase />
-        </Tilt>
-      </div>
-    </div>
-  );
+  // Was: a standalone OpportunityDial ring scoring a fake "82", plus the
+  // BrowserShowcase auto-rotating mock carousel. Both were removed
+  // 26 Nov 2026 — the ring was a washed-out, low-contrast mock with no
+  // product behind it, and the carousel showed invented earbuds and a
+  // fake AI-optimised title. Replaced by HeroCockpit: one real demo
+  // record, high-contrast dark glass, floating 3D chips, mouse tilt.
+  return <HeroCockpit />;
 }
 
 function Icon({ name }: { name: string }) {
