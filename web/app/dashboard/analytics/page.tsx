@@ -6,8 +6,8 @@ import AnalyticsClient from "./analytics-client";
 export const dynamic = "force-dynamic";
 
 async function AnalyticsData() {
-  const { validations } = await api.watchlist();
-  return <AnalyticsClient validations={validations} />;
+  const { validations } = await api.watchlist().catch(() => ({ validations: [] }));
+  return <AnalyticsClient validations={validations ?? []} />;
 }
 
 export default function AnalyticsPage() {

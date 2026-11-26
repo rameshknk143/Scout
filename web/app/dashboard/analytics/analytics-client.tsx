@@ -57,14 +57,15 @@ export default function AnalyticsClient({
     typeof v === "number" ? `${v}%` : "—";
 
   const stats = useMemo(() => {
-    const total = validations.length;
-    const uniqueAsins = new Set(validations.map((v) => v.asin)).size;
+    const list = validations ?? [];
+    const total = list.length;
+    const uniqueAsins = new Set(list.map((v) => v.asin)).size;
     const avgScore = total
-      ? validations.reduce((sum, v) => sum + v.score, 0) / total
+      ? list.reduce((sum, v) => sum + v.score, 0) / total
       : 0;
 
     const verdictCounts: Record<string, number> = {};
-    for (const v of validations) {
+    for (const v of list) {
       verdictCounts[v.verdict] = (verdictCounts[v.verdict] ?? 0) + 1;
     }
 
@@ -85,12 +86,12 @@ export default function AnalyticsClient({
     {
       key: "spend",
       header: "Ad Spend",
-      render: (c) => <span className="font-mono font-bold text-zinc-900">₹{c.spend.toLocaleString("en-IN")}</span>,
+      render: (c) => <span className="font-mono font-bold text-zinc-900">₹{(c.spend ?? 0).toLocaleString("en-IN")}</span>,
     },
     {
       key: "sales",
       header: "Ad Sales",
-      render: (c) => <span className="font-mono font-bold text-emerald-700">₹{c.sales.toLocaleString("en-IN")}</span>,
+      render: (c) => <span className="font-mono font-bold text-emerald-700">₹{(c.sales ?? 0).toLocaleString("en-IN")}</span>,
     },
     {
       key: "acos",
@@ -275,7 +276,7 @@ export default function AnalyticsClient({
           {/* Campaign Table or Connection Required State */}
           <div className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-zinc-900">Sponsored Products Campaign Audit</h3>
-            {ppcData.campaigns && ppcData.campaigns.length > 0 ? (
+            {ppcData?.campaigns && ppcData.campaigns.length > 0 ? (
               <Table rows={ppcData.campaigns as CampaignItem[]} columns={campaignColumns} rowKey={(c) => c.id} />
             ) : (
               <div className="p-8 text-center bg-zinc-50 rounded-xl border border-dashed border-zinc-200 space-y-2">
@@ -309,6 +310,38 @@ export default function AnalyticsClient({
                 {stats.total ? Math.round(((stats.verdictCounts["PURSUE"] || 0) / stats.total) * 100) : 0}%
               </span>
             </div>
+          </div>
+
+          {/* Verdict breakdown + validations table — previously this view
+              ended after the KPI cards, leaving a blank page below them. */}
+          <div className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-4">
+            <h3 className="text-sm font-bold text-zinc-900">Verdict breakdown</h3>
+            <div className="flex flex-wrap gap-2">
+              {(["PURSUE", "WATCH", "SKIP"] as const).map((v) => (
+                <span key={v} className="flex items-center gap-2 text-xs font-semibold text-zinc-700 bg-zinc-50 border border-zinc-200 rounded-full px-3 py-1.5">
+                  <VerdictBadge verdict={v} />
+                  {stats.verdictCounts[v] ?? 0} product{(stats.verdictCounts[v] ?? 0) === 1 ? "" : "s"}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-4">
+            <h3 className="text-sm font-bold text-zinc-900">All scored products</h3>
+            {(validations ?? []).length > 0 ? (
+              <Table
+                rows={[...(validations ?? [])].sort((a, b) => b.score - a.score)}
+                rowKey={(v) => v.asin}
+                columns={[
+                  { key: "asin", header: "ASIN", render: (v) => <span className="font-mono text-xs font-bold text-zinc-900">{v.asin}</span> },
+                  { key: "title", header: "Product", render: (v) => <span className="text-xs text-zinc-700">{v.title || "Unresolved Product Title"}</span> },
+                  { key: "score", header: "Score", render: (v) => <span className="font-mono font-bold text-zinc-900">{v.score.toFixed(1)}</span> },
+                  { key: "verdict", header: "Verdict", render: (v) => <VerdictBadge verdict={v.verdict} /> },
+                ]}
+              />
+            ) : (
+              <p className="text-xs text-zinc-500">No products scored yet. Validate an ASIN in the Opportunity Finder to see it here.</p>
+            )}
           </div>
         </div>
       )}

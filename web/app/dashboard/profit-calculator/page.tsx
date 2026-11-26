@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import ProfitCalculatorClient from "./profit-calculator-client";
 
 export default function ProfitCalculatorPage() {

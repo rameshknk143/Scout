@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+
+import { Suspense } from "react";
 import ListingClient from "./listing-client";
 
 export default function ListingPage() {
@@ -8,7 +11,9 @@ export default function ListingPage() {
         Paste an ASIN, get a rule-based read on title/bullet/image completeness and how it
         stacks up against its category — no AI, just objective checks against the live page.
       </p>
-      <ListingClient />
+      <Suspense fallback={<div className="text-xs text-zinc-400 font-semibold animate-pulse">Loading listing optimizer...</div>}>
+        <ListingClient />
+      </Suspense>
     </div>
   );
 }

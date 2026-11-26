@@ -171,7 +171,7 @@ export default function MyProductsClient() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sourcing Add Panel */}
-        <div className="lg:col-span-4 bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4 h-fit">
+        <div className="lg:col-span-4 min-w-0 bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4 h-fit">
           <div className="text-sm font-semibold text-zinc-900">Add Catalog Listing</div>
           <form onSubmit={handleAddProduct} className="space-y-3.5">
             <div>
@@ -270,7 +270,7 @@ export default function MyProductsClient() {
         </div>
 
         {/* Inventory Catalog Panel */}
-        <div className="lg:col-span-8 bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
+        <div className="lg:col-span-8 min-w-0 bg-white border border-black/5 rounded-xl p-5 shadow-sm space-y-4">
           <div className="text-sm font-semibold text-zinc-900">Active Catalog Trackings</div>
           {isPending ? (
             <div className="flex flex-col items-center justify-center py-16 space-y-3">

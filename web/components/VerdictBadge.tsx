@@ -2,6 +2,10 @@ const STYLES: Record<string, string> = {
   PURSUE: "badge-pursue",
   WATCH: "badge-watch",
   SKIP: "badge-skip",
+  Strong: "badge-pursue",
+  Workable: "badge-watch",
+  Thin: "badge-watch",
+  Loss: "badge-skip",
 };
 
 export default function VerdictBadge({ verdict }: { verdict: string }) {

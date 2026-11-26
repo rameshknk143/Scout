@@ -2,12 +2,15 @@ import { Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import MarketplaceIndicator from "@/components/MarketplaceIndicator";
 import { SetupWizard } from "@/components/SetupWizard";
+import { api } from "@/lib/api";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const me = await api.me().catch(() => null);
+  const firstName = (me?.full_name || "Ramesh Kanike").split(" ")[0] || "Ramesh";
   return (
     <div className="flex flex-col md:flex-row min-h-screen relative bg-bg text-text">
       {/* Sidebar reads ?tab= to highlight the active entry, so it needs a
@@ -34,7 +37,7 @@ export default function DashboardLayout({
                 RK
               </div>
               <span className="text-xs font-semibold text-zinc-700 hidden sm:inline">
-                Ram
+                {firstName}
               </span>
             </div>
           </div>

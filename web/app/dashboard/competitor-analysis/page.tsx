@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import CompetitorAnalysisClient from "./competitor-analysis-client";
 
 export default function CompetitorAnalysisPage() {

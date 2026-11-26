@@ -41,12 +41,19 @@ async function TrendRadarData() {
   );
 }
 
-export default function TrendRadarPage() {
+export default async function TrendRadarPage() {
+  // Real name from the signed-in account — never a hardcoded nickname.
+  // Falls back to Ramesh if /me is unavailable (single-owner workspace).
+  const me = await api.me().catch(() => null);
+  const firstName = (me?.full_name || "Ramesh Kanike").split(" ")[0] || "Ramesh";
+  const istHour = (new Date().getUTCHours() + 5.5) % 24;
+  const greeting =
+    istHour < 12 ? "Good morning" : istHour < 17 ? "Good afternoon" : "Good evening";
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-black/5">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Good evening, Ram</h1>
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">{greeting}, {firstName}</h1>
           <p className="text-xs text-zinc-500 font-medium mt-1">
             Your Amazon India reseller business at a glance.
           </p>
