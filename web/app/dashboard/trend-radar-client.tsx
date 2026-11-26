@@ -238,8 +238,14 @@ export default function TrendRadarClient({
     setIsDrawerOpen(true);
   };
 
-  const lowStockAsin = watchlist.find((w) => w.score < 60)?.asin || null;
-  const lowQualityAsin = watchlist.find((w) => w.score < 75)?.asin || null;
+  // An ASIN is "resolved" only when we actually have a title and a price
+  // for it. Unresolved rows (no snapshot) must never drive restock or
+  // quality actions — a low score there is a cold-start placeholder, not
+  // a measured signal.
+  const isResolved = (w: Validation) => w.title != null && w.price != null;
+  const lowStockAsin = watchlist.find((w) => isResolved(w) && w.score < 60)?.asin || null;
+  const lowQualityAsin = watchlist.find((w) => isResolved(w) && w.score < 75)?.asin || null;
+  const unresolvedAsin = watchlist.find((w) => !isResolved(w))?.asin || null;
 
   const [sellerConfig, setSellerConfig] = useState<any>(null);
 
@@ -293,16 +299,16 @@ export default function TrendRadarClient({
         <MetricCard
           title="Sales Revenue (14d)"
           value={hasStorefront ? `${storefrontCurrency}${realRevenue.toLocaleString("en-IN", { maximumFractionDigits: 0 })}` : "—"}
-          change={hasStorefront ? "Live · SP-API" : "Connect Amazon"}
+          change={!connected ? "Connect Amazon" : hasStorefront ? "Live · SP-API" : "Sync needed"}
           changeType="neutral"
-          tooltip="Real sales revenue synced from your Amazon Seller account over the last 14 days. Connect your account in Settings to populate this."
+          tooltip={!connected ? "Connect your Amazon Seller account in Settings to populate this." : hasStorefront ? "Real sales revenue synced from your Amazon Seller account over the last 14 days via SP-API." : "Amazon account connected — click Sync Storefront to fetch the last 14 days of sales from SP-API."}
         />
         <MetricCard
           title="Units Sold (14d)"
           value={hasStorefront ? realUnits.toLocaleString("en-IN") : "—"}
-          change={hasStorefront ? "Live · SP-API" : "Connect Amazon"}
+          change={!connected ? "Connect Amazon" : hasStorefront ? "Live · SP-API" : "Sync needed"}
           changeType="neutral"
-          tooltip="Real units sold, synced from Amazon SP-API over the last 14 days."
+          tooltip={!connected ? "Connect your Amazon Seller account in Settings to populate this." : hasStorefront ? "Real units sold, synced from Amazon SP-API over the last 14 days." : "Amazon account connected — click Sync Storefront to fetch the last 14 days of units from SP-API."}
         />
         <MetricCard
           title="Tracked ASINs"
@@ -332,7 +338,16 @@ export default function TrendRadarClient({
           ⚡ Recommended Next Actions
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {lowStockAsin ? (
+          {unresolvedAsin ? (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex flex-col justify-between">
+              <p className="text-xs font-semibold text-amber-800 leading-relaxed">
+                ASIN <strong className="font-mono text-zinc-900">{unresolvedAsin}</strong> couldn&apos;t be resolved — no title, price or snapshot found. Re-validate it or check the ASIN on Amazon.in. It is not a restock signal.
+              </p>
+              <Link href={`/dashboard/validator?asin=${unresolvedAsin}`} className="text-[10px] font-bold text-[#3b82f6] hover:underline mt-2.5 inline-block">
+                Re-validate ASIN →
+              </Link>
+            </div>
+          ) : lowStockAsin ? (
             <div className="p-3 bg-zinc-50 border border-black/5 rounded-lg flex flex-col justify-between">
               <p className="text-xs font-semibold text-zinc-600 leading-relaxed">
                 Restock ASIN <strong className="font-mono text-zinc-900">{lowStockAsin}</strong> soon — its opportunity score has dropped below 60, a signal worth checking against your actual inventory levels.
@@ -682,6 +697,13 @@ export default function TrendRadarClient({
             )}
 
             {/* Bestseller Category List tabs */}
+            {coldStart && (
+              <p className="text-[11px] text-zinc-500 bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 leading-relaxed">
+                Early data — only {digest.collection_dates.length} collection day{digest.collection_dates.length === 1 ? "" : "s"} in the last 7 days
+                {digest.collection_dates.length > 0 ? ` (last: ${digest.collection_dates[digest.collection_dates.length - 1]})` : ""}.
+                Top Movers needs 2+ collection runs per ASIN, so it will fill in after the next nightly run.
+              </p>
+            )}
             <Tabs
               tabs={[
                 { key: "entrants", label: "New Entrants" },

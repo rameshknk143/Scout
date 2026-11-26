@@ -213,6 +213,12 @@ export type ProfitResult = {
 };
 
 export const api = {
+  me: () =>
+    request<{ user_id: number; email: string; full_name: string | null }>(
+      "/auth/me",
+      {},
+      { revalidate: 60 }
+    ),
   // Nightly collector runs once/day, so a short revalidation window is safe:
   // fresh data still shows up within a minute, but repeated dashboard loads
   // in between don't each trigger a full Render cold-start + full-table scan.
@@ -488,7 +494,7 @@ export type OpsStatus = {
 
 export type Pipeline = {
   last_seen: string | null;
-  age_hours: number;
+  age_hours: number | null;
   rows: number;
   last_pass_asins?: number;
   targets?: number;

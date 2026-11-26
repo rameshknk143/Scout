@@ -324,42 +324,14 @@ export default function SettingsClient() {
       {/* TAB 2: TEAM & RBAC (Blueprint Stage 5) */}
       {activeTab === "teams" && (
         <div className="space-y-6">
-          {/* Invite Form */}
+          {/* Invite Form — hidden until invite emails + an accept flow exist.
+              Recording a member who can never sign in is worse than no form;
+              see handleInvite / POST /saas/org-members. */}
           <div className="bg-white border border-black/5 rounded-2xl p-6 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-zinc-900">Invite Team Member</h3>
-            <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                required
-                placeholder="colleague@company.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className="flex-1 text-xs px-3.5 py-2 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              />
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as any)}
-                className="text-xs px-3 py-2 rounded-xl border border-zinc-200 bg-zinc-50 font-semibold text-zinc-700"
-              >
-                <option value="Admin">Admin (Full Ops)</option>
-                <option value="Analyst">Analyst (Research)</option>
-                <option value="Viewer">Viewer (Read-Only)</option>
-              </select>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition shadow-sm shrink-0"
-              >
-                Add Member
-              </button>
-            </form>
-            {inviteStatus && (
-              <p className={`text-xs font-semibold ${inviteFailed ? "text-red-700" : "text-emerald-700"}`}>
-                {inviteStatus}
-              </p>
-            )}
-            <p className="text-[11px] text-zinc-500">
-              Adding a member records them in this workspace. Invitation emails are not
-              wired up yet, so you will need to let them know yourself.
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              Team invites are coming soon. Invite emails and the accept flow are not wired up yet,
+              so members added here could not sign in — the invite form is hidden until then.
             </p>
           </div>
 

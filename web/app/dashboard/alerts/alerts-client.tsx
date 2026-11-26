@@ -117,7 +117,7 @@ export default function AlertsClient({ alerts = [] }: { alerts: Alert[] }) {
       </div>
 
       {/* Alerts Table */}
-      <div className="bg-transparent overflow-hidden">
+      <div className="bg-transparent overflow-x-auto min-w-0">
         <Table
           columns={[
             {

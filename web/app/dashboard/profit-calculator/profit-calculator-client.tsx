@@ -21,6 +21,9 @@ const FEE_LABELS: Record<string, string> = {
 };
 
 export default function ProfitCalculatorClient() {
+  // Defaults are example values only — they are not any one product's price.
+  // Enter the ASIN's real sell/buy price and its real Amazon fee category
+  // before treating the result as that product's margin.
   const [sellPrice, setSellPrice] = useState("499");
   const [buyPrice, setBuyPrice] = useState("150");
   const [batchVolume, setBatchVolume] = useState("500");
@@ -58,6 +61,8 @@ export default function ProfitCalculatorClient() {
       ["Target Batch Unit Volume", vol],
       ["Sell Price (Per Unit)", `INR ${sellPrice}`],
       ["Sourcing Cost (Per Unit)", `INR ${buyPrice}`],
+      ["Gross margin ex-GST (Per Unit)", `INR ${result.gross_margin_pre_fee}`],
+      ["Less: GST included in prices (Per Unit)", `INR ${(parseFloat(sellPrice) - parseFloat(buyPrice) - result.gross_margin_pre_fee).toFixed(2)}`],
       ["Referral Fee (Amazon)", `INR ${result.referral_fee}`],
       ["Closing Fee (Amazon)", `INR ${result.closing_fee}`],
       ["Fulfillment Fee (Shipping)", `INR ${result.weight_or_pickpack_fee}`],
@@ -190,7 +195,7 @@ export default function ProfitCalculatorClient() {
               <div className="flex items-center gap-3 mt-1">
                 <VerdictBadge verdict={result.verdict} />
                 <span className="text-sm font-bold">
-                  {result.verdict === "PURSUE" ? "High Profitability Candidate" : result.verdict === "WATCH" ? "Moderate Margins — Monitor Fees" : "Low Margin — Risk of Loss"}
+                  {result.verdict === "Strong" ? "High Profitability Candidate" : result.verdict === "Workable" ? "Moderate Margins — Monitor Fees" : result.verdict === "Thin" || result.verdict === "Loss" ? "Low Margin — Risk of Loss" : result.verdict === "PURSUE" ? "High Profitability Candidate" : result.verdict === "WATCH" ? "Moderate Margins — Monitor Fees" : "Low Margin — Risk of Loss"}
                 </span>
               </div>
             </div>
@@ -254,6 +259,14 @@ export default function ProfitCalculatorClient() {
                 <span>− Buy / sourcing cost</span>
                 <span className="font-mono font-bold">₹{buyPrice}</span>
               </div>
+              <div className="flex justify-between py-1.5 border-b border-zinc-100 text-amber-700">
+                <span>− GST included in sell &amp; buy prices ({gst}%) — margin is calculated ex-GST</span>
+                <span className="font-mono font-bold">₹{(parseFloat(sellPrice) - parseFloat(buyPrice) - result.gross_margin_pre_fee).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-zinc-100">
+                <span className="text-zinc-600 font-medium">= Gross margin (ex-GST)</span>
+                <span className="font-mono font-bold text-zinc-900">₹{result.gross_margin_pre_fee}</span>
+              </div>
               <div className="flex justify-between py-1.5 border-b border-zinc-100 text-red-600">
                 <span>− Amazon referral fee ({category.replace("_", " ")})</span>
                 <span className="font-mono font-bold">₹{result.referral_fee}</span>
@@ -275,6 +288,11 @@ export default function ProfitCalculatorClient() {
                 <span className="font-mono">₹{result.net_margin_rupees} ({result.net_margin_pct}%)</span>
               </div>
             </div>
+            <p className="text-[11px] text-zinc-500 leading-relaxed">
+              Check the arithmetic: gross margin (ex-GST) − referral − closing − fulfilment − returns = net margin.
+              Fees depend on the product&apos;s real Amazon fee category — pick the category that matches the ASIN,
+              don&apos;t rely on the default. Fee table last verified 2026-08-15; re-check Amazon&apos;s fee page before sourcing.
+            </p>
           </div>
         </div>
       )}

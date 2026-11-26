@@ -108,7 +108,7 @@ export default function SystemHealthClient({
   let samplePct = 0;
   if (typeof tunnelSamples === "string") {
     const m = tunnelSamples.match(/^(\d+)\/(\d+)$/);
-    if (m) samplePct = Number(m[1]) / Number(m[2]);
+    if (m && Number(m[2]) > 0) samplePct = Number(m[1]) / Number(m[2]);
   }
   const tunnelTone =
     tunnelFlow === "ok" ? "ok" : tunnelFlow === "dead" || tunnelListener === "down" ? "error" : "warn";
@@ -119,11 +119,12 @@ export default function SystemHealthClient({
   const hist = (tunnelHistory?.history ?? []).slice();
   const dailyMap = new Map<string, { sum: number; n: number; samples: number }>();
   for (const b of hist) {
+    if (!b.hour) continue;
     const day = b.hour.slice(0, 10);
     const entry = dailyMap.get(day) ?? { sum: 0, n: 0, samples: 0 };
-    entry.sum += b.up_pct;
+    entry.sum += b.up_pct ?? 0;
     entry.n += 1;
-    entry.samples += b.samples;
+    entry.samples += b.samples ?? 0;
     dailyMap.set(day, entry);
   }
   const daily = Array.from(dailyMap.entries())
@@ -329,7 +330,7 @@ export default function SystemHealthClient({
                         {pipe?.rows?.toLocaleString() ?? "—"}
                       </td>
                       <td className="py-2.5 pr-4 text-zinc-500 font-mono">
-                        {pipe ? `${pipe.age_hours.toFixed(1)}h` : "—"}
+                        {pipe?.age_hours != null ? `${pipe.age_hours.toFixed(1)}h` : "—"}
                       </td>
                       <td className="py-2.5">
                         <span className="flex items-center gap-2">
@@ -341,9 +342,11 @@ export default function SystemHealthClient({
                                   ? (pipe.last_pass_asins ?? 0) >= (pipe.targets ?? 12) / 2
                                     ? DOT_GREEN
                                     : DOT_RED
-                                  : pipe.age_hours < 48
-                                    ? DOT_GREEN
-                                    : DOT_AMBER
+                                  : pipe.age_hours == null
+                                    ? DOT_GRAY
+                                    : pipe.age_hours < 48
+                                      ? DOT_GREEN
+                                      : DOT_AMBER
                             }`}
                             aria-hidden
                           />
@@ -351,13 +354,19 @@ export default function SystemHealthClient({
                             {key === "vm_watchlist" && pipe
                               ? `${pipe.last_pass_asins ?? "?"}/${pipe.targets ?? 12}`
                               : key === "nightly_collector"
-                                ? pipe && pipe.age_hours < 48
-                                  ? "fresh"
-                                  : "stale"
+                                ? pipe == null
+                                  ? "no data"
+                                  : pipe.age_hours == null
+                                    ? "no data"
+                                    : pipe.age_hours < 48
+                                      ? "fresh"
+                                      : "stale"
                                 : pipe
-                                  ? pipe.age_hours < 168
-                                    ? "recent"
-                                    : "idle"
+                                  ? pipe.age_hours == null
+                                    ? "no data"
+                                    : pipe.age_hours < 168
+                                      ? "recent"
+                                      : "idle"
                                   : "no data"}
                           </span>
                         </span>

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import MyProductsClient from "./my-products-client";
 
 export default function MyProductsPage() {

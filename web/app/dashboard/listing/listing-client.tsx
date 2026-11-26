@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import CaveatBox from "@/components/CaveatBox";
 import { Card, Field, MiniStat, Table, type Column } from "@/components/ui";
 import type { ListingAnalysis, ListingPeer, ListingSuggestion, ReviewSummary } from "@/lib/api";
@@ -51,6 +52,11 @@ export default function ListingClient() {
   }, [targetKeywords, titleDraft, bullet1, bullet2, bullet3, bullet4, bullet5, descriptionDraft]);
 
   const [asin, setAsin] = useState("");
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const urlAsin = searchParams.get("asin");
+    if (urlAsin) setAsin(urlAsin);
+  }, [searchParams]);
   const [category, setCategory] = useState("");
 
   const [result, setResult] = useState<ListingAnalysis | null>(null);
@@ -156,7 +162,7 @@ export default function ListingClient() {
               <input
                 value={asin}
                 onChange={(e) => setAsin(e.target.value)}
-                placeholder="B0D4DZ7WL2"
+                placeholder="e.g. B0D4DZ7WL2"
                 required
                 className="input font-mono text-sm"
               />

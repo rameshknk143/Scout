@@ -33,8 +33,8 @@ export default function Table<T>({
   if (!rows.length) return <EmptyState text={emptyText} />;
 
   return (
-    <div className="glass-panel overflow-hidden overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="glass-panel overflow-x-auto">
+      <table className="w-full min-w-[720px] text-sm">
         <thead>
           <tr className="text-left text-muted text-[10px] tracking-wider uppercase border-b border-black/5">
             {columns.map((col) => (

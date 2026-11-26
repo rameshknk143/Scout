@@ -72,7 +72,7 @@ export default function ValidatorClient() {
           <input
             value={asin}
             onChange={(e) => setAsin(e.target.value)}
-            placeholder="B0D4DZ7WL2"
+            placeholder="e.g. B0D4DZ7WL2"
             required
             className="input font-mono text-sm"
           />
